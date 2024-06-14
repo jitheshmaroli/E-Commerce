@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-const photoUpload = upload.array("photos", 3);
+const photoUpload = upload.array("photos", 4);
 
 
 const addProductView = async (req, res) => {

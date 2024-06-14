@@ -112,7 +112,7 @@
                               <tr>
                                 <td><%= item.name %></td>
                                 <td><%= item.quantity %></td>
-                                <td>$<%= item.price %></td>
+                                <td>₹<%= item.price %></td>
                                 <td><%= item.status %></td>
                                 <td>
                                   <% if (item.status === "Pending") { %>
@@ -141,7 +141,7 @@
                             <% }); %>
                           </tbody>
                         </table>
-                        <p>Total Amount: $<%= order.totalCost %></p>
+                        <p>Total Amount: ₹<%= order.totalCost %></p>
                       </div>
                     </div>
                   </div>

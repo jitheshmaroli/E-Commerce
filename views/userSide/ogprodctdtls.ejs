@@ -236,7 +236,7 @@ applyDiscountBtn.addEventListener('click', () => {
                 } else {
                     const finalPrice = calculateDiscount(totalPrice, data.discountPercentage);
                     finalPriceSpan.textContent = finalPrice;
-                    discountMessage.textContent = `Discount applied: -$${(totalPrice - finalPrice).toFixed(2)}`;
+                    discountMessage.textContent = `Discount applied: -₹${(totalPrice - finalPrice).toFixed(2)}`;
                 }
             })
             .catch(error => {

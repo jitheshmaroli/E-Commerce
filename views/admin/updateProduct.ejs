@@ -333,8 +333,8 @@
     const selectedFiles = event.target.files;
     const existingImages = imagePreviewContainer.querySelectorAll('.image-wrapper').length;
 
-    if (selectedFiles.length + existingImages !== 3) {
-      alert('Please ensure a total of exactly 3 photos are selected after additions.');
+    if (selectedFiles.length + existingImages !== 4) {
+      alert('Please ensure a total of exactly 4 photos are selected after additions.');
       photoInput.value = '';
     } else {
       displayImagePreviews(selectedFiles);

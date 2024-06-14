@@ -127,7 +127,7 @@
                                     <% } %>
                                   <% } %>
                                 </div>
-                                <div class="product-price">$<%= product.price %></div>
+                                <div class="product-price">₹<%= product.price %></div>
                                 <div class="product-actions">
                                     <a href="#" class="btn btn-add-to-cart add-to-cart" data-product-id="<%= product._id %>">Add to Cart</a>
                                     <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now">Buy Now</a>
@@ -407,7 +407,7 @@ function updateProductList(products) {
             <div class="product-rating">
               ${generateRatingHtml(product.averageRating)}
             </div>
-            <div class="product-price">$${product.price}</div>
+            <div class="product-price">₹${product.price}</div>
             <div class="product-actions">
               <a href="#" class="btn btn-add-to-cart add-to-cart" data-product-id="${product.id}">Add to Cart</a>
               <a href="/checkout?product=${product.id}" class="btn btn-buy-now">Buy Now</a>
