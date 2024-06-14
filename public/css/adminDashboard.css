@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif; /* Choose a suitable font family */
+}
+
+.main, .sidebar, .content {
+    box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
+}
+
+
+
+.main {
+    display: flex;
+    min-height: 100vh; /* Set main content area height (minus header height) */
+    background-color:#f0f0f0 ;
+}
+
+.sidebar {
+    width: 200px; /* Adjust sidebar width as needed */
+    background-color: #e0e0e0; /* Light gray background */
+    padding: 10px;
+}
+
+
+.content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .card-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow cards to wrap to a new line if needed */
+    justify-content: space-between; /* Distribute cards evenly */
+  }
+  
+  .card {
+    width: calc(33.33% - 20px); /* Adjust width based on number of cards and desired margin */
+    margin: 10px;
+    background-color: #fff; /* White background */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    text-align: center; /* Center text content within cards */
+    padding: 20px;
+  }
+  
+  .profile-avatar {
+    width: 100px; /* Adjust avatar size as needed */
+    height: 100px; /* Adjust avatar size as needed */
+    border-radius: 50%; /* Circular avatar */
+    margin-bottom: 10px;
+  }
+  
+  .card-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .card-link {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #333; /* Link background color */
+    color: #fff; /* Link text color */
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.2s ease-in-out; /* Add hover effect */
+  }
+  
+  .card-link:hover {
+    background-color: #222; /* Change link background on hover */
+  }
+  
+  /* Basic table styles */
+table {
+    width: 100%; /* Make table full width */
+    border-collapse: collapse; /* Remove borders between table cells */
+
+  }
+  
+  th, td {
+    padding: 10px; /* Adjust padding as needed */
+    border: 1px solid #ddd; /* Optional border for each cell */
+    text-align: left; /* Align content left within cells */
+  }
+  
+  th {
+    background-color: #f0f0f0; /* Light gray background for table headers */
+    font-weight: bold;
+  }
+
+  .card-container {
+    display: flex;  /* Enables flexbox for layout */
+    flex-direction: column;  /* Stacks elements vertically */
+    margin: 10px;  /* Add some margin for spacing */
+    padding: 10px;  /* Add some padding for content area */
+    border: 1px solid #ddd;  /* Optional border for the container */
+  }
+  
+  .order-status-info {
+    display: flex;
+    justify-content: space-between;  /* Distributes content horizontally */
+    align-items: center;  /* Aligns elements vertically */
+    margin-bottom: 10px;  /* Add space between order info and cards */
+  }
+  
+  .order-id, .order-date-range, .order-buttons {
+    flex: 1;  /* Makes each element take up equal space */
+    text-align: center;  /* Center content within each element */
+  }
+  
+  .product-list {
+    border: 1px solid #ddd;  /* Black border with 1px thickness */
+    margin: 10px;  /* Add some margin for spacing */
+    padding: 10px;
+  }
+  
+  .fixed-height-textarea {
+    height: 150px;  /* Adjust as needed (consider padding & border) */
+    /* Optional: Remove default row height from Bootstrap */
+    resize: none;
+  }
+  
+  .sidebar-list a{
+    text-decoration: none;
+  }
+  
+
+  

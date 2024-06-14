@@ -1,0 +1,415 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+/* Header */
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}
+
+.brand-logo img {
+  margin-right: 10px;
+}
+
+.search-bar {
+  flex-grow: 1;
+  margin: 0 20px;
+}
+
+.search-bar form {
+  display: flex;
+}
+
+.search-bar input[type="text"] {
+  flex-grow: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.search-bar .dropdown {
+  position: relative;
+}
+
+.search-bar .dropdown-toggle {
+  background-color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 0;
+}
+
+.search-bar .dropdown-toggle:hover {
+  background-color: #fff;
+  color: black;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 0;
+}
+
+.search-bar .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  margin: 0;
+}
+
+.search-bar .dropdown-item {
+  display: block;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #333;
+}
+
+.search-bar .search-btn {
+  background-color: #414341;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: ease-in-out;
+}
+.search-btn:hover .fa-search{
+  transform: scale(1.4);
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+
+.user-actions a {
+  color: #fff;
+  font-size: 24px;
+  margin-left: 10px;
+}
+
+.banner {
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+}
+
+
+.banner a {
+  color: #333;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.banner form {
+  display: inline-block;
+}
+
+.banner select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+/* Profile Icon */
+.profile-dropdown {
+  position: relative;
+  margin-right: 10px;
+}
+
+.profile-dropdown-toggle {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.profile-dropdown-menu {
+  display: none; /* Hide the menu by default */
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  margin: 0;
+  min-width: 100px;
+}
+
+/* Show the menu when hovering over the profile-dropdown */
+.profile-dropdown:hover .profile-dropdown-menu {
+  display: block;
+}
+
+.profile-dropdown-menu a {
+  display: block; /* Ensure the links are displayed as block elements */
+  padding: 8px 12px;
+  font-size: larger;
+  text-align: center;
+  text-decoration: none;
+  color: #666565;
+  background-color: transparent; /* Make the background transparent by default */
+  border: none; /* Remove any default borders */
+  outline: none; /* Remove any outlines */
+}
+
+.profile-dropdown-menu a:hover {
+ color: black;
+}
+  
+  /*section css starts here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+  
+  .section {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #b3d1d1;
+  }
+  
+  
+  /*section css ends here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+  
+  /* Footer */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+}
+
+.footer-heading {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.footer ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer form input[type="email"] {
+  width: 60%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.footer form button[type="submit"] {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+.social-link {
+  color: #fff;
+  font-size: 24px;
+  margin-left: 10px;
+}
+  
+  /* footer css ends here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+    
+
+    
+    .container {
+      max-width: 1200px; /* Limit container width for better responsiveness */
+      margin: 0 auto; /* Center the container horizontally */
+    }
+    
+    .copyright {
+      color: #333; /* Dark gray text color */
+      font-size: 14px; /* Adjust font size as needed */
+    }
+    .sidebar-list a{
+      text-decoration: none;
+    }
+  
+ 
+
+  .main, .sidebar, .content {
+    box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
+}
+.main, .sidebar, .content {
+  box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
+}
+
+.main {
+  display: flex;
+  min-height: 100vh; /* Set main content area height (minus header height) */
+  background-color:#f0f0f0 ;
+}
+
+
+
+.content {
+    flex: 1;
+    padding: 20px;
+  }
+
+  .sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+ 
+  
+  .profile-section {
+    text-align: center; /* If you want the text centered */
+  }
+  
+ 
+  .avatar {
+    position: relative;
+    width: 150px; /* Adjust as needed */
+    height: 150px; /* Adjust as needed */
+    overflow: hidden;
+    border-radius: 50%; /* This creates the rounded shape */
+    margin-bottom: 20px;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.avatar label:hover {
+    background-color: rgba(0, 0, 0, 0.7); /* Darker background on hover */
+}
+
+.avatar input[type="file"] {
+    display: none;
+}
+
+  
+  .avatar img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .profile-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .profile-links li {
+    margin-bottom: 10px;
+  }
+  
+  .profile-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
+  .profile-edit {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .profile-edit h2 {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+

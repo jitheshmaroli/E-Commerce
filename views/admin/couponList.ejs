@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORDERS LIST</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="/css/adminCouponList.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top" />
+        SportZilon
+      </a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              ADMIN
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item" href="/admin/logout">Logout</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <main class="main">
+    <aside class="sidebar">
+      <div class="">
+        <div class="list-group sidebar-list" id="myListGroup">
+          <a href="/admin">
+            <button type="button" class="list-group-item list-group-item-action">
+              HOME
+            </button>
+          </a>
+          <a href="/admin/allproducts">
+            <button type="button" class="list-group-item list-group-item-action">
+              ALL PRODUCTS
+            </button>
+          </a>
+          <a href="/admin/ordersList">
+            <button type="button" class="list-group-item list-group-item-action">
+              ORDERS LIST
+            </button>
+          </a>
+          <a href="/admin/usersList">
+            <button type="button" class="list-group-item list-group-item-action">
+              USERS LIST
+            </button>
+          </a>
+          <a href="/admin/categoryList">
+            <button type="button" class="list-group-item list-group-item-action">
+              CATEGORY LIST
+            </button>
+          </a>
+          <a href="/admin/couponList">
+            <button type="button" class="list-group-item list-group-item-action">
+              COUPON LIST
+            </button>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <section class="content">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item active" aria-current="page">
+            ALL COUPONS
+          </li>
+        </ol>
+      </nav>
+      <a href="/admin/addcoupon" class="btn btn-primary"> NEW COUPON</a>
+      <div class="container">
+        <% if (coupons && coupons.length > 0) { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">CODE</th>
+              <th scope="col">DISCOUNT(%)</th>
+              <th scope="col">EXPIRY DATE</th>
+              <th scope="col">STATUS</th>
+              <th scope="col">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% coupons.forEach(coupon => { %>
+            <tr data-coupon-id="<%= coupon._id %>">
+              <td hidden><%= coupon._id %></td>
+              <td><%= coupon.code %></td>
+              <td><%= coupon.discount %></td>
+              <td><%= coupon.expiryDate %></td>
+              <% if (coupon.expiryDate > Date.now()) { %>
+              <td>ACTIVE</td>
+              <% }else { %>
+              <td>EXPIRED</td>
+              <% } %>
+              <td>
+                <a href="#" class="btn btn-warning edit-coupon">EDIT</a>
+                <a href="#" class="btn btn-danger">REMOVE</a>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% }else {%>
+        <h2>NO COUPONS AVAILABLE</h2>
+        <% } %>
+      </div>
+    </section>
+    <div id="editCouponPopup" class="modal" style="display: none">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Coupon</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editCouponForm">
+              <input type="hidden" id="couponId" name="couponId" />
+              <div class="mb-3">
+                <label for="couponCode" class="form-label">Coupon Code</label>
+                <input type="text" class="form-control" id="couponCode" name="couponCode" required  maxlength="5" />
+                <span id="codeError" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <label for="discount" class="form-label">Discount (%)</label>
+                <input type="number" class="form-control" id="discount" name="discount" required max="100" min="1" />
+                <span id="discountError" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <label for="expiryDate" class="form-label">Expiry Date</label>
+                <input type="date" class="form-control" id="expiryDate" name="expiryDate" required />
+                <span id="expiryDateError" class="text-danger"></span>
+              </div>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="copyright">© 2024 ShoesZone.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+    integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+  <script>
+    const editCouponButtons = document.querySelectorAll(".edit-coupon");
+    const editCouponForm = document.getElementById("editCouponForm");
+    const modal = document.getElementById("editCouponPopup");
+
+    function validateForm() {
+  const code = document.getElementById("couponCode").value.trim();
+  const discountPercentage = document.getElementById("discount").value.trim();
+  const expiryDate = document.getElementById("expiryDate").value.trim();
+  const today = new Date().toISOString().split('T')[0];
+  let valid = true;
+
+  // Regular expression to check if the code contains at least one alphabetic character
+  const hasCharacter = /[a-zA-Z]/.test(code);
+
+  if (code === "") {
+    document.getElementById("codeError").textContent = "Coupon code is required.";
+    valid = false;
+  } else if (code.length < 3) {
+    document.getElementById("codeError").textContent = "Coupon code must be at least 3 characters long.";
+    valid = false;
+  } else if (!hasCharacter) {
+    document.getElementById("codeError").textContent = "Coupon code must include at least one character.";
+    valid = false;
+  } else if (expiryDate < today) {
+    document.getElementById("expiryDateError").textContent = "Expiry date cannot be before today's date.";
+    valid = false;
+  }else {
+    document.getElementById("codeError").textContent = "";
+  }
+
+  if (discountPercentage === "") {
+    document.getElementById("discountError").textContent = "Coupon discount percentage is required.";
+    valid = false;
+  } else if (isNaN(discountPercentage)) {
+    document.getElementById("discountError").textContent = "Coupon discount percentage must be digits.";
+    valid = false;
+  } else {
+    document.getElementById("discountError").textContent = "";
+  }
+
+  if (expiryDate === "") {
+    document.getElementById("expiryDateError").textContent = "Expiry date is required.";
+    valid = false;
+  } else {
+    document.getElementById("expiryDateError").textContent = "";
+  }
+
+  return valid;
+}
+
+
+    editCouponButtons.forEach((button) => {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        const tr = this.closest('tr');
+        const couponId = tr.getAttribute('data-coupon-id');
+        document.getElementById("couponId").value = couponId;
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+      });
+    });
+
+    editCouponButtons.forEach((button) => {
+  button.addEventListener("click", function (event) {
+    event.preventDefault();
+    const tr = this.closest('tr');
+    const couponId = tr.getAttribute('data-coupon-id');
+    const couponCode = tr.querySelector('td:nth-child(2)').textContent;
+    const discount = tr.querySelector('td:nth-child(3)').textContent;
+    const expiryDate = tr.querySelector('td:nth-child(4)').textContent;
+
+    document.getElementById("couponId").value = couponId;
+    document.getElementById("couponCode").value = couponCode;
+    document.getElementById("discount").value = discount;
+    document.getElementById("expiryDate").value = expiryDate;
+
+    const bootstrapModal = new bootstrap.Modal(modal);
+  });
+});
+
+    editCouponForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (validateForm()) {
+        const couponId = document.getElementById("couponId").value;
+        const code = document.getElementById("couponCode").value;
+        const discount = document.getElementById("discount").value;
+        const expiryDate = document.getElementById("expiryDate").value;
+
+        const data = {
+          code,
+          discount,
+          expiryDate,
+        };
+
+        fetch(`/admin/editCoupon/${couponId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const modalInstance = bootstrap.Modal.getInstance(modal);
+              modalInstance.hide();
+              location.reload();
+            } else {
+              alert("Error updating coupon");
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating coupon:", error);
+          });
+      }
+    });
+  </script>
+</body>
+</html>

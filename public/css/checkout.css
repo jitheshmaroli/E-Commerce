@@ -1,0 +1,325 @@
+    /* General Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+  }
+
+  /* Header */
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}
+
+.brand-logo img {
+  margin-right: 10px;
+}
+
+
+  .checkout-title {
+      flex-grow: 1;
+      text-align: center;
+  }
+
+  .checkout-title h2 {
+      margin: 0;
+      font-size: 24px;
+  }
+  .user-actions a {
+    color: #fff;
+    font-size: 24px;
+    margin-left: 10px;
+  }
+  /* Checkout Form Styles */
+  .container {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+  }
+
+  .checkout-form {
+      width: 60%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .quantity-btn {
+    width: 30px;
+    height: 30px;
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+  }
+  .quantity-btn:hover {
+    font-weight: bold;
+    color: white;
+    background-color: black;
+  }
+  
+  .quantity-control input {
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    margin: 0 5px;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; /* Optional for proper alignment */
+  }
+
+ .btn-place-order{
+  background-color: rgb(113, 112, 112);
+  color: black;
+  
+  width: 100%;
+ }
+ .btn-place-order:hover{
+  background-color: black;
+  color: white;
+ }
+
+  .address-card, .add-address-card ,.payment-options{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+  }
+
+  .address-card h3 {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .address-card p {
+    margin-bottom: 0.25rem;
+  }
+
+  .address-card button {
+    align-self: flex-end;
+    margin-top: 1rem;
+  }
+  .address-card-buttons .btn{
+    background-color: #838282;
+    color: white;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 6px;
+  }
+
+  .add-address-card .btn{
+    align-items: center;
+    background-color: #838282;
+    color: white;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 6px;
+  }
+
+  
+  .btn-add-address{
+    border: 1px solid black;
+  }
+  
+  .payment-options {
+      margin-bottom: 20px;
+  }
+
+  .payment-options h3 {
+      margin-bottom: 10px;
+  }
+
+  .payment-options div {
+      margin-bottom: 5px;
+  }
+
+  /* Order Summary Styles */
+  .order-summary {
+      width: 35%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-details {
+      margin-bottom: 20px;
+  }
+
+  .product-details{
+    display: flex;
+    flex-direction: row;
+    margin: 1rem;
+  }
+  .coupon-section {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.coupon-form {
+    display: flex;
+    align-items: center;
+}
+
+.coupon-form input {
+    flex: 1;
+    margin-right: 10px;
+    padding: 5px;
+}
+
+.coupon-form button {
+    padding: 5px 10px;
+}
+
+#couponMessage {
+    margin-left: 10px;
+    color: green;
+    font-weight: bold;
+}
+
+  .product {
+      margin-bottom: 10px;
+  }
+
+
+  .product img {
+      margin-right: 10px;
+  }
+
+  .product-details h4 {
+      margin: 0;
+      font-size: 16px;
+  }
+
+  .product-details p {
+      margin: 0;
+      font-size: 14px;
+  }
+
+  .total-amount {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #dee2e6;
+  }
+
+  .total-amount p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+  }
+
+  .footer {
+    margin-top: 10px;
+    background-color: #f2f2f2; 
+    text-align: center;
+  }
+  
+  
+  
+  .copyright {
+    color: #333; 
+    font-size: 14px; 
+    padding-top: 2px;
+  }
+
+  
+
+ /* Media Queries for Mobile Devices */
+@media (max-width: 767px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .checkout-form {
+    width: 100%;
+  }
+
+  .order-summary {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .navbar-brand img{
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .navbar-brand span {
+    font-size: 1rem;
+  }
+  .navbar-brand{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .checkout-title {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .user-actions {
+    margin-top: 10px;
+  }
+
+  .product-details {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .price-quantity {
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .checkout-form {
+    width: 100%;
+  }
+
+  .order-summary {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+

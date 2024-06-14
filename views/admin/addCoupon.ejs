@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All products</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/addCoupon.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="/assets/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        SportZilon
+      </a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              ADMIN
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav> 
+    <main class="main">
+      <aside class="sidebar">
+          <div class="">
+              <div class="list-group sidebar-list" id="myListGroup">
+                  <a href="/admin">
+                    <button type="button" class="list-group-item list-group-item-action">HOME </button>
+                  </a>
+                  <a href="/admin/allproducts">
+                     <button type="button" class="list-group-item list-group-item-action">ALL PRODUCTS</button>
+                  </a>
+                  <a href="/admin/ordersList">
+                     <button type="button" class="list-group-item list-group-item-action">ORDERS LIST</button>
+                  </a>
+                  <a href="/admin/usersList">
+                    <button type="button" class="list-group-item list-group-item-action">USERS LIST</button>
+                  </a>
+                  <a href="/admin/categoryList">
+                    <button type="button" class="list-group-item list-group-item-action">CATEGORY LIST</button>
+                  </a>
+                  <a href="/admin/couponList">
+                    <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
+                  </a>
+                </div>
+            </div>
+   </aside>
+   <section class="content">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/couponList">COUPON LIST</a></li>
+        <li class="breadcrumb-item active" aria-current="page">ADD NEW COUPON</li>
+      </ol>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-7">
+          <form id="couponForm" method="POST" action="/admin/addcoupon" onsubmit="return validateForm()">
+              <small class="text-danger" id="message" ></small>
+            <div class="form-group">
+              <label for="code">Coupon Code</label>
+              <input type="text" class="form-control" id="code" placeholder="Coupon code" name="code" maxlength="5">
+              <small class="text-danger" id="codeError"></small> 
+            </div>
+            <div class="form-group">
+              <label for="discount">Discount Percentage</label>
+              <input type="number" class="form-control" id="discount" placeholder="Coupon discount percentage" name="discount" min="" max="100">
+              <small class="text-danger" id="discountError"></small>
+            </div>
+            <div class="form-group">
+              <label for="expiryDate">Expiry Date</label>
+              <input type="date" class="form-control" id="expiryDate" name="expiryDate" min="" required>
+              <small class="text-danger" id="expiryDateError"></small>
+            </div>
+            <div class="row">
+              <button type="submit" class="btn btn-primary mr-1">ADD COUPON</button>
+              <button type="button" class="btn btn-primary" onclick="clearFields()">CLEAR FIELDS</button>
+              <a href="/admin/couponList" class="ml-auto">BACK</a>
+            </div>
+          </form>
+      </div>
+        </div>
+   </section>     
+   </main> 
+   <footer class="footer">
+      <div class="container">
+        <p class="copyright">© 2024 ShoesZone.</p>
+      </div>
+    </footer>
+  
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"></script>
+      <script>
+        function validateForm() {
+          const code = document.getElementById("code").value.trim();
+          const discountPercentage = document.getElementById("discount").value.trim();
+          const expiryDate =  document.getElementById("expiryDate").value.trim()
+          const messageElement = document.getElementById("message");
+          messageElement.textContent = "<%= message %>";
+    
+          
+          if (code === "") {
+            document.getElementById("codeError").textContent = "Coupon code is required.";
+            return false;
+          } else if( code.length < 3) {
+            document.getElementById("codeError").textContent = "Coupon code is required with atleast 3 characters.";
+            return false;
+          }else if(!isNaN(code)){
+            document.getElementById("codeError").textContent = "Coupon code must include character.";
+            return false;
+          }else{
+            document.getElementById("codeError").textContent = "";
+          }
+    
+         
+          if (discountPercentage === "") {
+            document.getElementById("discountError").textContent = "Coupon discount percentage is required.";
+            return false;
+          } else if(isNaN(discountPercentage)){
+            document.getElementById("descriptionError").textContent = "Coupon discount percentage must be digits.";
+            return false;
+          }else {
+            document.getElementById("discountError").textContent = ""; 
+          }
+    
+          
+          return true;
+        }
+    
+        function clearFields() {
+          document.getElementById("code").value = "";
+          document.getElementById("discount").value = "";
+          document.getElementById("expiryDate").value = "";
+          document.getElementById("codeError").textContent = "";
+          document.getElementById("discountError").textContent = "";
+          document.getElementById("message").textContent = "";
+        }
+      </script>
+      <script>
+        const today = new Date();
+        const minDate = today.toISOString().split('T')[0];
+        const expiryDateInput = document.getElementById('expiryDate');
+        expiryDateInput.min = minDate;
+      </script>
+    
+
+    
+</body>
+</html>

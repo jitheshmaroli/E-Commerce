@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All products</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/addCategory.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="/assets/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        SportZilon
+      </a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              ADMIN
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav> 
+    <main class="main">
+      <aside class="sidebar">
+          <div class="">
+              <div class="list-group sidebar-list" id="myListGroup">
+                  <a href="/admin">
+                    <button type="button" class="list-group-item list-group-item-action">HOME </button>
+                  </a>
+                  <a href="/admin/allproducts">
+                     <button type="button" class="list-group-item list-group-item-action">ALL PRODUCTS</button>
+                  </a>
+                  <a href="/admin/ordersList">
+                     <button type="button" class="list-group-item list-group-item-action">ORDERS LIST</button>
+                  </a>
+                  <a href="/admin/usersList">
+                    <button type="button" class="list-group-item list-group-item-action">USERS LIST</button>
+                  </a>
+                  <a href="/admin/categoryList">
+                    <button type="button" class="list-group-item list-group-item-action">CATEGORY LIST</button>
+                  </a>
+                  <a href="/admin/couponList">
+                    <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
+                  </a>
+                </div>
+            </div>
+   </aside>
+   <section class="content">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/categoryList">CATEGORY LIST</a></li>
+        <li class="breadcrumb-item active" aria-current="page">EDIT CATEGORY</li>
+      </ol>
+    </nav>
+    <% if (message) { %>
+      <h4><%= message %></h4>
+    <% } %>
+    <div class="container">
+        <% if (categoryList) { %>
+      <div class="row">
+        <div class="col-md-7">
+          <form method="POST" id="categoryForm" action="/admin/categoryList/edit/<%= categoryList._id %>" onsubmit="return validateForm()">
+            <div class="form-group">
+              <label for="CategoryName">Category Name</label>
+              <input type="text" class="form-control" id="categoryName" value="<%= categoryList.categoryName %>"  name="categoryName" maxlength="20">
+              <span id="categoryNameError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+              <label for="description">Category description</label>
+              <input type="text" class="form-control" id="description" value="<%= categoryList.description %>" name="description" maxlength="100">
+              <span id="descriptionError" class="text-danger"></span>
+            </div>           
+            <div class="row">
+              <button type="submit" id="submitButton" class="btn btn-primary mr-1 ">UPDATE CATEGORY</button>
+              <button type="button" class="btn btn-primary" onclick="clearFields()">CLEAR FIELDS</button>
+              <a href="" class="ml-auto">BACK</a>
+            </div>
+          </form> 
+        </div>
+      </div>
+      <% }else{ %>
+        <h4>Invalid Category</h4>
+        <% } %>
+    </div>
+   </section>     
+   </main> 
+   <footer class="footer">
+      <div class="container">
+        <p class="copyright">© 2024 ShoesZone.</p>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   
+    <script>
+      function validateForm() {
+        const categoryNameElement = document.getElementById("categoryName");
+        const categoryName = categoryNameElement.value.trim().toUpperCase(); 
+        const description = document.getElementById("description").value.trim();
+
+        const lettersRegex = /^[A-Za-z]+$/;
+  
+        if (categoryName === "" ) {
+          document.getElementById("categoryNameError").textContent = "Category Name is required";
+          return false; 
+        } else if(!lettersRegex.test(categoryName)) {
+          document.getElementById("categoryNameError").textContent = "Category Name must be a character.";
+          return false; 
+        }else if(categoryName.length < 3){
+          document.getElementById("categoryNameError").textContent = "Category Name is required with more than 3 letters";
+          return false; 
+        } {
+          document.getElementById("categoryNameError").textContent = "";
+        }
+  
+        categoryNameElement.value = categoryName;
+
+        if (description === "" || description.length < 3 ) {
+          document.getElementById("descriptionError").textContent = "Category Description is required with mor than 3 letters.";
+          return false;
+        } else if(!isNaN(description)){
+          document.getElementById("descriptionError").textContent = "Category Description is required character.";
+          return false;
+        } {
+          document.getElementById("descriptionError").textContent = "";
+        }
+  
+        return true;
+      }
+  
+      function clearFields() {
+        // Clear input fields
+        document.getElementById("categoryName").value = "";
+        document.getElementById("description").value = "";
+  
+        // Clear error messages
+        document.getElementById("categoryNameError").textContent = "";
+        document.getElementById("descriptionError").textContent = "";
+      }
+    </script>
+    
+</body>
+</html>

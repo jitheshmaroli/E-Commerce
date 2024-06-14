@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail Page</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/productDetails.css" type="text/css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <a class="navbar-brand" href="/">
+          <img src="/images/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid d-inline-block align-text-top">
+          <span class="d-inline-block">ShoeZone</span>
+        </a>
+      </div>
+      <div class="search-bar">
+        <form action="/search" method="GET">
+          <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Search for products...">
+            <button type="submit" class="input-group-text search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="dropdown">
+          <button class="dropdown-toggle btn dropdown-toggle-split" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="dropdown-toggle-text">All categories</span>
+            <span class="visually-hidden">Toggle Dropdown</span>
+          </button>
+          <% if (categoryList) { %>
+            <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+              <li><a class="dropdown-item" href="#" onclick="setCategory('all')">All</a></li>
+              <% categoryList.forEach(category => { %>
+                <li><a class="dropdown-item" href="#" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a></li>
+              <% }) %>
+            </ul>
+          <% } %>
+          <input type="hidden" name="category" id="selectedCategory" value="all">
+        </div>
+        </form>
+      </div>
+      
+      <div class="user-actions">
+        <div class="profile-dropdown">
+          <a class="profile-dropdown-toggle btn " href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i>
+          </a>
+            <div class="profile-dropdown-menu" >
+              <a class="dropdown-item" href="/profile">Profile</a>
+              <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+        </div>
+        <a href="/cart">
+          <i class="fas fa-shopping-cart"></i>
+      </a>
+      <a href="/wishlist">
+        <i class="fas fa-heart"></i>
+    </a>
+    </div>
+    
+    </nav>
+    <div class="banner">
+      <div class="row pt-2 pb-2">
+        <div class="col">
+          <a href="/">HOME</a>
+        </div>
+        <% categoryList.forEach(category => { %>
+          <div class="col">
+            <a href="/<%= category.categoryName %>" class="category-link" id="category-<%= category.categoryName %>" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a>
+          </div>
+      <% }) %>
+        <div class="col sort">
+          <form id="sortForm" action="" method="GET">
+            <select name="sortBy" id="sortBy">
+                <option value="">Sort</option>
+                <option value="popularity">Popularity</option>
+                <option value="priceLowToHigh">Price: Low to High</option>
+                <option value="priceHighToLow">Price: High to Low</option>
+                <option value="newArrival">New Arrivals</option>
+                <option value="aToZ">A - Z</option>
+                <option value="zToA">Z - A</option>
+            </select>
+        </form>
+        </div>
+      </div>
+    </div>
+ 
+  </header>
+      <div class="container">
+        <% if (productData) { %>
+          <% productData.forEach(product => { %>
+          <div class="product-image-wrapper">
+            <img
+              src="/uploads/<%= product.photos[0].filename || 'placeholder.jpg' %>"
+              alt="Product Image 1"
+              class="product-image img-fluid active zoomable"
+              onerror="this.src='placeholder.jpg'"
+            >
+  
+            <% for (let i = 1; i < product.photos.length; i++) { %>
+              <img
+                src="/uploads/<%= product.photos[i].filename || 'placeholder.jpg' %>"
+                alt="Product Image <%= i + 1 %>"
+                class="product-image img-fluid zoomable"
+                onerror="this.src='placeholder.jpg'"
+              >
+            <% } %>
+  
+            <div class="image-navigation" style= <%= product.photos.length > 1 ?"display: block" : "display:none" %>>
+              <button class="prev-btn">&lt;prev</button>
+              <button class="next-btn">next&gt;</button>
+            </div>
+          </div>
+    
+          <div class="product-details">
+            <h1><%= product.name %></h1>
+            <input type="hidden" id="product-id" value="<%= product._id %>">
+            <div class="rating">
+              </div>
+            <p class="price">Price: ₹<span id="original-price"><%= product.price %></span></p>
+            <div class="discount-section">
+              <input type="text" id="discount-code" placeholder="Enter Discount Code">
+              <button type="button" id="apply-discount-btn">Apply Discount</button>
+              <p id="discount-message"></p>
+            </div>
+            <p class="final-price">Final Price: ₹<span id="final-price">--</span></p>
+            <% if (product.stock == 0) { %>
+              <div class="text-danger " >The product is currentlyoOut of stock</div>
+            <% } %>
+            <div class="quantity-wrapper">
+              <input type="number" id="quantity" value="1" min="1">
+            </div>
+            <div class="action-buttons">
+              <button id="add-to-cart-btn">Add to Cart</button>
+              <button class="buy-now">Buy Now</button>
+              <a href="#" class="wishlist-icon">
+                <i class="fas fa-heart"></i>
+              </a>
+            </div>
+            <div class="product-description">
+              <h2>Product Description</h2>
+              <p><%= product.description %></p>
+            </div>
+            <div class="user-reviews">
+              <h2>User Reviews</h2>
+              </div>
+          </div>
+          <% }) %>
+          <% } else { %>
+            <p>An error occurred while fetching product details.</p>
+          <% } %>
+        </div>
+      
+
+    <footer class="footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-4">
+              <h3 class="footer-heading">About Us</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci orci, porta nec magna ac, placerat vestibulum ligula. Sed posuere consectetur est at lobortis.</p>
+              <a href="#" class="btn btn-outline-light">Learn More</a>
+            </div>
+            <div class="col-md-4">
+              <h3 class="footer-heading">Information</h3>
+              <ul class="list-unstyled">
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Contact Us</a></li>
+              </ul>
+            </div>
+            <div class="col-md-4">
+              <h3 class="footer-heading">Newsletter</h3>
+              <p>Subscribe to our newsletter to receive updates on new products and promotions.</p>
+              <form action="#" method="POST" class="d-flex">
+                <input type="email" class="form-control" placeholder="Enter Email Address">
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+              </form>
+            </div>
+          </div>
+          <div class="row mt-5">
+            <div class="col">
+              <p class="text-center text-muted">© 2024 Brand Name. All Rights Reserved.</p>
+            </div>
+            <div class="col d-flex justify-content-end">
+              <a href="#" class="social-link"><i class="fab fa-facebook"></i>fb</a>
+              <a href="#" class="social-link"><i class="fab fa-twitter"></i>tw</a>
+              <a href="#" class="social-link"><i class="fab fa-instagram"></i>in</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <script>
+const quantityInput = document.getElementById('quantity');
+const originalPriceSpan = document.getElementById('original-price');
+const finalPriceSpan = document.getElementById('final-price');
+const discountMessage = document.getElementById('discount-message');
+const applyDiscountBtn = document.getElementById('apply-discount-btn');
+const addToCartBtn = document.getElementById('add-to-cart-btn');
+const originalPrice = parseFloat(originalPriceSpan.textContent);
+
+function calculateDiscount(totalPrice, discountPercentage) {
+    const discount = totalPrice * (discountPercentage / 100);
+    const finalPrice = totalPrice - discount;
+    return finalPrice.toFixed(2);
+}
+
+applyDiscountBtn.addEventListener('click', () => {
+    const quantity = parseInt(quantityInput.value);
+    if (isNaN(quantity) || quantity < 1) {
+        console.error('Invalid quantity entered');
+        return;
+    }
+
+    const totalPrice = quantity * originalPrice;
+    console.log(totalPrice);
+
+    const discountCode = document.getElementById('discount-code').value.trim();
+    if (discountCode) {
+        fetch(`/discounts/${discountCode}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    discountMessage.textContent = data.error;
+                    finalPriceSpan.textContent = '--';
+                } else {
+                    const finalPrice = calculateDiscount(totalPrice, data.discountPercentage);
+                    finalPriceSpan.textContent = finalPrice;
+                    discountMessage.textContent = `Discount applied: -$${(totalPrice - finalPrice).toFixed(2)}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching discount:', error);
+                discountMessage.textContent = 'An error occurred. Please try again later.';
+            });
+    } else {
+        finalPriceSpan.textContent = totalPrice.toFixed(2);
+    }
+});
+
+addToCartBtn.addEventListener('click', () => {
+    const quantity = parseInt(quantityInput.value);
+    const productId = document.getElementById('product-id').value;
+    const couponCode = document.getElementById('discount-code').value.trim();
+    
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            productId,
+            quantity,
+            couponCode
+        })
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(data => {
+          if (data.error === 'Not enough stock available') {
+            alert(`Only ${data.availableStock} items are available in stock for this product.`);
+          } else {
+            throw new Error('Network response was not ok');
+          }
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+    })
+    .catch(error => {
+        console.error('Error adding product to cart:', error);
+    });
+});
+
+    </script>
+    
+      <script>
+        const productImages = document.querySelectorAll('.product-image');
+        let currentImageIndex = 0;
+
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+prevBtn.addEventListener('click', () => {
+  currentImageIndex--;
+  if (currentImageIndex < 0) {
+    currentImageIndex = productImages.length - 1;
+  }
+  productImages.forEach((image, index) => image.classList.remove('active'));
+  productImages[currentImageIndex].classList.add('active');
+});
+
+nextBtn.addEventListener('click', () => {
+  currentImageIndex++;
+  if (currentImageIndex >= productImages.length) {
+    currentImageIndex = 0;
+  }
+  productImages.forEach((image, index) => image.classList.remove('active'));
+  productImages[currentImageIndex].classList.add('active');
+});
+
+      </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const zoomableImages = document.querySelectorAll('.zoomable');
+          mediumZoom(zoomableImages, {
+            margin: 50,
+            background: '#000'
+            
+          });
+        });
+      </script>
+      <script>
+        function setCategory(category) {
+          document.getElementById('selectedCategory').value = category;
+          document.getElementById('categoryDropdown').querySelector('.dropdown-toggle-text').textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        }
+      </script>
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+
+      
+</body>
+</html>

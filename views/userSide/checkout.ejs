@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>userhome</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" type="text/css" href="/css/checkout.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <a class="navbar-brand" href="/">
+          <img src="/images/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid d-inline-block align-text-top">
+          <span class="d-inline-block">ShoeZone</span>
+        </a>
+      </div>
+      <div class="checkout-title">
+        <h2>Checkout</h2>
+      </div>
+      <div class="user-actions">
+        <a href="/cart">
+          <i class="fas fa-shopping-cart"></i>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="checkout-form">
+  
+      <div class="default-address">
+        <% if (addresses && addresses.address.length > 0) { %>
+          <% const defaultAddress = addresses.address.find(address => address.isDefault); %>
+          <% if (defaultAddress) { %>
+            <div class="address-card"  data-address-id="<%= defaultAddress._id %>">
+              <span class="default-address-tag" style="background-color: rgb(168, 166, 166); text-align: center;">Delivery Address</span>
+              <h3><%= defaultAddress.name %></h3>
+              <p><%= defaultAddress.houseName %>, <%= defaultAddress.street %>, <%= defaultAddress.city %>, <%= defaultAddress.district %>, <%= defaultAddress.state %>, <%= defaultAddress.pinCode %></p>
+              <div class="address-card-buttons">
+                <button type="button" class="btn btn-sm edit-address-btn">Edit</button>
+                <button type="button" class="btn btn-sm change-address-btn" data-bs-toggle="collapse" data-bs-target="#addressListCollapse" aria-expanded="false" aria-controls="addressListCollapse">
+                  Change
+                </button>
+              </div>
+            </div>
+          <% } else { %>
+            <p>No default address found.</p>
+          <% } %>
+        <% } else { %>
+          <p>No addresses found.</p>
+        <% } %>
+      </div>
+  
+      <div class="collapse" id="addressListCollapse">
+        <div class="address-list">
+          <% if (addresses && addresses.address.length > 0) { %>
+            <% addresses.address.forEach((address, index) => { %>
+              <% if (!address.isDefault) { %>
+                <div class="address-card" data-address-id="<%= address._id %>">
+                  <h3><%= address.name %></h3>
+                  <p><%= address.houseName %>, <%= address.street %>, <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.pinCode %></p>
+                  <div class="address-card-buttons">
+                    <button type="button" class="btn btn-sm edit-address-btn">Edit</button>
+                    <button type="button" class="btn btn-sm deliver-to-here-btn" data-address-id="<%= address._id %>">Deliver Here</button>
+                  </div>
+                </div>
+              <% } %>
+            <% }) %>
+          <% } else { %>
+            <p>No other addresses found.</p>
+          <% } %>
+        </div>
+        <div class="add-address-card">
+          <button type="button" class="btn btn-add-address" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+            Add New Address
+          </button>
+        </div>
+      </div>
+  
+      <div class="payment-options">
+        <h3>Payment Options</h3>
+        <div>
+          <input type="radio" id="online-payment" name="payment_method">
+          <label for="online-payment">Online Payment</label>
+        </div>
+        <div>
+          <input type="radio" id="wallet-payment" name="payment_method">
+          <label for="wallet-payment">Wallet Payment</label>
+        </div>
+        <div>
+          <input type="radio" id="cod" name="payment_method">
+          <label for="cod">Cash on Delivery</label>
+        </div>
+      </div>
+      
+
+    </div>
+  
+      <div class="order-summary">
+       <% if(checkoutItems && checkoutItems.length > 0){ %>
+          <div class="order-details">
+            <h3 style="text-align: center;">Order Summary</h3>
+              <div class="products">
+                <% checkoutItems.forEach(checkoutItem => { %>
+              <div class="product-details" id="product-details" data-product-id="<%=checkoutItem.product._id%>">
+                <img src="/uploads/<%= checkoutItem.product.photos[0].filename %>" width="100" height="100" alt="Product Image">
+                <div class="price-quantity">
+                    <h4><%= checkoutItem.product.name %></h4>
+                    <p id="product-price" data-product-price="<%= checkoutItem.product.price %>">Price: $<%= checkoutItem.product.price.toFixed(2) %></p>
+                    <div class="quantity-control">
+                      <button class="quantity-btn">-</button>
+                        <input type="number" class="form-control quantity-input" id="quantity" value="" data-stock="<%= checkoutItem.product.stock %>" data-qauntity="<%= checkoutItem.quantity ? checkoutItem.quantity : quantity %>">
+                      <button class="quantity-btn">+</button>
+                    </div>
+                </div>
+              </div>
+              <% }) %>
+              <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
+              <p id="product-total-price"></p>
+                <div class="coupon-section">
+                 <h4>Apply Coupon</h4>
+                 <div class="coupon-form">
+                    <input type="text" id="couponCodeInput" placeholder="Enter coupon code">
+                    <button id="applyCouponBtn">Apply</button>
+                   
+                 </div>
+                 <span id="couponMessage"></span>
+                </div>
+                 <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
+                 
+                 <div class="total-amount">
+                  <p id="total-quantity">Total Items: 1</p>
+                  <p id="coupon-discount"></p>
+                  <p id="order-total-price">Total Cost: </p>
+                </div>
+            </div>
+          </div>
+          <form action="/place-order" method="POST">
+            <button type="submit" class="btn btn-place-order">Place Order</button>
+          </form>
+        <% }else { %>
+          <h1>NO ITEMS SELECTED FOR CHECKOUT,</h1>
+        <% } %>
+      </div>
+
+  </div>
+ <!-- Add Address -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addAddressForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="houseName" class="form-label">House Name/Number</label>
+            <input type="text" class="form-control" id="houseName" name="houseName" required>
+          </div>
+          <div class="mb-3">
+            <label for="street" class="form-label">Street</label>
+            <input type="text" class="form-control" id="street" name="street" required>
+          </div>
+          <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" id="city" name="city" required>
+          </div>
+          <div class="mb-3">
+            <label for="district" class="form-label">District</label>
+            <input type="text" class="form-control" id="district" name="district" required>
+          </div>
+          <div class="mb-3">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" id="state" name="state" required>
+          </div>
+          <div class="mb-3">
+            <label for="pinCode" class="form-label">PIN Code</label>
+            <input type="number" class="form-control" id="pinCode" name="pinCode" required>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault">
+            <label class="form-check-label" for="isDefault">Set as Default Address</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveNewAddress">Save Address</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- edit address -->
+<div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editAddressForm">
+          <input type="hidden" id="addressId" name="addressId">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="houseName" class="form-label">House Name/Number</label>
+            <input type="text" class="form-control" id="houseName" name="houseName" required>
+          </div>
+          <div class="mb-3">
+            <label for="street" class="form-label">Street</label>
+            <input type="text" class="form-control" id="street" name="street" required>
+          </div>
+          <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" id="city" name="city" required>
+          </div>
+          <div class="mb-3">
+            <label for="district" class="form-label">District</label>
+            <input type="text" class="form-control" id="district" name="district" required>
+          </div>
+          <div class="mb-3">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" id="state" name="state" required>
+          </div>
+          <div class="mb-3">
+            <label for="pinCode" class="form-label">PIN Code</label>
+            <input type="number" class="form-control" id="pinCode" name="pinCode" required>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault">
+            <label class="form-check-label" for="isDefault">Set as Default Address</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveEditedAddress">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <footer class="footer">
+    <p class="copyright">© 2024 ShoesZone.</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const productCards = Array.from(document.querySelectorAll('.product-details'));
+
+    let couponDiscount = 0;
+    const orderTotalPriceElement = document.getElementById('order-total-price');
+    const totalQuantityElement = document.getElementById('total-quantity');
+    const couponDiscountPriceElement = document.getElementById('coupon-discount');
+    const couponInput = document.getElementById('couponCodeInput');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponMessage = document.getElementById('couponMessage');
+
+    function calculateTotals() {
+        let totalCost = 0;
+        let totalQuantity = 0;
+
+        productCards.forEach(card => {
+            const quantityInput = card.querySelector('.quantity-input');
+            const productPriceDiv = card.querySelector("#product-price");
+            
+            if (quantityInput && productPriceDiv) {
+                const quantity = parseInt(quantityInput.value) || 0;
+                const price = parseFloat(productPriceDiv.dataset.productPrice) || 0;
+                
+                totalQuantity += quantity;
+                totalCost += quantity * price;
+            }
+        });
+
+        const discountAmount = totalCost * couponDiscount;
+        const discountedTotal = totalCost - discountAmount;
+
+        orderTotalPriceElement.textContent = `Total Cost: $${discountedTotal.toFixed(2)}`;
+        totalQuantityElement.textContent = `Total Items: ${totalQuantity}`;
+        couponDiscountPriceElement.textContent = `Discount: $${discountAmount.toFixed(2)}`;
+    }
+
+    productCards.forEach((card, index) => {
+        const productPriceDiv = card.querySelector("#product-price");
+        const quantityInput = card.querySelector('.quantity-input');
+        const quantityBtnsInCard = card.querySelectorAll('.quantity-btn');
+        const quantityBtnsInCardInput = card.querySelector('.quantity-control input');
+        const productId = card.getAttribute("data-product-id");
+        const storedQuantity = JSON.parse(localStorage.getItem(`cartQuantity_${productId}`));
+
+        if (storedQuantity) {
+          quantityInput.value = storedQuantity;
+        }
+
+        let productPrice;
+        let quantity;
+        if (productPriceDiv) {
+            const productPriceString = productPriceDiv.dataset.productPrice;
+            const quantityString = productPriceDiv.dataset.quantity;
+            if (productPriceString && !isNaN(productPriceString)) {
+                productPrice = parseFloat(productPriceString);
+            } else {
+                console.error("Product price is not a valid number:", productPrice);
+            }
+
+            if(quantityString && !isNaN(quantityString)){
+              quantity = parseFloat(quantityString);
+            }
+        } else {
+            console.error("Element with ID 'product-price' not found");
+        }
+
+        
+
+        console.log(storedQuantity);
+
+        let maxQtyPerUser = 5;
+
+        quantityBtnsInCard.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const input = e.target.closest('.quantity-control').querySelector('input');
+                let currentQty = parseInt(input.value);
+                console.log(currentQty,"this is currnt");
+                const stockQty = parseInt(input.getAttribute('data-stock'));
+                const inputContent = e.target.textContent;
+                if (inputContent === '+') {
+                  console.log(storedQuantity,"this is stored",currentQty,maxQtyPerUser,stockQty);
+                    if (currentQty < maxQtyPerUser) {
+                        if (currentQty < stockQty) {
+                            input.value = currentQty + 1;
+                            localStorage.setItem(`cartQuantity_${productId}`, JSON.stringify(input.value));
+                          } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Stock Alert',
+                                text: 'Stock is less!',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Limit Exceeded',
+                            text: 'You can only buy up to 5 units of this item.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                    currentQty = input.value;
+                } else if (inputContent === '-') {
+                    if (currentQty > 1) {
+                        input.value = currentQty - 1;
+                        console.log(currentQty,"currentqty");
+                        localStorage.setItem(`cartQuantity_${productId}`, JSON.stringify(input.value));
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Minimum Order',
+                            text: 'The minimum order is 1 item.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                    currentQty = input.value;
+                }
+                calculateTotals();
+            });
+        });
+
+        quantityBtnsInCardInput.addEventListener('change', function(e) {
+            const stockQty = parseInt(e.target.getAttribute('data-stock'));
+            let newQty = parseInt(e.target.value);
+
+            if (newQty > maxQtyPerUser) {
+                newQty = maxQtyPerUser;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limit Exceeded',
+                    text: 'You can only buy up to 5 units of this item.',
+                    confirmButtonText: 'OK'
+                });
+            } else if (newQty > stockQty) {
+                newQty = stockQty;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Alert',
+                    text: 'Stock is less!',
+                    confirmButtonText: 'OK'
+                });
+            } else if (newQty < 1) {
+                newQty = 1;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Minimum Order',
+                    text: 'The minimum order is 1 item.',
+                    confirmButtonText: 'OK'
+                });
+            }
+            e.target.value = newQty;
+            localStorage.setItem(`cartQuantity_${productId}`, JSON.stringify(newQty));
+            calculateTotals();
+        });
+    });
+
+    let couponCode;
+    applyCouponBtn.addEventListener('click', () => {
+         couponCode = couponInput.value.trim().toUpperCase();
+
+        fetch(`/coupon-discount/${couponCode}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    couponDiscount = data.coupon.discount / 100;
+                    couponMessage.textContent = 'Coupon applied successfully!';
+                    couponMessage.style.color = 'green';
+                } else {
+                    couponDiscount = 0;
+                    couponMessage.textContent = 'Invalid coupon code.';
+                    couponMessage.style.color = 'red';
+                }
+                calculateTotals();
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        couponInput.value = '';
+    });
+
+    calculateTotals();
+
+
+const onlinePaymentRadio = document.getElementById('online-payment');
+const walletPaymentRadio = document.getElementById('wallet-payment');
+const codPaymentRadio = document.getElementById('cod');
+let selectedPaymentMode;
+
+onlinePaymentRadio.addEventListener('change', handlePaymentOptionChange);
+walletPaymentRadio.addEventListener('change', handlePaymentOptionChange);
+codPaymentRadio.addEventListener('change', handlePaymentOptionChange);
+
+function handlePaymentOptionChange(event) {
+  const selectedPaymentOption = event.target.id;
+  const paymentMode = {
+    'online-payment': 'online',
+    'wallet-payment': 'wallet',
+    'cod': 'cod'
+  };
+   selectedPaymentMode = paymentMode[selectedPaymentOption];
+}
+  // Place Order
+const placeOrderBtn = document.querySelector('.btn-place-order');
+placeOrderBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const productCards = Array.from(document.querySelectorAll('.product-details'));
+  const orderItems = [];
+  const totalCostString = document.getElementById("order-total-price").textContent;
+  const priceRegex = /\d+(?:\.\d+)?/;
+  const priceMatch = totalCostString.match(priceRegex);
+  const totalCost = priceMatch ? parseFloat(priceMatch[0]) : 0;
+
+  console.log(totalCost,"this is the total cost")
+
+  productCards.forEach(card => {
+    const quantityInput = card.querySelector('.quantity-input');
+    const productId = card.getAttribute("data-product-id");
+    const quantity = parseInt(quantityInput.value);
+
+    if (quantity > 0) {
+      orderItems.push({ productId, quantity });
+    }
+  });
+
+  if (orderItems.length === 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No items selected for ordering.',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch('/place-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ orderItems, totalCost, paymentMode: selectedPaymentMode, couponCode})
+    });
+
+    const data = await response.json();
+
+    if (data.cod) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Order Placed',
+        text: 'Your order has been placed successfully.',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        window.location.href = '/order-history';
+      });
+    } else if (data.online) {
+      const options = {
+        key:  "rzp_test_Tb5YYNqwWeIaYk" , 
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: 'ShoeZone',
+        description: 'Order Description',
+        order_id: data.order.id, // Razorpay Order ID
+        handler: async function (response) {
+          const orderData = {
+          paymentId: response.razorpay_payment_id,
+          orderId: response.razorpay_order_id,
+          signature: response.razorpay_signature,
+        };
+        const resp = await fetch('/handle-payment-success', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({orderData, orderItems, totalCost, couponCode})
+        });
+        const data = await resp.json();
+        if (data.success) {
+          console.log('Order placed successfully');
+          window.location.href = '/order-history';
+        } else {
+          console.error('Error updating order details:', data.error);
+        }
+        },
+        prefill: {
+          name: 'User Name',
+          email: 'user@example.com',
+          contact: '9876543210'
+        },
+        notes: {
+          address: 'Address Details'
+        }
+      };
+
+      const razorpayCheckout = new window.Razorpay(options);
+      razorpayCheckout.open();
+
+      
+      razorpayCheckout.on('payment.failed', function (response) {
+        
+        console.error('Payment failed:', response.error);
+        
+      });
+
+      razorpayCheckout.on('payment.dismissed', function (response) {
+        
+        console.log('Payment dismissed:', response);
+       
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.error,
+        confirmButtonText: 'OK'
+      });
+    }
+  } catch (error) {
+    console.error('Error placing order:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while placing the order.',
+      confirmButtonText: 'OK'
+    });
+  }
+});
+
+});
+
+</script> 
+
+ 
+<script>
+  document.querySelectorAll('.edit-address-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const addressCard = this.closest('.address-card');
+    const name = addressCard.querySelector('h3').textContent;
+    const address = addressCard.querySelector('p').textContent.split(', ');
+    const addressId = addressCard.dataset.addressId;
+    const houseName = address[0];
+    const street = address[1];
+    const city = address[2];
+    const district = address[3];
+    const state = address[4];
+    const pinCode = address[5];
+    const isDefault = addressCard.querySelector('.default-address-tag') !== null;
+
+    const modal = document.getElementById('editAddressModal');
+    const nameInput = modal.querySelector('#name');
+    const houseNameInput = modal.querySelector('#houseName');
+    const streetInput = modal.querySelector('#street');
+    const cityInput = modal.querySelector('#city');
+    const districtInput = modal.querySelector('#district');
+    const stateInput = modal.querySelector('#state');
+    const pinCodeInput = modal.querySelector('#pinCode');
+    const isDefaultInput = modal.querySelector('#isDefault');
+    const isDefaultCheckbox = modal.querySelector('#isDefault');
+
+    nameInput.value = name;
+    houseNameInput.value = houseName;
+    streetInput.value = street;
+    cityInput.value = district; 
+    districtInput.value = district;
+    stateInput.value = state;
+    pinCodeInput.value = pinCode;
+    isDefaultInput.value = isDefault;
+
+    if (isDefault) {
+      isDefaultCheckbox.checked = true;
+      isDefaultCheckbox.disabled = true;
+    } else {
+      isDefaultCheckbox.checked = false;
+      isDefaultCheckbox.disabled = false;
+    }
+
+    const saveButton = modal.querySelector('#saveEditedAddress');
+    saveButton.addEventListener('click', function() {
+      const formData = new FormData(modal.querySelector('#editAddressForm'));
+      const addressData = Object.fromEntries(formData);
+      addressData.addressId = addressId;
+      addressData.isDefault = modal.querySelector('#isDefault').checked;
+
+
+      fetch(`/address/edit?addressId=${addressId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(addressData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.success){
+          location.reload()
+        }else{
+          alert("error updating address");
+        }
+      })
+      .catch(error => {
+        console.error('Error updating address:', error);
+      });
+
+      const modalInstance = bootstrap.Modal.getInstance(modal);
+      modalInstance.hide();
+    });
+
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+  });
+});
+</script>
+<script>
+  document.querySelectorAll('.deliver-to-here-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const addressCard = this.closest('.address-card');
+    const addressId = addressCard.dataset.addressId;
+
+    fetch('/set-default', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ addressId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Default address updated successfully');
+        location.reload(); 
+      } else {
+        console.log(data)
+        alert('Error updating default address');
+      }
+    })
+    .catch(error => {
+      console.error('Error updating default address:', error);
+    });
+  });
+});
+</script>
+<script>
+  document.querySelector('#saveNewAddress').addEventListener('click', function() {
+    const formData = new FormData(document.querySelector('#addAddressForm'));
+    const addressData = Object.fromEntries(formData);
+    addressData.isDefault = document.querySelector('#isDefault').checked;
+
+    fetch('/address/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(addressData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Address added successfully');
+        location.reload();
+      } else {
+        alert('Error adding address');
+      }
+    })
+    .catch(error => {
+      console.error('Error adding address:', error);
+    });
+
+    const modalInstance = bootstrap.Modal.getInstance(document.querySelector('#addAddressModal'));
+    modalInstance.hide();
+  });
+</script>
+<!-- <script>
+const onlinePaymentRadio = document.getElementById('online-payment');
+const walletPaymentRadio = document.getElementById('wallet-payment');
+const codPaymentRadio = document.getElementById('cod');
+let selectedPaymentMode;
+
+onlinePaymentRadio.addEventListener('change', handlePaymentOptionChange);
+walletPaymentRadio.addEventListener('change', handlePaymentOptionChange);
+codPaymentRadio.addEventListener('change', handlePaymentOptionChange);
+
+function handlePaymentOptionChange(event) {
+  const selectedPaymentOption = event.target.id;
+  const paymentMode = {
+    'online-payment': 'online',
+    'wallet-payment': 'wallet',
+    'cod': 'cod'
+  };
+   selectedPaymentMode = paymentMode[selectedPaymentOption];
+}
+  // Place Order
+const placeOrderBtn = document.querySelector('.btn-place-order');
+placeOrderBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const productCards = Array.from(document.querySelectorAll('.product-details'));
+  const orderItems = [];
+  const totalCostString = document.getElementById("order-total-price").textContent;
+  const priceRegex = /\d+(?:\.\d+)?/;
+  const priceMatch = totalCostString.match(priceRegex);
+  const totalCost = priceMatch ? parseFloat(priceMatch[0]) : 0;
+
+  productCards.forEach(card => {
+    const quantityInput = card.querySelector('.quantity-input');
+    const productId = card.getAttribute("data-product-id");
+    const quantity = parseInt(quantityInput.value);
+
+    if (quantity > 0) {
+      orderItems.push({ productId, quantity });
+    }
+  });
+
+  if (orderItems.length === 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No items selected for ordering.',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch('/place-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ orderItems, totalCost, paymentMode: selectedPaymentMode })
+    });
+
+    const data = await response.json();
+
+    if (data.cod) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Order Placed',
+        text: 'Your order has been placed successfully.',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        window.location.href = '/order-history';
+      });
+    } else if (data.online) {
+      const options = {
+        key:  "rzp_test_Tb5YYNqwWeIaYk" , 
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: 'ShoeZone',
+        description: 'Order Description',
+        order_id: data.order.id, // Razorpay Order ID
+        handler: async function (response) {
+          const orderData = {
+          paymentId: response.razorpay_payment_id,
+          orderId: response.razorpay_order_id,
+          signature: response.razorpay_signature,
+        };
+        const resp = await fetch('/handle-payment-success', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({orderData, orderItems, totalCost})
+        });
+        const data = await resp.json();
+        if (data.success) {
+          console.log('Order placed successfully');
+          window.location.href = '/order-history';
+        } else {
+          console.error('Error updating order details:', data.error);
+        }
+        },
+        prefill: {
+          name: 'User Name',
+          email: 'user@example.com',
+          contact: '9876543210'
+        },
+        notes: {
+          address: 'Address Details'
+        }
+      };
+
+      const razorpayCheckout = new window.Razorpay(options);
+      razorpayCheckout.open();
+
+      
+      razorpayCheckout.on('payment.failed', function (response) {
+        
+        console.error('Payment failed:', response.error);
+        
+      });
+
+      razorpayCheckout.on('payment.dismissed', function (response) {
+        
+        console.log('Payment dismissed:', response);
+       
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.error,
+        confirmButtonText: 'OK'
+      });
+    }
+  } catch (error) {
+    console.error('Error placing order:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while placing the order.',
+      confirmButtonText: 'OK'
+    });
+  }
+});
+</script> -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

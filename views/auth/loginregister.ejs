@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Log In</title>
+    <link rel="stylesheet" href="/css/loginregister.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+<body>
+    <header class="header">
+    <div class="brand">
+      <img src="/images/test.jpg" alt="Brand Logo">
+      <span class="brand-name">ShoeZone</span>
+    </div>
+  </header>
+    <div class="container  mt-5 ">
+      <% if (message) { %>
+      <h4 style="color: red; text-align: center;"><%= message %></h4> 
+      <% } %>
+        <div class="form-container row">
+            <div class="signup-form col-md-6">
+                <h2>Create an account</h2>
+                <form action="/signup" id="signup-form" method="post">
+                  <input type="text" id="name" name="name" placeholder="Name" autocomplete="name" required maxlength="50">
+                  <span id="name-error" class="error-message "></span>
+                
+                  <input type="email" name="email" id="email" placeholder="Email" required autocomplete="email" maxlength="50">
+                  <span id="email-error" class="error-message"></span>
+                
+                  <input type="password" name="password" id="password" placeholder="Password" autocomplete="on" required maxlength="20">
+                  <span id="password-error" class="error-message"></span>
+                
+                  <input type="password" name="confirmPassword" id="confirmPassword" autocomplete="on" value="" placeholder="Confirm Password" required maxlength="20">
+                  <span id="confirm-error" class="error-message"></span>
+                
+                  <button type="submit" id="submit-btn" class="submit-btn mb-2 mt-2" disabled>Create Account</button>
+                  <a href='/auth/google' class="google-btn" style="display: block; text-decoration: none; text-align: center; ">Sign in with Google</a>
+                </form>
+            </div>
+            <div class="login-form col-md-6">
+                <h2>Log in</h2>
+                <form action="/login" id="login-form" method="post">
+                  <input type="email" placeholder="Email" name="email" required autocomplete="email" maxlength="50" onkeyup="validateLoginEmail(this)">
+                  <span class="error-message"></span> <input type="password" placeholder="Password" autocomplete="on" name="password" required maxlength="20">
+                  <button type="submit" id="submit-btn" class="submit-btn mb-2 mt-2">Log In</button>
+                  <a href='/auth/google' class="google-btn" style="display: block; text-decoration: none; text-align: center; ">Sign in with Google</a>
+                  <a href="/forgot-password">Forgot Password?</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+          <p class="copyright">© 2024 ShoesZone.</p>
+      </footer>
+
+      <!-- Include Google Sign-In JavaScript SDK -->
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+<script>
+    // Initialize Google Sign-In
+    function onSignIn(googleUser) {
+        // Extract user information
+        const profile = googleUser.getBasicProfile();
+        const id_token = googleUser.getAuthResponse().id_token;
+
+        // Send user information to server for authentication
+        // Example AJAX request using fetch API
+        fetch('/auth/google/callback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_token })
+        })
+        .then(response => {
+            // Handle response (redirect to dashboard, display error message, etc.)
+        })
+        .catch(error => {
+            console.error('Error during Google Sign-In:', error);
+        });
+    }
+</script>
+
+      <script>
+         if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+      window.location.href = "/login";
+    }
+        (function () {
+            window.onpageshow = function (event) {
+              if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+              }
+            };
+          })();
+        </script>        
+        <script>
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const submitButton = document.getElementById('submit-btn');// Select submit button
+          
+            const nameError = document.getElementById('name-error');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+            const confirmError = document.getElementById('confirm-error');
+            // Name validation - no special characters or numbers
+            nameInput.addEventListener('keyup', function() {
+              const name = nameInput.value;
+              const regex = /^[a-zA-Z]+$/; // Only allows letters
+              if (!regex.test(name)) {
+                nameError.textContent = 'Name can only contain letters.';
+                submitButton.disabled = true;
+              } else {
+                nameError.textContent = '';
+                validateForm(); // Call function to check overall validity
+              }
+            });
+          
+            // Email validation
+            emailInput.addEventListener('keyup', function() {
+              const email = emailInput.value;
+              const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format
+              if (!regex.test(email)) {
+                emailError.textContent = 'Please enter a valid email address.';
+                submitButton.disabled = true;
+              } else {
+                emailError.textContent = '';
+                validateForm(); // Call function to check overall validity
+              }
+            });
+          
+            // Password validation - minimum 8 characters with uppercase, lowercase, number, and symbol
+            passwordInput.addEventListener('keyup', function() {
+              const password = passwordInput.value;
+              const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\da-zA-Z]).{8,}$/; // Minimum 8 characters with at least 1 digit, lowercase, uppercase, and special character
+              if (!regex.test(password)) {
+                passwordError.textContent = 'Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number, and 1 symbol.';
+                submitButton.disabled = true;
+              } else {
+                passwordError.textContent = '';
+                validateForm(); // Call function to check overall validity
+              }
+            });
+          
+            // Confirm password validation
+            confirmPasswordInput.addEventListener('keyup', function() {
+              const confirmPassword = confirmPasswordInput.value;
+              const password = passwordInput.value;
+              if (confirmPassword !== password) {
+                confirmError.textContent = 'Passwords do not match.';
+                submitButton.disabled = true;
+              } else {
+                confirmError.textContent = '';
+                validateForm(); // Call function to check overall validity
+              }
+            });
+          
+            // Function to check overall form validity and enable/disable submit button
+            function validateForm() {
+              if (nameError.textContent === '' && emailError.textContent === '' && passwordError.textContent === '' && confirmError.textContent === '') {
+                submitButton.disabled = false;
+              } else {
+                submitButton.disabled = true;
+              }
+            }
+          </script>
+          <script>
+            // login form
+  function validateLoginEmail(emailInput) {
+  const email = emailInput.value;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format
+  const errorMessage = emailInput.parentElement.querySelector('.error-message'); // Find the error message element
+
+  if (!regex.test(email)) {
+    errorMessage.textContent = 'Please enter a valid email address.';
+    errorMessage.style.display = 'block'; // Show the error message
+  } else {
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none'; // Hide the error message
+  }
+}
+
+          </script>
+          
+
+          
+</body>
+</html>
