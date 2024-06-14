@@ -239,7 +239,7 @@ const loginViewUser = async (req, res) => {
         message = '' ;
       }
       console.log(message)
-     res.render("auth/loginregister",{message});
+     res.render("auth/login",{message});
 
       } catch (error) {
         console.error(error.message);
@@ -254,7 +254,7 @@ const loginViewUser = async (req, res) => {
       if(!message || message == "timemout"){
         message = '' ;
       }
-     res.render("auth/loginregister",{message});
+     res.render("auth/signup",{message});
     } catch (error) {
       console.error(error.message);
       res.status(500).send('Internal Server Error');
@@ -535,7 +535,7 @@ const verifyOtpSignup = async (req, res) => {
             console.error('Error destroying session:', err);
             res.status(500).send('Internal Server Error');
         } else {
-            res.render('auth/loginregister',{message:"logged out successfully"});
+            res.render('auth/login',{message:"logged out successfully"});
         }
     });
    } catch (error) {

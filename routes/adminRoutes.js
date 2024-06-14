@@ -7,7 +7,6 @@ const authentication = require("../middlewares/authMiddleware");
 const couponController = require("../controllers/couponController");
 
 
-
 router.get("/", authentication.isAdminAuthenticated, adminController.adminHome);
 
 router.get("/allproducts", authentication.isAdminAuthenticated, productController.allProducts);

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <link rel="stylesheet" href="/css/loginregister.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+<body>
+    <header class="header">
+    <div class="brand">
+      <img src="/images/test.jpg" alt="Brand Logo">
+      <span class="brand-name">ShoeZone</span>
+    </div>
+  </header>
+    <div class="container  mt-5 ">
+        <div class="form-container row">
+            <div class="login-form col">
+              <% if (message) { %>
+                <h4 style="color: red; text-align: center;"><%= message %></h4> 
+                <% } %>
+                <h2>Log in</h2>
+                <form action="/login" id="login-form" method="post">
+                  <input type="email" placeholder="Email" name="email" required autocomplete="email" maxlength="50" onkeyup="validateLoginEmail(this)">
+                  <span class="error-message"></span> <input type="password" placeholder="Password" autocomplete="on" name="password" required maxlength="20">
+                  <button type="submit" id="submit-btn" class="submit-btn mb-2 mt-2">Log In</button>
+                  <a href='/auth/google' class="google-btn" style="display: block; text-decoration: none; text-align: center; ">Sign in with Google</a>
+                  <a href="/forgot-password">Forgot Password?</a>
+                  <div class="signup-link">
+                    <a href="/signup">click Here</a><span> to signup if you are not registered yet.</span>
+                 </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+          <p class="copyright">© 2024 ShoesZone.</p>
+      </footer>
+
+      <!-- Include Google Sign-In JavaScript SDK -->
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script>
+    if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+      window.location.href = "/login";
+    }
+    (function () {
+        window.onpageshow = function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        };
+    })();
+</script>        
+        
+<script>
+    // login form
+  function validateLoginEmail(emailInput) {
+  const email = emailInput.value;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const errorMessage = emailInput.parentElement.querySelector('.error-message'); 
+
+  if (!regex.test(email)) {
+    errorMessage.textContent = 'Please enter a valid email address.';
+    errorMessage.style.display = 'block'; 
+  } else {
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none'; 
+  }
+}
+</script>
+          
+
+          
+</body>
+</html>
