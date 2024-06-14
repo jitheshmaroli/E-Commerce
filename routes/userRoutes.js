@@ -65,7 +65,6 @@ router.post("/forgot-password", userController.forgotPassword);
 router.get("/forgot-password-verify-otp",authentication.otpAuthentication,userController.forgotPasswordVerifyOtpView);
 router.post("/forgot-password-verify-otp",userController.resetPasswordVerifyOtp);
 router.post("/reset-password", userController.resetPassword);
-
 router.get("/logout", userController.logoutViewUser);
 
 router.get("/search/:productName",authentication.isUserAuthenticated,productController.productSearchView);
