@@ -3,7 +3,7 @@ const  isAdminAuthenticated = (req, res, next) => {
     if (req.session.isAdminAuthenticated) {
       next();
     } else {
-      res.render('auth/loginregister',{message:"login to continue"});
+      res.render('auth/login',{message:"login to continue"});
     }
   }
   

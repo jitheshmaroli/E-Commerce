@@ -131,9 +131,20 @@
                 </div>
                  <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                  
-                 <div class="total-amount">
+                 <!-- <div class="total-amount">
+                  
                   <p id="total-quantity">Total Items: 1</p>
                   <p id="coupon-discount"></p>
+                 
+                  <p id="order-total-price">Total Cost: </p>
+                </div> -->
+                <div class="total-amount">
+                  <p id="base-price"></p>
+                  <p id="total-quantity">Total Items: 1</p>
+                  <p id="coupon-discount"></p>
+                  <p id="sub-total"></p>
+                  <p id="sales-tax"></p>
+                  <p id="delivery-charge"></p>
                   <p id="order-total-price">Total Cost: </p>
                 </div>
             </div>
@@ -268,29 +279,50 @@
     const couponMessage = document.getElementById('couponMessage');
 
     function calculateTotals() {
-        let totalCost = 0;
-        let totalQuantity = 0;
+    let totalCost = 0;
+    let totalQuantity = 0;
+    let basePrice = 0;
 
-        productCards.forEach(card => {
-            const quantityInput = card.querySelector('.quantity-input');
-            const productPriceDiv = card.querySelector("#product-price");
-            
-            if (quantityInput && productPriceDiv) {
-                const quantity = parseInt(quantityInput.value) || 0;
-                const price = parseFloat(productPriceDiv.dataset.productPrice) || 0;
-                
-                totalQuantity += quantity;
-                totalCost += quantity * price;
-            }
-        });
+    productCards.forEach(card => {
+        const quantityInput = card.querySelector('.quantity-input');
+        const productPriceDiv = card.querySelector("#product-price");
 
-        const discountAmount = totalCost * couponDiscount;
-        const discountedTotal = totalCost - discountAmount;
+        if (quantityInput && productPriceDiv) {
+            const quantity = parseInt(quantityInput.value) || 0;
+            const price = parseFloat(productPriceDiv.dataset.productPrice) || 0;
 
-        orderTotalPriceElement.textContent = `Total Cost: ₹${discountedTotal.toFixed(2)}`;
-        totalQuantityElement.textContent = `Total Items: ${totalQuantity}`;
-        couponDiscountPriceElement.textContent = `Discount: ₹${discountAmount.toFixed(2)}`;
+            totalQuantity += quantity;
+            basePrice += quantity * price;
+        }
+    });
+
+    const salesTax = basePrice * 0.08; // 8% sales tax
+    const deliveryCharge = 40; // flat delivery charge of 40 rupees
+    const subTotal = basePrice - (basePrice * couponDiscount);
+    const discountAmount = basePrice * couponDiscount;
+    const grandTotal = subTotal + salesTax + deliveryCharge;
+
+    document.getElementById('base-price').textContent = `Base Price: ₹${basePrice.toFixed(2)}`;
+    document.getElementById('sub-total').textContent = `Sub Total: ₹${subTotal.toFixed(2)}`;
+    document.getElementById('sales-tax').textContent = `Sales Tax: ₹${salesTax.toFixed(2)}`;
+    document.getElementById('delivery-charge').textContent = `Delivery Charge: ₹${deliveryCharge.toFixed(2)}`;
+    orderTotalPriceElement.textContent = `Total Cost: ₹${grandTotal.toFixed(2)}`;
+    totalQuantityElement.textContent = `Total Items: ${totalQuantity}`;
+    if(discountAmount > 0){
+      couponDiscountPriceElement.textContent = `Discount: -₹${discountAmount.toFixed(2)}`;
+    }else{
+      couponDiscountPriceElement.textContent = `Discount: ₹${discountAmount.toFixed(2)}`;
     }
+
+    return {
+        discountAmount,
+        salesTax,
+        deliveryCharge,
+        subTotal,
+        
+    };
+    
+}
 
     productCards.forEach((card, index) => {
         const productPriceDiv = card.querySelector("#product-price");
@@ -491,13 +523,15 @@ placeOrderBtn.addEventListener('click', async (e) => {
     return;
   }
 
+  const priceDetails = calculateTotals();
+
   try {
     const response = await fetch('/place-order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ orderItems, totalCost, paymentMode: selectedPaymentMode, couponCode})
+      body: JSON.stringify({ orderItems, totalCost, paymentMode: selectedPaymentMode, couponCode, priceDetails})
     });
 
     const data = await response.json();
@@ -530,7 +564,7 @@ placeOrderBtn.addEventListener('click', async (e) => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({orderData, orderItems, totalCost, couponCode})
+          body: JSON.stringify({orderData, orderItems, totalCost, couponCode, priceDetails})
         });
         const data = await resp.json();
         if (data.success) {

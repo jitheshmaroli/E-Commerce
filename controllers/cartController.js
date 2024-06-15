@@ -179,7 +179,7 @@ const placeOrder =  async (req, res) => {
   try {
     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
     const userId = user._id;
-    const { orderItems, totalCost, paymentMode, couponCode } = req.body;
+    const { orderItems, totalCost, paymentMode, couponCode, priceDetails} = req.body;
 
     if(paymentMode === "cod"){
       const validatedOrderItems = await validateOrderItems(orderItems);
@@ -192,7 +192,13 @@ const placeOrder =  async (req, res) => {
         items: validatedOrderItems,
         totalCost,
         paymentMethod: 'cod',
-        couponCode: couponCode
+        couponCode: couponCode,
+        priceDetails: {
+          discountAmount: priceDetails.discountAmount,
+          salesTax: priceDetails.salesTax,
+          deliveryCharge: priceDetails.deliveryCharge,
+          subTotal: priceDetails.subTotal
+      }
       });
 
       await updateProductStock(validatedOrderItems);
@@ -200,7 +206,7 @@ const placeOrder =  async (req, res) => {
 
     }else if(paymentMode === "online"){
       var options = {
-        amount: totalCost * 100, // Amount in paise (e.g., 100 paise = 1 INR)
+        amount: totalCost * 100, 
         currency: 'INR',
         receipt: 'order_receipt_xyz' // Replace with a unique order receipt (e.g., order ID)
       }
@@ -252,7 +258,7 @@ const paymentSuccess = async(req, res) => {
   try {
     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
     const userId = user._id;
-    const {orderData, orderItems, totalCost, couponCode} = req.body;
+    const {orderData, orderItems, totalCost, couponCode, priceDetails} = req.body;
     const validatedOrderItems = await validateOrderItems(orderItems);
       if (validatedOrderItems.length === 0) {
         return res.status(400).json({ success: false, error: 'One or more items are out of stock.' });
@@ -269,7 +275,13 @@ const paymentSuccess = async(req, res) => {
               paymentId: orderData.paymentId,
               orderId: orderData.orderId,
               signature: orderData.signature
-          }
+          },
+          priceDetails: {
+            discountAmount: priceDetails.discountAmount,
+            salesTax: priceDetails.salesTax,
+            deliveryCharge: priceDetails.deliveryCharge,
+            subTotal: priceDetails.subTotal
+        }
       });
 
       console.log(order)
@@ -302,7 +314,8 @@ const orderHistory = async (req, res) => {
     const orders = await Order.find({ userId })
       .sort({ createdAt: -1 })
       .skip((page - 1) * perPage)
-      .limit(perPage);
+      .limit(perPage)
+      .populate('items.productId');
 
       function formatDate(date) {
         const d = date.getDate().toString().padStart(2, '0');

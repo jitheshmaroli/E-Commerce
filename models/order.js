@@ -14,20 +14,8 @@ const OrderSchema = new Schema({
                 ref: 'products',
                 required: true
             },
-            name: {
-                type: String,
-                required: true
-            },
-            price: {
-                type: Number,
-                required: true
-            },
             quantity: {
                 type: Number,
-                required: true
-            },
-            image: {
-                type: String,
                 required: true
             },
             status: {
@@ -47,10 +35,28 @@ const OrderSchema = new Schema({
         required: true
     },
     couponCode: {
-        type:String
+        type: String
     },
     paymentDetails: {
         type: Schema.Types.Mixed
+    },
+    priceDetails: {
+        discountAmount: {
+            type: Number,
+            required: true
+        },
+        salesTax: {
+            type: Number,
+            required: true
+        },
+        deliveryCharge: {
+            type: Number,
+            required: true
+        },
+        subTotal: {
+            type: Number,
+            required: true
+        }
     },
     createdAt: {
         type: Date,
@@ -58,6 +64,5 @@ const OrderSchema = new Schema({
     }
 });
 
-
-const order = mongoose.model("Order",OrderSchema);
-module.exports = order ;
+const Order = mongoose.model("Order", OrderSchema);
+module.exports = Order;

@@ -304,7 +304,7 @@
         const checkbox = item.querySelector('.cart-item-checkbox-input');
         if (checkbox.checked) {
             const qty = parseInt(item.querySelector('.quantity-control input').value);
-            const price = parseFloat(item.querySelector('.product-price').textContent.replace('$', ''));
+            const price = parseFloat(item.querySelector('.product-price').textContent.replace('₹', ''));
 
             totalItems += qty;
             totalCost += qty * price;
