@@ -132,7 +132,7 @@
                       <% order.items.forEach(item => { %>
                       <div class="row">
                         <div class="col-md-2">
-                          <img src="/uploads/<%= item.image %>" class="img-fluid" alt="Product Image" />
+                          <img src="/uploads/<%= item.productId.photos[0].filename %>" class="img-fluid" alt="Product Image" />
                         </div>
                         <div
                           class="col-md-2 text-center d-flex justify-content-center align-items-center">
@@ -140,14 +140,14 @@
                         </div>
                         <div
                           class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                          <p class="text-muted mb-0 small"><%= item.price %></p>
+                          <p class="text-muted mb-0 small">₹<%= item.price %></p>
                         </div>
                         <div
                           class="col-md-2 text-center d-flex justify-content-center align-items-center">
                           <p class="text-muted mb-0 small">Qty: <%= item.quantity %></p>
                         </div>
                         <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                          <p class="text-muted mb-0 small">$<%= order.totalCost %></p>
+                          <p class="text-muted mb-0 small">₹<%= order.totalCost %></p>
                         </div>
                         <% if (item.status === 'Pending') { %>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">

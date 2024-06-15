@@ -274,9 +274,9 @@ photoInput.addEventListener('change', (event) => {
   if (selectedFiles.length === 0) {
     photoError.textContent = 'Please select at least one photo.';
     photoInput.value = ''; // Clear the input value (optional)
-  } else if (selectedFiles.length > 3) {
-    alert('Please select a maximum of 3 photos');
-    photoError.textContent = 'Maximum 3 photos allowed.';
+  } else if (selectedFiles.length > 4) {
+    alert('Please select a maximum of 4 photos');
+    photoError.textContent = 'Maximum 4 photos allowed.';
     photoInput.value = ''; // Clear the input value (optional)
   } else {
     // Existing code for handling valid selections (3 photos)
@@ -320,7 +320,7 @@ function validateInput(inputId, inputValue) {
   }
 }
 const selectedFiles = photoInput.files;
-  if(selectedFiles.length !== 3) {
+  if(selectedFiles.length !== 4) {
     photoError.textContent = 'Photo input cannot be empty.';
   }
 

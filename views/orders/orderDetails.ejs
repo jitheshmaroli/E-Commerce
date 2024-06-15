@@ -123,18 +123,18 @@
                 <div class="col-md-9">
                   <h6><%= item.name %></h6>
                   <p>Quantity: <%= item.quantity %></p>
-                  <p>Price: $<%= item.price %></p>
+                  <p>Price: ₹<%= item.price %></p>
                 </div>
               </div>
               <% }) %>
               <div class="row">
                 <div class="col-md-6">
-                  <p>Total Amount: $<%= order.totalCost %></p>
+                  <p>Total Amount: ₹<%= order.totalCost %></p>
                 </div>
                 <div class="col-md-6">
                   <% if (order.couponApplied) { %>
                   <p>Coupon Applied: <%= order.couponCode %></p>
-                  <p>Discounted Amount: $<%= order.discountedAmount %></p>
+                  <p>Discounted Amount: ₹<%= order.discountedAmount %></p>
                   <% } %>
                 </div>
               </div>

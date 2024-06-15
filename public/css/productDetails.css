@@ -193,40 +193,13 @@ header {
  
 
 /* section */
-.container {
+/* .container {
     display: flex;
     flex-wrap: wrap;
     margin: auto;
     padding: 20px;
-}
+} */
 
-.product-image-wrapper {
-    flex-basis: 50%;
-}
-
-.product-image {
-    width: 100%;
-    display: none;
-}
-
-.product-image.active {
-    display: block;
-}
-
-.image-navigation {
-    display: flex;
-    justify-content: center;
-}
-
-.prev-btn,
-.next-btn {
-    background-color: transparent;
-    border: none;
-    color: #8b0e0e;
-    padding: 5px 10px;
-    font-size: 20px;
-    cursor: pointer;
-}
 
 .product-details {
     flex-basis: content;
@@ -394,15 +367,34 @@ h1, h2 {
 }
   
   /* footer css ends here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+  * {box-sizing: border-box;}
 
-.container {
+  .img-zoom-container {
+    position: relative;
+  }
+  
+  .img-zoom-lens {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    /*set the size of the lens:*/
+    width: 40px;
+    height: 40px;
+  }
+  
+  .img-zoom-result {
+    border: 1px solid #d4d4d4;
+    /*set the size of the result div:*/
+    width: 300px;
+    height: 300px;
+  }
+/* .container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Horizontally center the container */
+    justify-content: center; 
     margin: auto;
     padding: 20px;
     max-width: 1200px; 
-}
+} */
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
@@ -440,3 +432,48 @@ h1, h2 {
         font-size: 18px;
     }
 }
+
+.product-image-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px;
+}
+
+.image-preview-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.image-preview {
+  flex: 1;
+  max-width: 25%;
+  cursor: pointer;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.main-image-wrapper {
+  width: 100%;
+}
+
+.main-image img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 991.98px) {
+  .image-preview-wrapper {
+    display: none;
+  }
+  .main-image {
+    display: none !important;
+  }
+}
+
+
