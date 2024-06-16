@@ -35,7 +35,7 @@ router.get("/checkout", authentication.isUserAuthenticated, cartController.check
 router.get("/checkout/:productId/:quantity", authentication.isUserAuthenticated, cartController.checkoutView);
 router.post("/place-order", cartController.placeOrder);
 router.get("/order-history", authentication.isUserAuthenticated, cartController.orderHistory);
-router.get("/order-details",cartController.orderDetails)
+router.get("/order-details/:orderId",cartController.orderDetails)
 
 router.post("/cancel-order/:orderId/:itemId", cartController.cancelOrder);
 router.get('/review/:orderId/:productId',productController.reviewView);
@@ -48,7 +48,7 @@ router.post("/update-quantity", cartController.updateQuantity);
 router.get("/check-stock/:productId",authentication.isUserAuthenticated,cartController.checkStock);
 router.post("/toggle-wishlist", cartController.toggleWishList);
 router.post("/cart/move-to-wishlist", cartController.moveToWishList);
-router.post("/remove-from-wishlist", cartController.removeFromWishList);
+router.post("/wishlist/remove/:productId",cartController.removeFromWishList);
 router.post("/remove-from-cart", cartController.removeFromCart);
 router.get("/wishlist", cartController.wishListView);
 router.post("/set-default-address/:addressId",userController.setDefaultAddress);
@@ -58,6 +58,7 @@ router.get("/address/delete/:addressId",authentication.isUserAuthenticated,userC
 router.post("/set-default", userController.setDefault);
 router.post("/address/add", userController.addNewAddress);
 router.get("/get-address/:addressId",userController.getAddress);
+router.post("/move-to-cart/:productId", cartController.moveToCart);
 
 router.post("/handle-payment-success",cartController.paymentSuccess);
 
