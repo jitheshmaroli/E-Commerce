@@ -58,6 +58,10 @@ const OrderSchema = new Schema({
             required: true
         }
     },
+    deliveryAddress:{
+        type: Schema.Types.Mixed,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

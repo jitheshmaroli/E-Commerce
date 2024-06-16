@@ -103,7 +103,7 @@
               <td hidden><%= coupon._id %></td>
               <td><%= coupon.code %></td>
               <td><%= coupon.discount %></td>
-              <td><%= coupon.expiryDate %></td>
+              <td><%= new Date(coupon.expiryDate).toDateString()  %></td>
               <% if (coupon.expiryDate > Date.now()) { %>
               <td>ACTIVE</td>
               <% }else { %>

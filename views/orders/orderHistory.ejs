@@ -116,14 +116,17 @@
                 <div class="card-body p-4">
                   <% orders.forEach(order => { %>
                     <% const orderDate = formattedDate.find(date => date.order._id === order._id); %>
-                  <div class="row">
-                    <div class="col-md-4">
-                        <p>ORDER PLACED : <%= orderDate ? orderDate.orderDate : '' %></p>
+                  <div class=" orderDetails">
+                    <div class="">
+                        <p>DATE : <%= orderDate ? orderDate.orderDate : '' %></p>
                     </div>
-                    <div class="col-md-4">
-                      <p>ORDER ID : <%= order._id %></p>
+                    <div class="">
+                      <p>ID : <%= order._id %></p>
                     </div>
-                    <div class="col-md-4" style="text-align: center;">
+                    <div class="">
+                      <p >Total : ₹<%= order.totalCost %></p>
+                    </div>
+                    <div class="" >
                       <p><a href="/order-details" style="text-decoration: none;">view  details</a></p>
                     </div>
                   </div>
@@ -136,34 +139,34 @@
                         </div>
                         <div
                           class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                          <p class="text-muted mb-0"><%= item.name %></p>
+                          <p class="text-muted mb-0"><%= item.productId.name %></p>
                         </div>
                         <div
                           class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                          <p class="text-muted mb-0 small">₹<%= item.price %></p>
+                          <p class="text-muted mb-0 small">₹<%= item.productId.price %></p>
                         </div>
                         <div
                           class="col-md-2 text-center d-flex justify-content-center align-items-center">
                           <p class="text-muted mb-0 small">Qty: <%= item.quantity %></p>
                         </div>
                         <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                          <p class="text-muted mb-0 small">₹<%= order.totalCost %></p>
+                          <p class="text-muted mb-0 small">Order Total : ₹<%= order.totalCost %></p>
                         </div>
                         <% if (item.status === 'Pending') { %>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <form action="/cancel-order/<%= order._id %>/<%= item._id %>" method="POST">
+                            <form action="/cancel-order/<%= order._id %>/<%= item.productId._id %>" method="POST">
                               <button type="submit" class="btn btn-danger btn-sm">Cancel Item</button>
                             </form>
                           </div>
                         <% } %>
                         <% if (item.status === 'Delivered') { %>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <a href="/review/<%= order._id %>/<%= item.productId %>" class="btn btn-primary btn-sm">Add Review</a>
+                            <a href="/review/<%= order._id %>/<%= item.productId._id %>" class="btn btn-primary btn-sm">Add Review</a>
                           </div>
                         <% } %>
                         <% if (item.status === 'Cancelled') { %>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <a href="/checkout/<%= item.productId %>/<%= item.quantity %>" class="btn btn-primary btn-sm">Re-Order</a>
+                            <a href="/checkout/<%= item.productId._id %>/<%= item.quantity %>" class="btn btn-primary btn-sm">Re-Order</a>
                           </div>
                         <% } %>
                       </div>
