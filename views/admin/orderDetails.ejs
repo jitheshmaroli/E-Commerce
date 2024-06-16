@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORDERS LIST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="/css/adminOrderDetails.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        SportZilon
+      </a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              ADMIN
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav> 
+  <main class="main">
+    <aside class="sidebar">
+      <div class="">
+        <div class="list-group sidebar-list" id="myListGroup">
+          <a href="/admin">
+            <button type="button" class="list-group-item list-group-item-action">HOME</button>
+          </a>
+          <a href="/admin/allproducts">
+            <button type="button" class="list-group-item list-group-item-action">ALL PRODUCTS</button>
+          </a>
+          <a href="/admin/ordersList">
+            <button type="button" class="list-group-item list-group-item-action ">ORDERS LIST</button>
+          </a>
+          <a href="/admin/usersList">
+            <button type="button" class="list-group-item list-group-item-action">USERS LIST</button>
+          </a>
+          <a href="/admin/categoryList">
+            <button type="button" class="list-group-item list-group-item-action">CATEGORY LIST</button>
+          </a>
+          <a href="/admin/couponList">
+            <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <div class="container-fluid">
+
+      <div class="container">
+         <% if (order) { %>
+        <div class="d-flex justify-content-between align-items-center py-3">
+          <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> Order id: <%= order._id %></h2>
+        </div>
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="mb-3 d-flex justify-content-between">
+                  <div>
+                    <span class="me-3"><%= new Date(order.createdAt).toLocaleDateString() %></span>
+                    <!-- <span class="me-3">#16123222</span>
+                    <span class="me-3">Visa -1234</span>
+                    <span class="badge rounded-pill bg-info">SHIPPING</span> -->
+                  </div>
+                  <div class="d-flex">
+                    <button class="btn btn-link p-0 me-3 d-none d-lg-block btn-icon-text"><i class="bi bi-download"></i> <span class="text">Invoice</span></button>
+                    <div class="dropdown">
+                      <button class="btn btn-link p-0 text-muted" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil"></i> Edit</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-printer"></i> Print</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <table class="table table-borderless">
+                  <tbody>
+                      <% order.items.forEach(item => { %>
+                        <tr id="item-row-<%= item.productId._id %>">
+                          <td>
+                            <div class="d-flex mb-2">
+                              <div class="flex-shrink-0">
+                                <img src="/uploads/<%= item.productId.photos[0].filename %>" alt="" width="35" class="img-fluid">
+                              </div>
+                              <div class="flex-lg-grow-1 ms-3">
+                                <h6 class="small mb-0"><a href="#" class="text-reset"><%= item.productId.name %></a></h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td id="item-status-<%= item.productId._id %>"><%= item.status %></td>
+                          <td><%= item.quantity %></td>
+                          <td class="text-end">₹<%= item.productId.price %></td>
+                          <td id="action-buttons-<%= item.productId._id %>">
+                            <% if (item.status === "Pending") { %>
+                              <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId._id %>','Cancelled' ); return false;" style="display: inline;">
+                                <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
+                              </form>
+                              <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId._id %>', 'Shipped'); return false;" style="display: inline;">
+                                <button class="btn btn-primary btn-sm" type="submit">Ship</button>
+                              </form>
+                            <% } else if (item.status === "Cancelled") { %>
+                              <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId._id %>', 'Shipped'); return false;" style="display: inline;">
+                                <button class="btn btn-primary btn-sm" type="submit">Ship</button>
+                              </form>
+                            <% } else if (item.status === "Shipped") { %>
+                              <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId._id %>', 'Cancelled'); return false;" style="display: inline;">
+                                <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
+                              </form>
+                              <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId._id %>', 'Delivered'); return false;" style="display: inline;">
+                                <button class="btn btn-success btn-sm" type="submit">Delivered</button>
+                              </form>
+                            <% } else if (item.status === "Delivered") { %>
+                              <p>DELIVERED</p>
+                            <% } %>
+                          </td>
+                         </tr>
+                    <% }) %>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="2">Discount(code: <%= order.couponCode %>)</td>
+                      <td class="text-danger text-end">-₹<%= order.priceDetails.discountAmount %></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Subtotal</td>
+                      <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Delivery charge</td>
+                      <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Sales Tax</td>
+                      <td class="text-end"><%= order.priceDetails.salesTax %></td>
+                    </tr>
+                    <tr class="fw-bold">
+                      <td colspan="2">TOTAL</td>
+                      <td class="text-end">₹<%= order.totalCost %></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card mb-4">
+              <div class="card-body">
+                  <h3 class="h6">Payment Method</h3>
+                  <p><%= order.paymentMethod %> <br>
+                  Total: ₹<%= order.totalCost %> <span class="badge bg-success rounded-pill">PAID</span></p>
+              </div>
+            </div>
+            <div class="card mb-4">
+              <div class="card-body">
+                <h3 class="h6">Billing Address</h3>
+                <address>
+                  <strong><%= order.deliveryAddress.address.name %></strong><br>
+                  <%= order.deliveryAddress.address.houseName %><br>
+                  <%= order.deliveryAddress.address.street %>,<%= order.deliveryAddress.address.city %><br>
+                  <%= order.deliveryAddress.address.district %><br>
+                  <%= order.deliveryAddress.address.state %>-<%= order.deliveryAddress.address.pinCode %><br>
+                  <!-- <abbr title="Phone">P:</abbr> (123) 456-7890 -->
+                </address>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+  </div>  
+  </main> 
+  <footer class="footer">
+    <div class="container">
+      <p class="copyright">© 2024 ShoesZone.</p>
+    </div>
+  </footer>   
+
+<script>
+  async function updateOrderStatus(event, orderId, productId, status) {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(`/admin/updateOrderStatus/${orderId}/${productId}?status=${status}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        // Update the status cell
+        document.getElementById(`item-status-${productId}`).textContent = status;
+
+        // Update the action buttons
+        document.getElementById(`action-buttons-${productId}`).innerHTML = getActionButtons(status, orderId, productId);
+      } else {
+        console.error('Failed to update order status');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  function getActionButtons(status, orderId, productId) {
+    let buttons = '';
+
+    if (status === "Pending") {
+      buttons += `
+        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Cancelled'); return false;" style="display: inline;">
+          <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
+        </form>
+        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Shipped'); return false;" style="display: inline;">
+          <button class="btn btn-primary btn-sm" type="submit">Ship</button>
+        </form>
+      `;
+    } else if (status === "Cancelled") {
+      buttons += `
+        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Shipped'); return false;" style="display: inline;">
+          <button class="btn btn-primary btn-sm" type="submit">Ship</button>
+        </form>
+      `;
+    } else if (status === "Shipped") {
+      buttons += `
+        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Cancelled'); return false;" style="display: inline;">
+          <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
+        </form>
+        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Delivered'); return false;" style="display: inline;">
+          <button class="btn btn-success btn-sm" type="submit">Delivered</button>
+        </form>
+      `;
+    } else if (status === "Delivered") {
+      buttons += '<p>DELIVERED</p>';
+    }
+
+    return buttons;
+  }
+</script>
+
+</body>
+</html>

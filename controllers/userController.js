@@ -981,6 +981,20 @@ if (req.file) {
   }
 };
 
+const getAddress = async (req, res) => {
+  try {
+    const addressId = req.params.addressId;
+    const user = await User.findOne({
+      email: req.session.userId || req.session.passport.user.userId,
+    });
+    const addressDoc = await Addresses.findOne({ userId: user._id });
+    const address = addressDoc.address.id(addressId);
+    res.json({ address});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
   module.exports = {
     verifyLogin,
@@ -1013,7 +1027,8 @@ if (req.file) {
     updateAddress,
     deleteAddress,
     updateProfile,
-    profilePhotoUpload
+    profilePhotoUpload,
+    getAddress
     
   }
   

@@ -63,13 +63,32 @@ const logoutViewAdmin = async (req, res) => {
 const ordersListView = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("userId")
-      .sort({ createdAt: -1 });
+    .populate("userId", "name email photo isVerified isAdmin isBlocked") 
+    .populate({
+      path: "items.productId", 
+      model: "products" 
+    })
+    .sort({ createdAt: -1 });
+    console.log(orders)
     res.render("admin/ordersList", { orders });
   } catch (err) {
     res.status(500).send(err.message);
   }
 };
+
+const orderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const order = await Order.findById({_id: orderId})
+    .populate("userId", "name email photo isVerified isAdmin isBlocked") 
+    .populate({ path: "items.productId", model: "products" })
+    .populate('deliveryAddress','isDefault');
+    console.log(order)
+    res.render("admin/orderDetails",{order});
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
 
 const updateOrderStatus = async (req, res) => {
   const { orderId, productId } = req.params;
@@ -208,5 +227,6 @@ module.exports = {
   ordersListView,
   updateOrderStatus,
   cancelOrder,
-  salesReport
+  salesReport,
+  orderDetails
 };

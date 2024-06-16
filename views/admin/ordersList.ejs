@@ -61,97 +61,26 @@
       </div>
     </aside>
     <section class="content">
-      <% if (orders.length <= 0) { %>
-        <h4 style="text-align: center;">NO ORDERS AVAILABLE</h4>
-       <% }else { %>
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item active" aria-current="page">ALL ORDERS</li>
-        </ol>
-      </nav>
-      <div class="container">   
         <table class="table" id="myTable">
-          <thead>
-            <tr>
-              <th scope="col">ORDER ID</th>
-              <th scope="col">ITEM NAME</th>
-              <th scope="col">USER NAME</th>
-              <th scope="col">ORDER DATE</th>
-              <th scope="col">ACTION</th>              
-            </tr>
-          </thead>
-          <tbody>
-            <% orders.forEach(order => { %>
+            <thead>
               <tr>
-                <td><%= order._id %></td>
-                <td><%= order.items.map(item => item.name).join(', ') %></td>
-                <td><%= order.userId.name %></td>
-                <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
-                <td>
-                  <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#orderDetails<%= order._id %>">Details</button>
-                </td>
+                <th scope="col">ORDER ID</th>
+                <th scope="col">ORDER DATE</th>
+                <th scope="col">CUSTOMER NAME</th>
+                <th scope="col">PAYMENT STATUS</th>
               </tr>
-              <tr>
-                <td colspan="6" class="hiddenRow">
-                  <div class="collapse" id="orderDetails<%= order._id %>">
-                    <div class="card">
-                      <div class="card-body">
-                        <h5 class="card-title">Order Details</h5>
-                        <table class="table table-bordered" id="myTable">
-                          <thead>
-                            <tr>
-                              <th>Product</th>
-                              <th>Quantity</th>
-                              <th>Price</th>
-                              <th>Status</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <% order.items.forEach(item => { %>
-                              <tr>
-                                <td><%= item.name %></td>
-                                <td><%= item.quantity %></td>
-                                <td>₹<%= item.price %></td>
-                                <td><%= item.status %></td>
-                                <td>
-                                  <% if (item.status === "Pending") { %>
-                                    <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId %>', 'Cancelled'); return false;" style="display: inline;">
-                                      <button class="btn btn-danger" type="submit">Cancel</button>
-                                    </form>
-                                    <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId %>', 'Shipped'); return false;" style="display: inline;">
-                                      <button class="btn btn-primary" type="submit">Ship</button>
-                                    </form>
-                                  <% }else if(item.status === "Cancelled" ){%>
-                                    <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId %>', 'Shipped'); return false;" style="display: inline;">
-                                      <button class="btn btn-primary" type="submit">Ship</button>
-                                    </form>
-                                  <% }else if(item.status === "Shipped" ){%> 
-                                    <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId %>', 'Shipped'); return false;" style="display: inline;">
-                                      <button class="btn btn-danger" type="submit">Cancel</button>
-                                    </form>
-                                    <form onsubmit="updateOrderStatus(event, '<%= order._id %>', '<%= item.productId %>', 'Delivered'); return false;" style="display: inline;">
-                                      <button class="btn btn-success" type="submit">Delivered</button>
-                                    </form>
-                                  <% }else if(item.status === "Delivered" ){%>                                 
-                                  <p>DELIVERED</p>
-                                  <% } %>
-                                </td>
-                              </tr>
-                            <% }); %>
-                          </tbody>
-                        </table>
-                        <p>Total Amount: ₹<%= order.totalCost %></p>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            <% }); %>
-          </tbody>
-        </table>
-      </div>
-      <% } %>
+            </thead>
+            <tbody>
+              <% orders.forEach(order => { %>
+                <tr>
+                  <td><a href="/admin/orders/<%= order._id %>"><%= order._id %></a></td>
+                  <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                  <td><%= order.userId.name %></td>
+                  <td><%= order.paymentMethod %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
     </section>     
   </main> 
   <footer class="footer">
@@ -171,86 +100,13 @@
     $(document).ready(function() {
       $('#myTable').DataTable();
     });
+
+    $.extend( $.fn.dataTable.defaults, {
+        ordering: true,
+        order: [[0, 'desc']] // Sort by the first column (index 0) in ascending order
+    } );
   </script>
   
 
-  <script>
-    document.querySelectorAll('[data-toggle="collapse"]').forEach(function(button) {
-      button.addEventListener('click', toggleCollapse);
-    });
-    let openCollapse = null;
-
-function toggleCollapse(event) {
-  const currentCollapse = event.target.getAttribute('data-target');
-
-  if (openCollapse && openCollapse !== currentCollapse) {
-    const openCollapseElement = document.querySelector(openCollapse);
-    const bsCollapse = new bootstrap.Collapse(openCollapseElement, { toggle: false });
-    bsCollapse.hide();
-  }
-
-  openCollapse = currentCollapse;
-}
-
-async function updateOrderStatus(event, orderId, productId, status) {
-  event.preventDefault();
-
-  try {
-    const response = await fetch(`/admin/updateOrderStatus/${orderId}/${productId}?status=${status}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response.ok) {
-      // Update the UI with the new status and buttons
-      const statusElement = event.target.parentNode.parentNode.querySelector('td:nth-child(4)');
-      const actionElement = event.target.parentNode.parentNode.querySelector('td:nth-child(5)');
-
-      statusElement.textContent = status;
-      actionElement.innerHTML = getActionButtons(status, orderId, productId);
-    } else {
-      console.error('Failed to update order status');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-function getActionButtons(status, orderId, productId) {
-  let buttons = '';
-
-  if (status === "Pending") {
-    buttons += `
-      <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Cancelled'); return false;" style="display: inline;">
-        <button class="btn btn-danger" type="submit">Cancel</button>
-      </form>
-      <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Shipped'); return false;" style="display: inline;">
-        <button class="btn btn-primary" type="submit">Ship</button>
-      </form>
-    `;
-  } else if (status === "Cancelled") {
-    buttons += `
-      <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Shipped'); return false;" style="display: inline;">
-        <button class="btn btn-primary" type="submit">Ship</button>
-      </form>
-    `;
-  } else if (status === "Shipped") {
-    buttons += `
-      <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Cancelled'); return false;" style="display: inline;">
-        <button class="btn btn-danger" type="submit">Cancel</button>
-      </form>
-      <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Delivered'); return false;" style="display: inline;">
-        <button class="btn btn-success" type="submit">Delivered</button>
-      </form>
-    `;
-  } else if (status === "Delivered") {
-    buttons += '<p>DELIVERED</p>';
-  }
-
-  return buttons;
-}
-  </script>
 </body>
 </html>

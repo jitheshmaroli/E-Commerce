@@ -19,6 +19,7 @@ router.post('/allProducts/removeImage',productController.removeImage);
 router.put('/allProducts/updatePhotos/:productId', productController.updatePhotos);
 router.get("/allProducts/delete/:productId", authentication.isAdminAuthenticated, productController.deleteProduct);
 router.get("/orderslist", authentication.isAdminAuthenticated, adminController.ordersListView);
+router.get("/orders/:orderId",authentication.isAdminAuthenticated,adminController.orderDetails);
 router.post("/updateOrderStatus/:orderId/:productId", adminController.updateOrderStatus);
 router.post("/cancelOrder/:orderId/:productId", adminController.cancelOrder);
 router.get("/couponlist", authentication.isAdminAuthenticated, couponController.couponListView);

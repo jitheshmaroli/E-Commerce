@@ -57,6 +57,7 @@ router.post("/address/edit", userController.updateAddress);
 router.get("/address/delete/:addressId",authentication.isUserAuthenticated,userController.deleteAddress);
 router.post("/set-default", userController.setDefault);
 router.post("/address/add", userController.addNewAddress);
+router.get("/get-address/:addressId",userController.getAddress);
 
 router.post("/handle-payment-success",cartController.paymentSuccess);
 

@@ -522,16 +522,28 @@ placeOrderBtn.addEventListener('click', async (e) => {
     });
     return;
   }
+  const addressCard = document.querySelector('.address-card[data-address-id]');
+  let addressDetails;
+
+  if (addressCard) {
+     const addressId = addressCard.dataset.addressId;
+     const response = await fetch(`/get-address/${addressId}`);
+     addressDetails = await response.json();
+  } else {
+    console.error('No address selected for the order');
+    return;
+  }
 
   const priceDetails = calculateTotals();
 
+  console.log(addressDetails);
   try {
     const response = await fetch('/place-order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ orderItems, totalCost, paymentMode: selectedPaymentMode, couponCode, priceDetails})
+      body: JSON.stringify({ orderItems, totalCost, paymentMode: selectedPaymentMode, couponCode, priceDetails, addressDetails})
     });
 
     const data = await response.json();
@@ -564,7 +576,7 @@ placeOrderBtn.addEventListener('click', async (e) => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({orderData, orderItems, totalCost, couponCode, priceDetails})
+          body: JSON.stringify({orderData, orderItems, totalCost, couponCode, priceDetails, addressDetails})
         });
         const data = await resp.json();
         if (data.success) {

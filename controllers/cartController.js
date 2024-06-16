@@ -179,7 +179,7 @@ const placeOrder =  async (req, res) => {
   try {
     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
     const userId = user._id;
-    const { orderItems, totalCost, paymentMode, couponCode, priceDetails} = req.body;
+    const { orderItems, totalCost, paymentMode, couponCode, priceDetails, addressDetails} = req.body;
 
     if(paymentMode === "cod"){
       const validatedOrderItems = await validateOrderItems(orderItems);
@@ -198,7 +198,8 @@ const placeOrder =  async (req, res) => {
           salesTax: priceDetails.salesTax,
           deliveryCharge: priceDetails.deliveryCharge,
           subTotal: priceDetails.subTotal
-      }
+        },
+        deliveryAddress:addressDetails
       });
 
       await updateProductStock(validatedOrderItems);
@@ -258,7 +259,7 @@ const paymentSuccess = async(req, res) => {
   try {
     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
     const userId = user._id;
-    const {orderData, orderItems, totalCost, couponCode, priceDetails} = req.body;
+    const {orderData, orderItems, totalCost, couponCode, priceDetails, addressDetails} = req.body;
     const validatedOrderItems = await validateOrderItems(orderItems);
       if (validatedOrderItems.length === 0) {
         return res.status(400).json({ success: false, error: 'One or more items are out of stock.' });
@@ -281,7 +282,8 @@ const paymentSuccess = async(req, res) => {
             salesTax: priceDetails.salesTax,
             deliveryCharge: priceDetails.deliveryCharge,
             subTotal: priceDetails.subTotal
-        }
+        },
+        deliveryAddress:addressDetails
       });
 
       console.log(order)
@@ -315,8 +317,10 @@ const orderHistory = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * perPage)
       .limit(perPage)
-      .populate('items.productId');
+      .populate({ path: "items.productId", model: "products" })
+      .populate('deliveryAddress');
 
+      console.log(orders)
       function formatDate(date) {
         const d = date.getDate().toString().padStart(2, '0');
         const m = (date.getMonth() + 1).toString().padStart(2, '0');
