@@ -291,6 +291,12 @@ const addToCartBtn = document.getElementById('add-to-cart-btn');
 const originalPrice = parseFloat(originalPriceSpan.textContent);
 const productName = document.getElementById("product-name").textContent;
 
+function updateTotalPrice() {
+        const quantity = parseInt(quantityInput.value);
+        const totalPrice = originalPrice * quantity;
+        finalPriceSpan.textContent = totalPrice.toFixed(2); 
+    }
+
 document.addEventListener('DOMContentLoaded', function() {
     const maxQtyPerUser = 5;
 
@@ -335,11 +341,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             currentQty=input.value;
-            // updateQuantityOnServer(productId, currentQty);
-            // updateOrderSummary();
+             updateTotalPrice()
         });
     });
 
+    updateTotalPrice();
     document.querySelectorAll('.quantity-control input').forEach(input => {
         input.addEventListener('change', function(e) {
             const stockQty = parseInt(e.target.getAttribute('data-stock'));
@@ -371,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     confirmButtonText: 'OK'
                 });
             }
-            // updateQuantityOnServer(productId, newQty);
+            updateTotalPrice();
         })
         });
 });

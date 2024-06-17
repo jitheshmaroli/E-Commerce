@@ -96,9 +96,9 @@
     <div class="container">
         <div class="row">
             <% if (products && products.length > 0) { %>
-              <div id="productData" data-products="<%= JSON.stringify(productsToSort) %>" hidden></div>
+              <div id="productData" data-products="<%= JSON.stringify(productsToSort) %>"   data-current-page="<%= currentPage %>" data-products-per-page="<%= productsPerPage %>" data-total-products="<%= totalProducts %>" hidden></div>
               <div id="wishlistData" data-wishlist-products="<%= JSON.stringify(wishlistProducts) %>" hidden></div>
-                <% products.forEach(product => { %>
+              <% products.forEach(product => { %>
                     <div class="col-lg-3 col-md-6 col-sm-12">
                         <div class="product-card" data-product="<%= product._id %>">
                             <div class="product-image">
@@ -136,6 +136,23 @@
                         </div>
                     </div>
                 <% }) %>
+              <div class="pagination-controls" id="pagination-controls">
+                <% if (currentPage > 1) { %>
+                  <a href="?page=<%= currentPage - 1 %>" class="prev-page">Previous</a>
+                <% } %>
+
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                  <% if (i === currentPage) { %>
+                    <span class="current-page"><%= i %></span>
+                  <% } else { %>
+                    <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+                  <% } %>
+                <% } %>
+
+                <% if (currentPage < totalPages) { %>
+                  <a href="?page=<%= currentPage + 1 %>" class="next-page">Next</a>
+                <% } %>
+              </div>
             <% } else{ %>
               <h1 style="text-align: center; padding: 150px;">NO PRODUCTS AVAILABLE</h1>
             <% } %>
@@ -290,15 +307,21 @@
    const productData = JSON.parse(productDataString);
    const wishlistProductsString = wishlistDataDiv.dataset.wishlistProducts;
    const wishlistProducts = JSON.parse(wishlistProductsString);
-  function sortByPrice(order) {
-  return productData.sort((a, b) => {
-    if (order === 'asc') {
-      return a.price - b.price;
-    } else {
-      return b.price - a.price;
-    }
-  });
-}
+   const currentPage =  JSON.parse(productDataDiv.dataset.currentPage);
+   const productsPerPage = JSON.parse(productDataDiv.dataset.productsPerPage);
+   const totalProducts = JSON.parse(productDataDiv.dataset.totalProducts);
+
+   
+   
+   function sortByPrice(order) {
+      return productData.sort((a, b) => {
+        if (order === 'asc') {
+          return a.price - b.price;
+        } else {
+          return b.price - a.price;
+        }
+      });
+   }
 
 function sortByName(order) {
   return productData.sort((a, b) => {
@@ -361,11 +384,12 @@ document.getElementById('sortBy').addEventListener('change', function() {
       sortedProducts = productData;
   }
 
-  
-  updateProductList(sortedProducts);
+  console.log("crntpage:",currentPage,"prodperpage:",productsPerPage,"total:",totalProducts)
+  updateProductList(sortedProducts, currentPage, productsPerPage, totalProducts);
 });
 
-function updateProductList(products) {
+
+function updateProductList(products, currentPage, productsPerPage, totalProducts) {
   const productSection = document.querySelector('.product-section .row');
   productSection.innerHTML = '';
 
@@ -374,7 +398,11 @@ function updateProductList(products) {
     return;
   }
 
-  products.forEach(product => {
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+
+  paginatedProducts.forEach(product => {
     const isInWishlist = wishlistProducts.find(item => item._id === product._id);
     const wishlistIconColor = isInWishlist ? 'black' : 'rgb(221, 218, 218)';
     function generateRatingHtml(rating) {
@@ -416,9 +444,43 @@ function updateProductList(products) {
         </div>
       </div>
     `;
+    
     productSection.insertAdjacentHTML('beforeend', productCard);
   });
+  
+  // Add pagination controls
+  const paginationControls = document.querySelector("pagination-controls");
+  console.log(paginationControls);
+  paginationControls.innerHTML = '';
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
 
+  if (currentPage > 1) {
+    paginationControls.innerHTML += `<a href="#" class="prev-page" data-page="${currentPage - 1}">Previous</a>`;
+  }
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === currentPage) {
+      paginationControls.innerHTML += `<span class="current-page">${i}</span>`;
+    } else {
+      paginationControls.innerHTML += `<a href="#" class="page-link" data-page="${i}">${i}</a>`;
+    }
+  }
+
+  if (currentPage < totalPages) {
+    paginationControls.innerHTML += `<a href="#" class="next-page" data-page="${currentPage + 1}">Next</a>`;
+  }
+
+  productSection.insertAdjacentElement('afterend', paginationControls);
+
+  // Add event listeners for pagination links
+  document.querySelectorAll('.page-link, .prev-page, .next-page').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const page = parseInt(e.target.getAttribute('data-page'));
+      console.log(page,productsPerPage,totalProducts)
+      updateProductList(products, page, productsPerPage, totalProducts);
+    });
+  });
   const addToCartButtons = document.querySelectorAll('.add-to-cart');
     
     addToCartButtons.forEach(button => {

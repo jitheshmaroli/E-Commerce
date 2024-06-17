@@ -444,11 +444,32 @@ const loadCategoryItems = async (req, res) => {
       wishlistProducts = wishlist ? wishlist.products : [];
     }
 
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const productsPerPage = 8;
+    const skip = (page - 1) * productsPerPage;
+
     let products;
     let categoryId;
+    let productsWithRating;
+    let totalPages;
+    let productCount;
 
     if (categoryName === "all") {
-      products = await Product.find({ isDeleted: false, photos: { $ne: [] } });
+      productCount = await Product.countDocuments({ isDeleted: false, photos: { $ne: [] } });
+      totalPages = Math.ceil(productCount / productsPerPage);
+      products = await Product.find({ isDeleted: false, photos: { $ne: [] } })
+        .populate("reviews")
+        .skip(skip)
+        .limit(productsPerPage);
+         productsWithRating = products.map(product => {
+          const reviews = product.reviews;
+          const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+          const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+          return {
+            ...product.toObject(),
+            averageRating: averageRating.toFixed(1)
+          };
+        });
     } else {
       const category = categoryList.find(
         (cat) => cat.categoryName === categoryName
@@ -458,19 +479,43 @@ const loadCategoryItems = async (req, res) => {
       } else {
         console.error("Category not found");
       }
+      productCount = await Product.countDocuments({
+        category: categoryId,
+        isDeleted: false,
+        photos: { $ne: [] }
+      });
+      totalPages = Math.ceil(productCount / productsPerPage);
+
       products = await Product.find({
         category: categoryId,
         isDeleted: false,
         photos: { $ne: [] },
-      }).populate("category");
+      })
+      .populate("reviews")
+      .skip(skip)
+      .limit(productsPerPage);
+
+      productsWithRating = products.map(product => {
+        const reviews = product.reviews;
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+        return {
+          ...product.toObject(),
+          averageRating: averageRating.toFixed(1)
+        };
+      });
     }
 
     res.render("userSide/shoppingHome", {
-      products: products,
-      productsToSort: products,
+      products: productsWithRating,
+      productsToSort: productsWithRating,
       wishlistProducts: wishlistProducts,
       user,
       categoryList,
+      currentPage: page,
+      totalPages: totalPages,
+      productsPerPage: productsPerPage,
+      totalProducts: productCount,
     });
   } catch (error) {
     console.error(error);

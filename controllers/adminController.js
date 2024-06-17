@@ -1,6 +1,8 @@
 /* eslint-disable no-case-declarations */
 const User = require("../models/user");
 const Order = require("../models/order");
+const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
 
 const adminHome = async (req, res) => {
   try {
@@ -9,6 +11,16 @@ const adminHome = async (req, res) => {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
+};
+
+const formatReportData = (orders) => {
+  return orders.map(order => ({
+      date: order.createdAt.toISOString().split('T')[0],
+      totalSales: order.totalCost,
+      ordersCount: order.items.length,
+      totalDiscounts: order.priceDetails.discountAmount,
+      couponDeductions: order.couponCode ? order.priceDetails.discountAmount : 0
+  }));
 };
 
 const blockUser = async (req, res) => {
@@ -82,7 +94,7 @@ const orderDetails = async (req, res) => {
     const order = await Order.findById({_id: orderId})
     .populate("userId", "name email photo isVerified isAdmin isBlocked") 
     .populate({ path: "items.productId", model: "products" })
-    .populate('deliveryAddress','isDefault');
+    .populate('deliveryAddress');
     console.log(order)
     res.render("admin/orderDetails",{order});
   } catch (error) {
@@ -143,80 +155,105 @@ const cancelOrder = async (req, res) => {
 
 const salesReport = async (req, res) => {
   try {
-    const reportType = req.query.type;
-    let startDate, endDate;
+    const { type, startDate, endDate } = req.query;
 
-    // Calculate start and end dates based on the report type
-    switch (reportType) {
-      case 'daily':
-        const now = new Date();
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        endDate = now;
-        console.log('Daily start date:', startDate);
-        console.log('Daily end date:', endDate);
-        break;
-      case 'weekly':
-        const currentDate = new Date();
-        const dayOfWeek = currentDate.getDay();
-        const diffDays = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-        startDate = new Date(currentDate.setDate(currentDate.getDate() - diffDays));
-        endDate = new Date(currentDate.setDate(currentDate.getDate() + (7 - diffDays)));
-        break;
-      case 'monthly':
-        const year = new Date().getFullYear();
-        const month = new Date().getMonth();
-        startDate = new Date(year, month, 1);
-        endDate = new Date(year, month + 1, 0);
-        break;
-      case 'custom':
-        if (!req.query.startDate || !req.query.endDate) {
-          return res.status(400).json({ error: 'Start and end dates are required for custom report' });
+    let filter = {};
+    if (type === 'custom' && startDate && endDate) {
+        filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    } else {
+        let date = new Date();
+        switch (type) {
+            case 'daily':
+                filter.createdAt = { $gte: new Date(date.setHours(0, 0, 0, 0)), $lt: new Date(date.setHours(23, 59, 59, 999)) };
+                break;
+            case 'weekly':
+                let weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
+                filter.createdAt = { $gte: new Date(weekStart.setHours(0, 0, 0, 0)), $lt: new Date() };
+                break;
+            case 'yearly':
+                filter.createdAt = { $gte: new Date(date.getFullYear(), 0, 1), $lt: new Date(date.getFullYear() + 1, 0, 1) };
+                break;
         }
-        startDate = new Date(req.query.startDate);
-        endDate = new Date(req.query.endDate);
-        endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
-        break;
-      default:
-        return res.status(400).json({ error: 'Invalid report type' });
     }
 
-    // Find orders within the date range
-    const orders = await Order.aggregate([
-      {
-        $match: {
-          createdAt: {
-            $gte: startDate,
-            $lte: endDate
-          }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: '%Y-%m-%d',
-              date: '$createdAt'
-            }
-          },
-          totalSales: { $sum: '$totalCost' },
-          ordersCount: { $sum: 1 }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          date: '$_id',
-          totalSales: 1,
-          ordersCount: 1
-        }
-      }
-    ]);
+    const orders = await Order.find(filter);
+    const reportData = formatReportData(orders);
 
-    res.json(orders);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.json(reportData);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching sales report', error });
   }
+};
+
+
+const downloadReport =  async (req, res) => {
+  try {
+    const { format, type, startDate, endDate } = req.query;
+
+    let filter = {};
+    if (type === 'custom' && startDate && endDate) {
+        filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    } else {
+        let date = new Date();
+        switch (type) {
+            case 'daily':
+                filter.createdAt = { $gte: new Date(date.setHours(0, 0, 0, 0)), $lt: new Date(date.setHours(23, 59, 59, 999)) };
+                break;
+            case 'weekly':
+                let weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
+                filter.createdAt = { $gte: new Date(weekStart.setHours(0, 0, 0, 0)), $lt: new Date() };
+                break;
+            case 'yearly':
+                filter.createdAt = { $gte: new Date(date.getFullYear(), 0, 1), $lt: new Date(date.getFullYear() + 1, 0, 1) };
+                break;
+        }
+    }
+
+    const orders = await Order.find(filter);
+    const reportData = formatReportData(orders);
+
+    if (format === 'pdf') {
+        const doc = new PDFDocument();
+        res.setHeader('Content-disposition', 'attachment; filename=sales_report.pdf');
+        res.setHeader('Content-type', 'application/pdf');
+        doc.pipe(res);
+
+        doc.text('Sales Report', { align: 'center' });
+        doc.moveDown();
+        reportData.forEach(report => {
+            doc.text(`Date: ${report.date}`);
+            doc.text(`Total Sales: ${report.totalSales}`);
+            doc.text(`Orders Count: ${report.ordersCount}`);
+            doc.text(`Total Discounts: ${report.totalDiscounts}`);
+            doc.text(`Coupon Deductions: ${report.couponDeductions}`);
+            doc.moveDown();
+        });
+
+        doc.end();
+    } else if (format === 'excel') {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sales Report');
+
+        worksheet.columns = [
+            { header: 'Date', key: 'date' },
+            { header: 'Total Sales', key: 'totalSales' },
+            { header: 'Orders Count', key: 'ordersCount' },
+            { header: 'Total Discounts', key: 'totalDiscounts' },
+            { header: 'Coupon Deductions', key: 'couponDeductions' },
+        ];
+
+        worksheet.addRows(reportData);
+
+        res.setHeader('Content-disposition', 'attachment; filename=sales_report.xlsx');
+        res.setHeader('Content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        await workbook.xlsx.write(res);
+        res.end();
+    } else {
+        res.status(400).json({ message: 'Invalid format' });
+    }
+} catch (error) {
+    res.status(500).json({ message: 'Error downloading sales report', error });
+}
 };
 
 module.exports = {
@@ -228,5 +265,6 @@ module.exports = {
   updateOrderStatus,
   cancelOrder,
   salesReport,
-  orderDetails
+  orderDetails,
+  downloadReport
 };

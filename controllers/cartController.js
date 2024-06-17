@@ -69,13 +69,40 @@ const addToCart = async (req, res) => {
       { $pull: { items: { productId } } }
     );
 
-    res.json({ message: 'Product added to cart successfully', discountPercentage });
+    res.json({ success: true, message: 'Product added to cart successfully', discountPercentage });
   } catch (error) {
     console.error('Error adding product to cart:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+const moveToCart = async (req, res) => {
+  const { productId, quantity = 1 } = req.body;
+  const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
+  const userId = user._id; 
+
+  try {
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      cart = new Cart({ userId, items: [] });
+    }
+
+    const itemIndex = cart.items.findIndex((item) => item.productId.equals(productId));
+
+    if (itemIndex !== -1) {
+      cart.items[itemIndex].quantity += quantity;
+    } else {
+      cart.items.push({ productId, quantity });
+    }
+
+    await cart.save();
+
+   res.redirect("/wishlist");
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    res.status(500).json({ success: false, error: 'An error occurred while adding the product to the cart.' });
+  }
+};
 
 const cartView = async (req,res) => {
   try {
@@ -209,17 +236,15 @@ const placeOrder =  async (req, res) => {
       var options = {
         amount: totalCost * 100, 
         currency: 'INR',
-        receipt: 'order_receipt_xyz' // Replace with a unique order receipt (e.g., order ID)
+        receipt: 'order_receipt_xyz' 
       }
-      // Create an order
+
       razorpay.orders.create(options, (err, order) => {
         if (err) {
-          // Handle error
           console.error('Error creating Razorpay order:', err);
           return res.status(500).json({ error: 'Error creating Razorpay order' });
         }
 
-        // Send the order details to the client
         res.json({ online: true, order });
       });
     }
@@ -229,7 +254,6 @@ const placeOrder =  async (req, res) => {
   }
 };
 
-// Validate order items and check stock availability
 const validateOrderItems = async (orderItems) => {
   const validatedOrderItems = [];
 
@@ -248,7 +272,6 @@ const validateOrderItems = async (orderItems) => {
   return validatedOrderItems;
 };
 
-// Update stock for ordered products
 const updateProductStock = async (orderedItems) => {
   for (const { productId, quantity } of orderedItems) {
     await Product.findByIdAndUpdate(productId, { $inc: { stock: -quantity } });
@@ -347,39 +370,60 @@ const cancelOrder = async (req, res) => {
     const orderId = req.params.orderId;
     const itemId = req.params.itemId;
 
-    console.log("orderid:" + orderId)
+    console.log("orderid:" + orderId);
 
-    const order = await Order.findById(orderId);
-    const coupon = await Coupon.findOne({code:order.couponCode});
-    
+    const order = await Order.findById({ _id: orderId })
+      .populate("userId", "name email photo isVerified isAdmin isBlocked")
+      .populate({ path: "items.productId", model: "products" })
+      .populate('deliveryAddress');
+
     if (!order) {
       return res.status(404).send('Order not found');
     }
 
-    const itemIndex = order.items.findIndex(item => item._id.toString() === itemId);
+    const itemIndex = order.items.findIndex(item => item.productId._id.toString() === itemId);
 
     if (itemIndex === -1) {
       return res.status(404).send('Item not found in the order');
     }
 
     const item = order.items[itemIndex];
-    const product = await Product.findById(item.productId);
+    const product = await Product.findById(item.productId._id);
 
     if (product) {
       product.stock += item.quantity;
       await product.save();
     }
 
-    if(coupon){
+    const coupon = await Coupon.findOne({ code: order.couponCode });
+
+    let itemPrice = item.productId.price * item.quantity;
+    let discountPrice = 0;
+
+    if (coupon) {
       const couponDiscount = coupon.discount / 100;
-      const discountPrice = item.price * item.quantity * couponDiscount;
-      order.totalCost += discountPrice;
-      order.totalCost -= item.price * item.quantity;
-    }else{
-      order.totalCost -= item.price * item.quantity;
+      discountPrice = itemPrice * couponDiscount;
+      itemPrice -= discountPrice;
     }
-    
-    item.status =  'Cancelled';
+
+    const salesTaxRate = order.priceDetails.salesTax / (order.priceDetails.subTotal + order.priceDetails.discountAmount);
+    const itemSalesTax = itemPrice * salesTaxRate;
+
+    order.totalCost -= (itemPrice + itemSalesTax);
+
+    order.priceDetails.subTotal -= item.productId.price * item.quantity;
+    order.priceDetails.discountAmount -= discountPrice;
+    order.priceDetails.salesTax -= itemSalesTax;
+
+    item.status = 'Cancelled';
+
+    const allItemsCancelled = order.items.every(item => item.status === 'Cancelled');
+    if (allItemsCancelled) {
+      order.totalCost = 0;
+      order.priceDetails.subTotal = 0;
+      order.priceDetails.discountAmount = 0;
+      order.priceDetails.salesTax = 0;
+    }
 
     await order.save();
 
@@ -389,6 +433,8 @@ const cancelOrder = async (req, res) => {
     res.status(500).send('Error cancelling order item');
   }
 };
+
+
 
 
   const updateQuantity = async (req, res) => {
@@ -488,6 +534,12 @@ const moveToWishList = async (req, res) => {
     if (!wishlist) {
       wishlist = new Wishlist({ userId, items: [] });
     }
+    const isProductInWishlist = wishlist.products.some(product => product.equals(productId));
+
+    if (isProductInWishlist) {
+      return res.status(200).json({success: true, message: 'Product is already in the wishlist' });
+    }
+
     wishlist.products.push( productId );
     await wishlist.save();
 
@@ -500,23 +552,7 @@ const moveToWishList = async (req, res) => {
 };
 
 
-const removeFromWishList = async (req, res) => {
-  const { userId, productId } = req.body;
-  
-  try {
-      const wishlist = await Wishlist.findOne({ userId: userId });
-      if (wishlist) {
-          wishlist.products = wishlist.products.filter(item => item.toString() !== productId);
-          await wishlist.save();
-          res.json({ success: true });
-      } else {
-          res.json({ success: false, message: 'Wishlist not found' });
-      }
-  } catch (error) {
-      console.error(error);
-      res.json({ success: false, message: 'Error removing item from wishlist' });
-  }
-};
+
 
 const wishListView = async(req,res) => {
   try {
@@ -553,37 +589,54 @@ const removeFromCart =  async (req, res) => {
 
 const orderDetails = async (req,res) => {
   try {
+    const orderId = req.params.orderId;
     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
     const categoryList = await Category.find({isBlocked:false});
     if (!user) {
       return res.status(404).send('User not found');
     }
-    const userId = user._id;
+    
+    const order = await Order.findById({ _id: orderId })
+      .populate("userId", "name email photo isVerified isAdmin isBlocked")
+      .populate({ path: "items.productId", model: "products" })
+      .populate('deliveryAddress');
 
 
-    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
-
-      function formatDate(date) {
-        const d = date.getDate().toString().padStart(2, '0');
-        const m = (date.getMonth() + 1).toString().padStart(2, '0');
-        const y = date.getFullYear();
-        return `${d}/${m}/${y}`;
-      }
-      
-      const formattedDate = orders.map(order => ({
-        order,
-        orderDate: formatDate(order.createdAt)
-      }));
-
-      console.log(orders)
-    res.render('orders/orderDetails', { orders, user, categoryList, formattedDate});
+      console.log(order)
+    res.render('orders/orderDetails', { order, user, categoryList});
   } catch (error) {
     console.log(error);
     res.status(500).send('Error retrieving order history');
   }
 }
 
+const removeFromWishList = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
+    const userId = user._id; 
 
+    // Find the wishlist document for the user
+    const wishlist = await Wishlist.findOne({ userId });
+
+    if (!wishlist) {
+      return res.status(404).json({ error: 'Wishlist not found' });
+    }
+
+    // Remove the product from the products array
+    wishlist.products = wishlist.products.filter(
+      (product) => !product.equals(productId)
+    );
+
+    // Save the updated wishlist document
+    await wishlist.save();
+
+    res.redirect("/wishlist");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 module.exports = {
     addToCart,
@@ -600,5 +653,6 @@ module.exports = {
     paymentSuccess,
     orderHistory,
     cancelOrder,
-    orderDetails
+    orderDetails,
+    moveToCart
 }

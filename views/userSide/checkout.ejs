@@ -457,7 +457,7 @@
                     couponMessage.style.color = 'green';
                 } else {
                     couponDiscount = 0;
-                    couponMessage.textContent = 'Invalid coupon code.';
+                    couponMessage.textContent = `${data.error}`;
                     couponMessage.style.color = 'red';
                 }
                 calculateTotals();
