@@ -326,23 +326,40 @@ const userSignup = async (req, res) => {
   };
    
 
-//  const shoppingHomeView = async (req, res) => {
+
+// const shoppingHomeView = async (req, res) => {
 //   try {
-//       const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
-//       const categoryList = await Category.find({isBlocked:false});
-//       let wishlistProducts = [];
-//       if (user) {
-//           const wishlist = await Wishlist.findOne({ userId: user._id }).populate('products');
-//           console.log(wishlist)
-//           wishlistProducts = wishlist ? wishlist.products : [];
-//       }
+//     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
+//     const categoryList = await Category.find({ isBlocked: false });
+//     let wishlistProducts = [];
+//     if (user) {
+//       const wishlist = await Wishlist.findOne({ userId: user._id }).populate('products');
+//       console.log(wishlist);
+//       wishlistProducts = wishlist ? wishlist.products : [];
+//     }
 
-//       const products = await Product.find({ isDeleted: false, photos: { $ne: [] } }).populate('reviews');
+//     const products = await Product.find({ isDeleted: false, photos: { $ne: [] } }).populate('reviews');
 
-//       res.render('userSide/shoppingHome', { products: products,productsToSort: products, wishlistProducts: wishlistProducts,user,categoryList });
+//     // Calculate the average rating for each product
+//     const productsWithRating = products.map(product => {
+//       const reviews = product.reviews;
+//       const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+//       const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+//       return {
+//         ...product.toObject(),
+//         averageRating: averageRating.toFixed(1)
+//       };
+//     });
+//     res.render('userSide/shoppingHome', {
+//       products: productsWithRating,
+//       productsToSort: productsWithRating,
+//       wishlistProducts: wishlistProducts,
+//       user,
+//       categoryList
+//     });
 //   } catch (error) {
-//       console.error(error);
-//       res.status(500).send("Internal Server Error");
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
 //   }
 // };
 
@@ -353,11 +370,20 @@ const shoppingHomeView = async (req, res) => {
     let wishlistProducts = [];
     if (user) {
       const wishlist = await Wishlist.findOne({ userId: user._id }).populate('products');
-      console.log(wishlist);
       wishlistProducts = wishlist ? wishlist.products : [];
     }
 
-    const products = await Product.find({ isDeleted: false, photos: { $ne: [] } }).populate('reviews');
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const productsPerPage = 8; // Number of products per page
+    const skip = (page - 1) * productsPerPage;
+
+    const productCount = await Product.countDocuments({ isDeleted: false, photos: { $ne: [] } });
+    const totalPages = Math.ceil(productCount / productsPerPage);
+
+    const products = await Product.find({ isDeleted: false, photos: { $ne: [] } })
+      .populate('reviews')
+      .skip(skip)
+      .limit(productsPerPage);
 
     // Calculate the average rating for each product
     const productsWithRating = products.map(product => {
@@ -369,12 +395,17 @@ const shoppingHomeView = async (req, res) => {
         averageRating: averageRating.toFixed(1)
       };
     });
+
     res.render('userSide/shoppingHome', {
       products: productsWithRating,
       productsToSort: productsWithRating,
       wishlistProducts: wishlistProducts,
       user,
-      categoryList
+      categoryList,
+      currentPage: page,
+      totalPages: totalPages,
+      productsPerPage: productsPerPage,
+      totalProducts: productCount
     });
   } catch (error) {
     console.error(error);

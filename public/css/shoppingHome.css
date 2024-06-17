@@ -190,7 +190,11 @@ header {
  color: black;
 }
 
-
+.pagination-controls{
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+}
 /* Product Section */
 .section {
   padding: 2rem 1rem;

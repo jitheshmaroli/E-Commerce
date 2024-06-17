@@ -23,7 +23,7 @@ router.get("/orders/:orderId",authentication.isAdminAuthenticated,adminControlle
 router.post("/updateOrderStatus/:orderId/:productId", adminController.updateOrderStatus);
 router.post("/cancelOrder/:orderId/:productId", adminController.cancelOrder);
 router.get("/couponlist", authentication.isAdminAuthenticated, couponController.couponListView);
-router.delete("/removecoupon/:couponId", couponController.deleteCoupon);
+router.get("/removecoupon/:couponId", couponController.deleteCoupon);
 router.get("/addcoupon", authentication.isAdminAuthenticated, couponController.addCouponView);
 router.post("/addcoupon", couponController.addCoupon);
 router.post("/editCoupon/:couponId", couponController.updateCoupon);
@@ -37,6 +37,7 @@ router.post("/categoryList/delete/:id", categoryController.deleteCategory);
 router.get("/logout", adminController.logoutViewAdmin);
 
 router.get('/sales-report',adminController.salesReport);
+router.get('/sales-report/download',adminController.downloadReport);
 //user routes
 router.get("/usersList", authentication.isAdminAuthenticated, adminController.userListView);
 router.post("/usersList/:userEmail", adminController.blockUser);
