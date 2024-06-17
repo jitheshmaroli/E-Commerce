@@ -69,7 +69,7 @@ router.post("/forgot-password-verify-otp",userController.resetPasswordVerifyOtp)
 router.post("/reset-password", userController.resetPassword);
 router.get("/logout", userController.logoutViewUser);
 
-router.get("/search/:productName",authentication.isUserAuthenticated,productController.productSearchView);
+router.get("/search",authentication.isUserAuthenticated,productController.productSearchView);
 router.get("/:category",authentication.isUserAuthenticated,productController.loadCategoryItems);
 router.get("/product-details/:productId",authentication.isUserAuthenticated,productController.productDetailsView);
 router.get("/coupon-discount/:couponCode",couponController.couponDiscount);
