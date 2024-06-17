@@ -230,27 +230,72 @@ const allProducts = async (req, res) => {
   }
 };
 
+
 const productSearchView = async (req, res) => {
+  const searchQuery = req.query.query || "";
+  const selectedCategory = req.query.category || "all";
+  console.log(searchQuery);
+
   try {
-    const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
+    const user = await User.findOne({
+      email: req.session.userId || req.session.passport.user.userId,
+    });
     const categoryList = await Category.find({ isBlocked: false });
     let wishlistProducts = [];
     if (user) {
-      const wishlist = await Wishlist.findOne({ userId: user._id }).populate('products');
-      console.log(wishlist);
+      const wishlist = await Wishlist.findOne({ userId: user._id }).populate("products");
       wishlistProducts = wishlist ? wishlist.products : [];
     }
-    
-    let productName = req.params.productName;
-    let productData = [];
-    productData = await Product.find({
-      $or: [
-        { name: productName }, // Find product by name (if provided)
-        { isDeleted: false, photos: { $ne: [] } } // Find all non-deleted products with photos
-      ]
-    }).populate('reviews');
 
-    const productsWithRating = productData.map(product => {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const productsPerPage = 8;
+    const skip = (page - 1) * productsPerPage;
+
+    let productCount;
+    let products;
+    if (selectedCategory === "all") {
+      productCount = await Product.countDocuments({
+        name: { $regex: searchQuery, $options: "i" },
+        isDeleted: false,
+        photos: { $ne: [] }
+      });
+
+      products = await Product.find({
+        name: { $regex: searchQuery, $options: "i" },
+        isDeleted: false,
+        photos: { $ne: [] }
+      })
+      .populate("reviews")
+      .skip(skip)
+      .limit(productsPerPage);
+    } else {
+      const category = await Category.findOne({ categoryName: selectedCategory, isBlocked: false });
+      if (!category) {
+        console.error("Category not found");
+        return res.status(404).send("Category not found");
+      }
+
+      productCount = await Product.countDocuments({
+        name: { $regex: searchQuery, $options: "i" },
+        category: category._id,
+        isDeleted: false,
+        photos: { $ne: [] }
+      });
+
+      products = await Product.find({
+        name: { $regex: searchQuery, $options: "i" },
+        category: category._id,
+        isDeleted: false,
+        photos: { $ne: [] }
+      })
+      .populate("reviews")
+      .skip(skip)
+      .limit(productsPerPage);
+    }
+
+    const totalPages = Math.ceil(productCount / productsPerPage);
+
+    const productsWithRating = products.map(product => {
       const reviews = product.reviews;
       const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
       const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
@@ -259,16 +304,23 @@ const productSearchView = async (req, res) => {
         averageRating: averageRating.toFixed(1)
       };
     });
-    console.log("category" + categoryList)
-    res.render("userSide/productSearch", { 
+
+    res.render("userSide/shoppingHome", {
       products: productsWithRating,
       productsToSort: productsWithRating,
       wishlistProducts: wishlistProducts,
       user,
-      categoryList });
+      categoryList,
+      currentPage: page,
+      totalPages: totalPages,
+      productsPerPage: productsPerPage,
+      totalProducts: productCount,
+      searchQuery: searchQuery,
+      selectedCategory: selectedCategory
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("internal server error");
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
