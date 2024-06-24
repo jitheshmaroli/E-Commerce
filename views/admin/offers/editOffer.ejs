@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Offer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/addCategory.css">
+    <style>
+        .text-danger {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="/assets/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            SportZilon
+          </a>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  ADMIN
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <main class="main">
+        <aside class="sidebar">
+          <div class="">
+            <div class="list-group sidebar-list" id="myListGroup">
+              <a href="/admin">
+                <button type="button" class="list-group-item list-group-item-action">HOME </button>
+              </a>
+              <a href="/admin/allproducts">
+                <button type="button" class="list-group-item list-group-item-action">ALL PRODUCTS</button>
+              </a>
+              <a href="/admin/ordersList">
+                <button type="button" class="list-group-item list-group-item-action">ORDERS LIST</button>
+              </a>
+              <a href="/admin/usersList">
+                <button type="button" class="list-group-item list-group-item-action">USERS LIST</button>
+              </a>
+              <a href="/admin/categoryList">
+                <button type="button" class="list-group-item list-group-item-action">CATEGORY LIST</button>
+              </a>
+              <a href="/admin/couponList">
+                <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
+              </a>
+              <a href="/admin/offers">
+                <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+              </a>
+            </div>
+          </div>
+        </aside>
+        <section class="content">
+            <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/admin/offers">OFFERS LIST</a></li>
+              <li class="breadcrumb-item active" aria-current="page">EDIT OFFER</li>
+            </ol>
+          </nav>
+    <div class="container mt-5">
+        <h1 class="mb-4">Edit Offer</h1>
+        <form id="offerForm" action="/admin/offers/edit/<%= offer._id %>" method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%= offer.name %>" required>
+                <small class="text-danger" id="nameError"></small>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" required><%= offer.description %></textarea>
+                <small class="text-danger" id="descriptionError"></small>
+            </div>
+            <div class="form-group">
+                <label for="discountType">Discount Type</label>
+                <select class="form-control" id="discountType" name="discountType" required>
+                    <option value="">Select Discount Type</option>
+                    <option value="percentage" <%= offer.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                    <option value="amount" <%= offer.discountType === 'amount' ? 'selected' : '' %>>Amount</option>
+                </select>
+                <small class="text-danger" id="discountTypeError"></small>
+            </div>
+            <div class="form-group">
+                <label for="discountValue">Discount Value</label>
+                <input type="number" class="form-control" id="discountValue" name="discountValue" value="<%= offer.discountValue %>" required>
+                <small class="text-danger" id="discountValueError"></small>
+            </div>
+            <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= offer.startDate.toISOString().split('T')[0] %>" required>
+                <small class="text-danger" id="startDateError"></small>
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" value="<%= offer.endDate.toISOString().split('T')[0] %>" required>
+                <small class="text-danger" id="endDateError"></small>
+            </div>
+            <div class="form-group">
+                <label for="offerType">Offer Type</label>
+                <select class="form-control" id="offerType" name="offerType" required>
+                    <option value="">Select Offer Type</option>
+                    <option value="product" <%= offer.offerType === 'product' ? 'selected' : '' %>>Product</option>
+                    <option value="category" <%= offer.offerType === 'category' ? 'selected' : '' %>>Category</option>
+                    <option value="referral" <%= offer.offerType === 'referral' ? 'selected' : '' %>>Referral</option>
+                </select>
+                <small class="text-danger" id="offerTypeError"></small>
+            </div>
+            <div class="form-group">
+                <label for="product">Product</label>
+                <select class="form-control" id="product" name="product">
+                    <option value="">Select Product</option>
+                    <option value="all" <%= offer.applyToAllProducts ? 'selected' : '' %>>All Products</option>
+                    <% products.forEach(product => { %>
+                        <option value="<%= product._id %>" <%= offer.product && offer.product.toString() === product._id.toString() ? 'selected' : '' %>><%= product.name %></option>
+                    <% }); %>
+                </select>
+                <small class="text-danger" id="productError"></small>
+            </div>      
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select class="form-control" id="category" name="category">
+                    <option value="">Select Category</option>
+                    <option value="all" <%= offer.applyToAllCategories ? 'selected' : '' %>>All Categories</option>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category._id %>" <%= offer.category && offer.category.toString() === category._id.toString() ? 'selected' : '' %>><%= category.categoryName %></option>
+                    <% }); %>
+                </select>
+                <small class="text-danger" id="categoryError"></small>
+            </div>      
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="isActive" name="isActive" <%= offer.isActive ? 'checked' : '' %>>
+                <label class="form-check-label" for="isActive">Active</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Offer</button>
+        </form>
+    </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="container">
+    <p class="copyright">© 2024 ShoesZone.</p>
+  </div>
+</footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const productSelect = document.getElementById('product');
+        const categorySelect = document.getElementById('category');
+
+        document.getElementById('offerType').addEventListener('change', function () {
+            const offerType = this.value;
+            if (offerType === 'product') {
+                productSelect.disabled = false;
+                categorySelect.disabled = true;
+            } else if (offerType === 'category') {
+                productSelect.disabled = true;
+                categorySelect.disabled = false;
+            } else {
+                productSelect.disabled = true;
+                categorySelect.disabled = true;
+            }
+        });
+
+        document.getElementById('discountType').addEventListener('change', function () {
+            const discountType = this.value;
+            const discountValueInput = document.getElementById('discountValue');
+            if (discountType === 'percentage') {
+                discountValueInput.setAttribute('min', '1');
+                discountValueInput.setAttribute('max', '100');
+                discountValueInput.setAttribute('step', '1');
+            } else if (discountType === 'amount') {
+                discountValueInput.removeAttribute('min');
+                discountValueInput.removeAttribute('max');
+                discountValueInput.setAttribute('step', '0.01');
+            }
+        });
+
+        // Trigger change event to set initial state
+        document.getElementById('offerType').dispatchEvent(new Event('change'));
+        document.getElementById('discountType').dispatchEvent(new Event('change'));
+
+        document.getElementById('offerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            // Clear previous error messages
+            document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+            
+            let isValid = true;
+
+            // Name validation
+            const name = document.getElementById('name');
+            if (name.value.trim().length < 3 || name.value.trim().length > 50) {
+                document.getElementById('nameError').textContent = 'Name must be between 3 and 50 characters';
+                isValid = false;
+            }
+
+            // Description validation
+            const description = document.getElementById('description');
+            if (description.value.trim().length < 10 || description.value.trim().length > 200) {
+                document.getElementById('descriptionError').textContent = 'Description must be between 10 and 200 characters';
+                isValid = false;
+            }
+
+            // Discount type validation
+            const discountType = document.getElementById('discountType');
+            if (discountType.value === '') {
+                document.getElementById('discountTypeError').textContent = 'Please select a discount type';
+                isValid = false;
+            }
+
+            // Discount value validation
+            const discountValue = document.getElementById('discountValue');
+            if (discountType.value === 'percentage') {
+                if (discountValue.value < 1 || discountValue.value > 100) {
+                    document.getElementById('discountValueError').textContent = 'Percentage discount must be between 1 and 100';
+                    isValid = false;
+                }
+            } else if (discountType.value === 'amount') {
+                if (discountValue.value <= 0) {
+                    document.getElementById('discountValueError').textContent = 'Amount discount must be greater than 0';
+                    isValid = false;
+                }
+            }
+
+            // Date validation
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            const start = new Date(startDate.value);
+            const end = new Date(endDate.value);
+            if (end <= start) {
+                document.getElementById('endDateError').textContent = 'End date must be after start date';
+                isValid = false;
+            }
+
+            // Offer type validation
+            const offerType = document.getElementById('offerType');
+            const product = document.getElementById('product');
+            const category = document.getElementById('category');
+            
+            if (offerType.value === '') {
+                document.getElementById('offerTypeError').textContent = 'Please select an offer type';
+                isValid = false;
+            } else if (offerType.value === 'product' && product.value === '') {
+                document.getElementById('productError').textContent = 'Please select a product for product offer';
+                isValid = false;
+            } else if (offerType.value === 'category' && category.value === '') {
+                document.getElementById('categoryError').textContent = 'Please select a category for category offer';
+                isValid = false;
+            }
+
+            // If all validations pass, submit the form
+            if (isValid) {
+                this.submit();
+            }
+        });
+    </script>
+</body>
+</html>

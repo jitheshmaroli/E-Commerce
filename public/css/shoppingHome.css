@@ -209,6 +209,9 @@ header {
 }
 
  /* Product Card */
+
+
+
  .product-card {
   background-color: #fff;
   width:105%;
@@ -265,7 +268,22 @@ header {
   max-width: 200px; /* Adjust this value based on your layout */
 }
 
+.price {
+  
+  color: #000000;
+  margin-right: 10px;
+}
 
+.current-price {
+  font-weight: bold;
+  color: #e53935;
+}
+
+.offer-icon {
+  font-size: smaller;
+  margin-left: 5px;  
+  color: rgb(55, 55, 56); 
+}
 
 .rating {
   color: black;
@@ -310,6 +328,30 @@ header {
   text-align: center;
   display: none;
 }
+
+.product-card.out-of-stock {
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.product-card.out-of-stock .product-image a {
+  pointer-events: auto;
+}
+
+.product-card .out-of-stock-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 1.2em;
+  text-align: center;
+}
+
 
 /* Responsive Styles */
 @media (max-width: 767px) {

@@ -99,7 +99,14 @@
                         </div>
                         <div class="item-info">
                             <a href="/product-details/<%= item.productId %>" data-product="<%=item.productId%>"><h3 class="product-name"><%= item.name.toUpperCase() %></h3></a>
-                            <p class="product-price">₹<%= item.price.toFixed(2) %></p>
+                            <p class="product-price"><% if (item.offer) { %>
+                                <span class="price" style="text-decoration: line-through;">₹<%= item.price.toFixed(2) %></span>
+                                <span class="current-price">₹<%= item.currentPrice.toFixed(2) %></span>
+                                <i class="fas fa-info-circle offer-icon" data-bs-toggle="modal" data-bs-target="#offerModal<%= item.productId %>"></i>
+                              <% } else { %>
+                                ₹<%= item.currentPrice.toFixed(2) %>
+                              <% } %>
+                            </p>
                             <div class="quantity-control">
                                 <button class="quantity-btn">-</button>
                                 <input type="number" value="<%= item.quantity %>" min="1" data-stock="<%= item.stock %>">
@@ -110,7 +117,23 @@
                     <div class="item-action">
                         <a href="#" class="move-to-wishlist"><i class="fa fa-heart"></i></a>
                     </div>
-                </div>                
+                </div> 
+                <% if (item.offer) { %>
+                    <div class="modal fade" id="offerModal<%= item.productId %>" tabindex="-1" aria-labelledby="offerModalLabel<%= item.productId %>" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="offerModalLabel<%= item.productId %>">Offer Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <%= item.offer.name %>: 
+                            <%= item.offer.discountType === 'percentage' ? item.offer.discountValue + '% off' : '₹' + item.offer.discountValue + ' off' %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% } %>               
             <% }) %>
         </div>
     </section>
@@ -304,7 +327,13 @@
         const checkbox = item.querySelector('.cart-item-checkbox-input');
         if (checkbox.checked) {
             const qty = parseInt(item.querySelector('.quantity-control input').value);
-            const price = parseFloat(item.querySelector('.product-price').textContent.replace('₹', ''));
+            let price;
+            const currentPriceElement = item.querySelector('.current-price');
+            if (currentPriceElement) {
+                price = parseFloat(currentPriceElement.textContent.replace('₹', ''));
+            } else {
+                price = parseFloat(item.querySelector('.product-price').textContent.replace('₹', ''));
+            }
 
             totalItems += qty;
             totalCost += qty * price;
@@ -323,11 +352,13 @@ document.querySelectorAll('.cart-item-checkbox-input').forEach(checkbox => {
 const checkoutBtn = document.getElementById('checkout-btn');
 checkoutBtn.addEventListener('click', () => {
     const selectedItems = Array.from(document.querySelectorAll('.cart-item-checkbox-input:checked'))
-        .map(checkbox => ({
-            productId: checkbox.getAttribute('data-product'),
-            quantity: parseInt(checkbox.getAttribute('data-quantity'))
-        }));
-
+        .map(checkbox => {
+            const item = checkbox.closest('.cart-item');
+            return {
+                productId: checkbox.getAttribute('data-product'),
+                quantity: parseInt(item.querySelector('.quantity-control input').value)
+            };
+        });
     if (selectedItems.length === 0) {
         Swal.fire({
             icon: 'warning',

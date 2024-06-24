@@ -1,6 +1,9 @@
 const express = require("express");
 const nocache = require('nocache');
 const app = express();
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
+
 const path = require("path");
 const bodyparser = require("body-parser");
 const session = require("express-session");

@@ -150,7 +150,35 @@
               <% } %>
             </div>
             <span>(<%= product.averageRating %> out of 5)</span>
-            <p class="price">Price: ₹<span id="original-price"><%= product.price %></span></p>
+            <% if (product.bestOffer) { %>
+              <p id="product-price" data-product-price="<%= product.currentPrice %>" data-original-price="<%= product.price %>">
+                Price: <span style="text-decoration: line-through;">₹<%= product.price.toFixed(2) %></span>
+                ₹<%= product.currentPrice.toFixed(2) %>
+                <i class="fas fa-info-circle offer-icon" data-bs-toggle="modal" data-bs-target="#offerModal<%= product._id %>"></i>
+              </p>
+            <% } else { %>
+              <p id="product-price" data-product-price="<%= product.price %>">
+                Price: ₹<%= product.price.toFixed(2) %>
+              </p>
+            <% } %>            
+            <!-- Offer Modal -->
+            <% if (product.bestOffer) { %>
+            <div class="modal fade" id="offerModal<%= product._id %>" tabindex="-1" aria-labelledby="offerModalLabel<%= product._id %>" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="offerModalLabel<%= product._id %>">Offer Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Offer Name: <%= product.bestOffer.name %></p>
+                    <p>Discount: <%= product.bestOffer.discountType === 'percentage' ? product.bestOffer.discountValue + '%' : '₹' + product.bestOffer.discountValue %></p>
+                    <p>Valid until: <%= product.bestOffer.endDate.toLocaleDateString() %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
             <% if (product.stock == 0) { %>
                 <div class="text-danger">The product is currently out of stock</div>
                 <div class="quantity-control disabled">
@@ -285,15 +313,20 @@
 </script>
 <script>
 const quantityInput = document.getElementById("quantity-input");
-const originalPriceSpan = document.getElementById('original-price');
+// const originalPriceSpan = document.getElementById('price');
+// console.log(originalPriceSpan)
+const productPriceElement = document.getElementById("product-price");
+const currentPrice = productPriceElement.dataset.productPrice;
+const originalPrice = productPriceElement.dataset.originalPrice;
+console.log(originalPrice)
 const finalPriceSpan = document.getElementById('final-price');
 const addToCartBtn = document.getElementById('add-to-cart-btn');
-const originalPrice = parseFloat(originalPriceSpan.textContent);
+//const originalPrice = parseFloat(originalPriceSpan.textContent);
 const productName = document.getElementById("product-name").textContent;
 
 function updateTotalPrice() {
         const quantity = parseInt(quantityInput.value);
-        const totalPrice = originalPrice * quantity;
+        const totalPrice = currentPrice ? currentPrice * quantity : originalPrice * quantity;
         finalPriceSpan.textContent = totalPrice.toFixed(2); 
     }
 
@@ -381,7 +414,59 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         });
 });
-
+function updateQuantityOnServer(productId, quantity) {
+  fetch('/update-quantity', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ productId, quantity }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(data => {
+          if (data.error === 'Not enough stock available') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: `Only ${data.availableStock} items are available in stock for this product.`,
+              confirmButtonText: 'OK',
+            });
+          } else {
+            throw new Error('Network response was not ok');
+          }
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Cart',
+          text: 'The item has been added to your cart.',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        console.error('Error updating quantity on server:', data.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was an error updating the quantity.',
+          confirmButtonText: 'OK',
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error updating quantity on server:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'There was an error updating the quantity.',
+        confirmButtonText: 'OK',
+      });
+    });
+}
 addToCartBtn.addEventListener('click', () => {
     const quantity = parseInt(quantityInput.value);
     const productId = document.getElementById('product-id').value;
@@ -398,7 +483,8 @@ addToCartBtn.addEventListener('click', () => {
     })
     .then(response => {
       if (!response.ok) {
-        return response.json().then(data => {
+        return response.json()
+        .then(data => {
           if (data.error === 'Not enough stock available') {
             alert(`Only ${data.availableStock} items are available in stock for this product.`);
           } else {
@@ -410,6 +496,7 @@ addToCartBtn.addEventListener('click', () => {
     })
     .then(data => {
       if (data) {
+        updateQuantityOnServer(productId, quantity);
         Swal.fire('Success!', `${quantity} x ${productName} added to cart!`, 'success');
       } else {
          console.error('Error adding product to cart:', data.error);

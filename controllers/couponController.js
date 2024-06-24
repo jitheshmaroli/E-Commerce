@@ -63,21 +63,18 @@ const couponDiscount = async (req, res) => {
   const couponCode = req.params.couponCode;
 
   try {
-    // Find the coupon by its code
     const coupon = await Coupon.findOne({ code: couponCode });
 
     if (!coupon) {
       return res.status(404).json({ error: 'Coupon not found' });
     }
 
-    // Check if the coupon has expired
     const currentDate = new Date();
     if (currentDate > coupon.expiryDate) {
       return res.status(400).json({ error: 'Coupon expired' });
     }
 
-    // If coupon is valid, send discount information
-    res.json({ discount: coupon.discount });
+    res.json({success: true, discount: coupon.discount });
 
   } catch (err) {
     console.error('Error checking coupon:', err);

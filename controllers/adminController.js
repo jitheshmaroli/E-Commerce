@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 const User = require("../models/user");
 const Order = require("../models/order");
-const PDFDocument = require('pdfkit');
+const PDFDocument = require('pdfkit-table');
 const ExcelJS = require('exceljs');
 
 const adminHome = async (req, res) => {
@@ -213,41 +213,83 @@ const downloadReport =  async (req, res) => {
     const reportData = formatReportData(orders);
 
     if (format === 'pdf') {
-        const doc = new PDFDocument();
-        res.setHeader('Content-disposition', 'attachment; filename=sales_report.pdf');
-        res.setHeader('Content-type', 'application/pdf');
-        doc.pipe(res);
+      const doc = new PDFDocument();
+      res.setHeader('Content-disposition', 'attachment; filename=sales_report.pdf');
+      res.setHeader('Content-type', 'application/pdf');
+      doc.pipe(res);
 
-        doc.text('Sales Report', { align: 'center' });
-        doc.moveDown();
-        reportData.forEach(report => {
-            doc.text(`Date: ${report.date}`);
-            doc.text(`Total Sales: ${report.totalSales}`);
-            doc.text(`Orders Count: ${report.ordersCount}`);
-            doc.text(`Total Discounts: ${report.totalDiscounts}`);
-            doc.text(`Coupon Deductions: ${report.couponDeductions}`);
-            doc.moveDown();
-        });
+      doc.fontSize(16).text('Sales Report', { align: 'center' });
+      doc.moveDown();
 
-        doc.end();
+      const table = {
+        headers: ['Index', 'Date', 'Total Sales', 'Orders Count', 'Total Discounts', 'Coupon Deductions'],
+        rows: reportData.map((report, index) => [
+          index + 1,
+          report.date,
+          report.totalSales.toFixed(2),
+          report.ordersCount,
+          report.totalDiscounts.toFixed(2),
+          report.couponDeductions.toFixed(2)
+        ])
+      };
+
+      doc.table(table, {
+        prepareHeader: () => doc.font('Helvetica-Bold'),
+        // eslint-disable-next-line no-unused-vars
+        prepareRow: (row, i) => doc.font('Helvetica').fontSize(10)
+      });
+
+      doc.end();
     } else if (format === 'excel') {
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Sales Report');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Sales Report');
 
-        worksheet.columns = [
-            { header: 'Date', key: 'date' },
-            { header: 'Total Sales', key: 'totalSales' },
-            { header: 'Orders Count', key: 'ordersCount' },
-            { header: 'Total Discounts', key: 'totalDiscounts' },
-            { header: 'Coupon Deductions', key: 'couponDeductions' },
-        ];
+      worksheet.columns = [
+        { header: 'Index', key: 'index', width: 10 },
+        { header: 'Date', key: 'date', width: 15 },
+        { header: 'Total Sales', key: 'totalSales', width: 15 },
+        { header: 'Orders Count', key: 'ordersCount', width: 15 },
+        { header: 'Total Discounts', key: 'totalDiscounts', width: 15 },
+        { header: 'Coupon Deductions', key: 'couponDeductions', width: 20 },
+      ];
 
-        worksheet.addRows(reportData);
+      // Add header row
+      worksheet.getRow(1).font = { bold: true };
 
-        res.setHeader('Content-disposition', 'attachment; filename=sales_report.xlsx');
-        res.setHeader('Content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        await workbook.xlsx.write(res);
-        res.end();
+      // Add data rows with index
+      reportData.forEach((report, index) => {
+        worksheet.addRow({
+          index: index + 1,
+          date: report.date,
+          totalSales: report.totalSales,
+          ordersCount: report.ordersCount,
+          totalDiscounts: report.totalDiscounts,
+          couponDeductions: report.couponDeductions
+        });
+      });
+
+      // Format number columns
+      ['C', 'E', 'F'].forEach(col => {
+        worksheet.getColumn(col).numFmt = '#,##0.00';
+      });
+
+      // Add borders
+      // eslint-disable-next-line no-unused-vars
+      worksheet.eachRow((row, rowNumber) => {
+        row.eachCell((cell) => {
+          cell.border = {
+            top: {style:'thin'},
+            left: {style:'thin'},
+            bottom: {style:'thin'},
+            right: {style:'thin'}
+          };
+        });
+      });
+
+      res.setHeader('Content-disposition', 'attachment; filename=sales_report.xlsx');
+      res.setHeader('Content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      await workbook.xlsx.write(res);
+      res.end();
     } else {
         res.status(400).json({ message: 'Invalid format' });
     }
@@ -255,6 +297,7 @@ const downloadReport =  async (req, res) => {
     res.status(500).json({ message: 'Error downloading sales report', error });
 }
 };
+
 
 module.exports = {
   adminHome,

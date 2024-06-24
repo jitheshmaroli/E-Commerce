@@ -100,7 +100,7 @@
               <div id="wishlistData" data-wishlist-products="<%= JSON.stringify(wishlistProducts) %>" hidden></div>
               <% products.forEach(product => { %>
                     <div class="col-lg-3 col-md-6 col-sm-12">
-                        <div class="product-card" data-product="<%= product._id %>">
+                        <div class="product-card <%= product.stock === 0 ? 'out-of-stock' : '' %>" data-product="<%= product._id %>">
                             <div class="product-image">
                               <a href="/product-details/<%= product._id %>">
                                 <img src="/uploads/<%= product.photos[0].filename %>" alt="Product Image">
@@ -115,6 +115,9 @@
                                     <% } %>
                                 </a>
                                 </div>
+                                <% if (product.stock === 0) { %>
+                                  <div class="out-of-stock-message">Out of Stock</div>
+                                <% } %>
                             </div>
                             <div class="product-details">
                                 <h3 class="product-name"><%= product.name %></h3>
@@ -127,11 +130,39 @@
                                     <% } %>
                                   <% } %>
                                 </div>
-                                <div class="product-price">₹<%= product.price %></div>
-                                <div class="product-actions">
+                                <div class="product-price">
+                                  <% if (product.offer && product.price !== product.currentPrice) { %>
+                                    <p class="price">
+                                      <span class="price" style="text-decoration: line-through;">₹<%= product.price.toFixed(2) %></span>
+                                      <span class="current-price">₹<%= product.currentPrice.toFixed(2) %></span>
+                                      <i class="fas fa-info-circle offer-icon" data-bs-toggle="modal" data-bs-target="#offerModal"></i>
+                                    </p>
+                                     <!-- Modal -->
+                                <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="offerModalLabel">Offer Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        <p><%= product.offer.name %></p>
+                                        <p><%= product.offer.description %></p>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                  <% } else { %>
+                                    <p class="price">₹<%= product.price.toFixed(2) %></p>
+                                  <% } %>
+                                </div>
+                                  <div class="product-actions">
                                     <a href="#" class="btn btn-add-to-cart add-to-cart" data-product-id="<%= product._id %>">Add to Cart</a>
                                     <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now">Buy Now</a>
-                                </div>
+                                  </div>
                             </div>
                         </div>
                     </div>
@@ -216,6 +247,11 @@
       addToCartButtons.forEach(button => {
         button.addEventListener('click', (event) => {
           event.preventDefault();
+          const item = event.target.closest('.product-card');
+          if (item.classList.contains('out-of-stock')) {
+            Swal.fire('Out of Stock', 'This product is currently out of stock.', 'warning');
+            return;
+          }
           const quantity = 1;
           const productId = button.dataset.productId;
           const productName = button.closest('.product-card').querySelector('.product-name').textContent;
