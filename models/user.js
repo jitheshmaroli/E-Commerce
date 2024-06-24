@@ -31,7 +31,15 @@ const newUser = new mongoose.Schema({
     isBlocked:{
         type:Boolean,
         default:false
-    }
+    },
+    wallet: {
+        type: Number,
+        default: 1000  
+    },
+    walletTransactions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Wallet'
+    }]
 },{timestamps:true});
 
 const User = mongoose.model("User",newUser);

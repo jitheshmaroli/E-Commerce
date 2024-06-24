@@ -1,4 +1,5 @@
 const Category = require("../models/category");
+const Product = require("../models/product");
 
 const categoryListView = async (req, res) => {
   try {
@@ -87,16 +88,18 @@ const deleteCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
 
-    const categoryData = await Category.findById(categoryId);
     await Category.findByIdAndUpdate(
       { _id: categoryId },
-      { $set: { isBlocked: !categoryData.isBlocked } },
+      { $set: { isBlocked: true } },
       { new: true }
     );
 
-    if (!categoryData) {
-      return res.status(404).json({ error: "category not found" });
-    }
+
+    await Product.updateMany(
+      { category: categoryId },
+      { $set: { isDeleted:true } },
+      { new: true }
+    );
 
     res.redirect("/admin/categoryList");
   } catch (err) {

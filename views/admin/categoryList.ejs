@@ -100,6 +100,9 @@
                 COUPON LIST
               </button>
             </a>
+            <a href="/admin/offers">
+              <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+            </a>
           </div>
         </div>
       </aside>
@@ -159,7 +162,7 @@
                     >EDIT</a
                   >
                   <form
-                    action="/admin/categoryList/delete/<%= category._id %>"
+                    action="/admin/categoryList/delete/<%= category._id %>?_method=DELETE"
                     method="POST"
                     style="display: inline">
                     <button type="submit" class="btn btn-sm btn-danger">
