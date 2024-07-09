@@ -298,6 +298,214 @@ const downloadReport =  async (req, res) => {
 }
 };
 
+const dashboard = async (req, res) => {
+  try {
+    const filter = req.query.filter || 'yearly';
+    
+    const chartData = await processOrdersForChart(filter);
+    const topProducts = await getTopProducts();
+    const topCategories = await getTopCategories();
+    const recentOrders = await getRecentOrders();
+    // topBrands = await getTopBrands(orders);
+    
+    res.json({
+      chartData,
+      topProducts,
+      topCategories,
+      recentOrders
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+async function processOrdersForChart(filter) {
+  let groupBy, sortBy, dateProject;
+  
+  switch(filter) {
+    case 'weekly':
+      groupBy = {
+        year: { $year: '$createdAt' },
+        week: { $week: '$createdAt' }
+      };
+      sortBy = { '_id.year': 1, '_id.week': 1 };
+      dateProject = {
+        $concat: [
+          { $toString: '$_id.year' },
+          '-W',
+          { $toString: { $cond: [{ $lt: ['$_id.week', 10] }, { $concat: ['0', { $toString: '$_id.week' }] }, { $toString: '$_id.week' }] } }
+        ]
+      };
+      break;
+    case 'monthly':
+      groupBy = {
+        year: { $year: '$createdAt' },
+        month: { $month: '$createdAt' }
+      };
+      sortBy = { '_id.year': 1, '_id.month': 1 };
+      dateProject = {
+        $concat: [
+          { $toString: '$_id.year' },
+          '-',
+          { $cond: [{ $lt: ['$_id.month', 10] }, { $concat: ['0', { $toString: '$_id.month' }] }, { $toString: '$_id.month' }] }
+        ]
+      };
+      break;
+    case 'yearly':
+    default:
+      groupBy = { year: { $year: '$createdAt' } };
+      sortBy = { '_id.year': 1 };
+      dateProject = { $toString: '$_id.year' };
+  }
+
+  const aggregateResult = await Order.aggregate([
+    {
+      $group: {
+        _id: groupBy,
+        totalSales: { $sum: '$totalCost' }
+      }
+    },
+    {
+      $sort: sortBy
+    },
+    {
+      $project: {
+        _id: 0,
+        date: dateProject,
+        totalSales: 1
+      }
+    }
+  ]);
+
+  const labels = aggregateResult.map(item => item.date);
+  const data = aggregateResult.map(item => item.totalSales);
+
+  return {
+    labels,
+    datasets: [{
+      label: 'Total Sales',
+      data,
+      borderColor: 'rgba(75, 192, 192, 1)',
+      tension: 0.1
+    }]
+  };
+}
+
+async function getTopProducts() {
+  return await Order.aggregate([
+    { $unwind: '$items' },
+    { $match: { 'items.status': { $ne: 'Cancelled' } } },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'items.productId',
+        foreignField: '_id',
+        as: 'product'
+      }
+    },
+    { $unwind: '$product' },
+    {
+      $group: {
+        _id: '$items.productId',
+        name: { $first: '$product.name' },
+        totalQuantity: { $sum: '$items.quantity' }
+      }
+    },
+    { $sort: { totalQuantity: -1 } },
+    { $limit: 10 },
+    {
+      $project: {
+        _id: 0,
+        id: '$_id',
+        name: 1,
+        sales: '$totalQuantity'
+      }
+    }
+  ]);
+}
+
+// Helper function to get top categories
+async function getTopCategories() {
+  return await Order.aggregate([
+    { $unwind: '$items' },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'items.productId',
+        foreignField: '_id',
+        as: 'product'
+      }
+    },
+    { $unwind: '$product' },
+    {
+      $group: {
+        _id: '$product.category',
+        totalQuantity: { $sum: '$items.quantity' }
+      }
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'category'
+      }
+    },
+    { $unwind: '$category' },
+    { $sort: { totalQuantity: -1 } },
+    { $limit: 10 },
+    {
+      $project: {
+        _id: 0,
+        id: '$_id',
+        name: '$category.categoryName',
+        sales: '$totalQuantity'
+      }
+    }
+  ]);
+}
+
+// Helper function to get recent orders
+async function getRecentOrders() {
+  return await Order.aggregate([
+    { $sort: { createdAt: -1 } },
+    { $limit: 10 },
+    { $unwind: '$items' },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'items.productId',
+        foreignField: '_id',
+        as: 'product'
+      }
+    },
+    { $unwind: '$product' },
+    {
+      $group: {
+        _id: '$_id',
+        totalCost: { $first: '$totalCost' },
+        createdAt: { $first: '$createdAt' },
+        itemStatuses: {
+          $push: {
+            productName: '$product.name',
+            status: '$items.status'
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        _id: 1,
+        totalCost: 1,
+        createdAt: 1,
+        itemStatuses: 1
+      }
+    }
+  ]);
+}
+
+
 
 module.exports = {
   adminHome,
@@ -309,5 +517,6 @@ module.exports = {
   cancelOrder,
   salesReport,
   orderDetails,
-  downloadReport
+  downloadReport,
+  dashboard,
 };

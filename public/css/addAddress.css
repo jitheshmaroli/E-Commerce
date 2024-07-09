@@ -9,18 +9,42 @@ body {
 
 /* Header */
 header {
-  background-color: #333;
+  background-color: #080808;
   color: #fff;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px;
+}
+.nav-category{
+  background-color: #585858;
+  border-radius: 5px; 
+}
+.navbar .row {
+  width: 100%;
 }
 
-.brand-logo {
+.navbar .nav-link {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: #000000;
+}
+
+.navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand, .navbar-brand>span {
+  color: #ffffff;
   display: flex;
   align-items: center;
 }
@@ -109,36 +133,11 @@ header {
   align-items: center;
 }
 
-
 .user-actions a {
-  color: #fff;
+  color: #ffffff;
   font-size: 24px;
   margin-left: 10px;
 }
-
-.banner {
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-}
-
-
-.banner a {
-  color: #333;
-  text-decoration: none;
-  margin: 0 10px;
-}
-
-.banner form {
-  display: inline-block;
-}
-
-.banner select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 
 /* Profile Icon */
 .profile-dropdown {

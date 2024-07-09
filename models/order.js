@@ -7,6 +7,10 @@ const OrderSchema = new Schema({
         ref: 'User',
         required: true
     },
+    uniqueOrderId: {
+        type: String,
+        unique: true
+    },
     items: [
         {
             productId: {
@@ -22,6 +26,14 @@ const OrderSchema = new Schema({
                 type: String,
                 enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
                 default: 'Pending'
+            },
+            returnStatus: {
+                type: String,
+                enum: ['None', 'Requested', 'Approved', 'Rejected', 'Refunded'],
+                default: 'None'
+              },
+            returnReason: {
+                type: String
             }
         }
     ],
@@ -32,13 +44,17 @@ const OrderSchema = new Schema({
     paymentMethod: {
         type: String,
         enum: ['online', 'cod', 'wallet'],
-        required: true
+        //required: true
     },
     couponCode: {
         type: String
     },
     paymentDetails: {
         type: Schema.Types.Mixed
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'confirmed'],
     },
     priceDetails: {
         discountAmount: {

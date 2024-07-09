@@ -10,88 +10,16 @@
     <link rel="stylesheet" href="/css/productDetails.css" type="text/css">
 </head>
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="brand-logo">
-        <a class="navbar-brand" href="/">
-          <img src="/images/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid d-inline-block align-text-top">
-          <span class="d-inline-block">ShoeZone</span>
-        </a>
-      </div>
-      <div class="search-bar">
-        <form action="/search" method="GET">
-          <div class="input-group">
-            <input type="text" name="query" class="form-control" placeholder="Search for products...">
-            <button type="submit" class="input-group-text search-btn">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-        <div class="dropdown">
-          <button class="dropdown-toggle btn dropdown-toggle-split" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="dropdown-toggle-text">All categories</span>
-            <span class="visually-hidden">Toggle Dropdown</span>
-          </button>
-          <% if (categoryList) { %>
-            <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-              <li><a class="dropdown-item" href="#" onclick="setCategory('all')">All</a></li>
-              <% categoryList.forEach(category => { %>
-                <li><a class="dropdown-item" href="#" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a></li>
-              <% }) %>
-            </ul>
-          <% } %>
-          <input type="hidden" name="category" id="selectedCategory" value="all">
-        </div>
-        </form>
-      </div>
-      
-      <div class="user-actions">
-        <div class="profile-dropdown">
-          <a class="profile-dropdown-toggle btn " href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i>
-          </a>
-            <div class="profile-dropdown-menu" >
-              <a class="dropdown-item" href="/profile">Profile</a>
-              <a class="dropdown-item" href="/logout">Logout</a>
-            </div>
-        </div>
-        <a href="/cart">
-          <i class="fas fa-shopping-cart"></i>
-      </a>
-      <a href="/wishlist">
-        <i class="fas fa-heart"></i>
-    </a>
-    </div>
-    
-    </nav>
-    <div class="banner">
-      <div class="row pt-2 pb-2">
-        <div class="col">
-          <a href="/">HOME</a>
-        </div>
-        <% categoryList.forEach(category => { %>
-          <div class="col">
-            <a href="/<%= category.categoryName %>" class="category-link" id="category-<%= category.categoryName %>" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a>
-          </div>
-      <% }) %>
-        <div class="col sort">
-          <form id="sortForm" action="" method="GET">
-            <select name="sortBy" id="sortBy">
-                <option value="">Sort</option>
-                <option value="popularity">Popularity</option>
-                <option value="priceLowToHigh">Price: Low to High</option>
-                <option value="priceHighToLow">Price: High to Low</option>
-                <option value="newArrival">New Arrivals</option>
-                <option value="aToZ">A - Z</option>
-                <option value="zToA">Z - A</option>
-            </select>
-        </form>
-        </div>
-      </div>
-    </div>
- 
-  </header>
+  <%- include('../includes/userHeader.ejs') %>
       <div class="container">
         <% if (product) { %>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/category/<%= product.category._id %>"><%= product.category.categoryName %></a></li>
+              <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+            </ol>
+          </nav>
           <div class="product-image-wrapper">
             <div class="carousel-wrapper d-md-none">
             <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -138,6 +66,9 @@
     
           <div class="product-details">
             <h1 id="product-name"><%= product.name.toUpperCase() %></h1>
+            <div class="product-category">
+              <%= product.category.categoryName %>
+            </div>
             <input type="hidden" id="product-id" value="<%= product._id %>">
             <div class="rating">
               
@@ -190,16 +121,12 @@
                 <div class="product-actions">
                   <a href="#" class="btn btn-add-to-cart add-to-cart disabled" id="add-to-cart-btn" data-product-id="<%= product._id %>" disabled>Add to Cart</a>
                   <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now disabled" disabled>Buy Now</a>
-                  <div class="product-wishlist">
-                    <a href="#" class="move-to-wishlist">
-                      <% const isInWishlist = wishlistProducts.find(item => item._id.toString() === product._id.toString()); %>
-                      <% if (isInWishlist) { %>
-                          <i class="fa fa-heart" style="color: black;"></i>
-                      <% } else { %>
-                          <i class="fa fa-heart" style="color:rgb(221, 218, 218);"></i>
-                      <% } %>
-                    </a>
-                  </div>
+                  <% const isInWishlist = wishlistProducts.find(item => item._id.toString() === product._id.toString()); %>
+                  <% if (isInWishlist) { %>
+                    <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
+                  <% } else { %>
+                    <button class="btn btn-add-to-wishlist  add-to-wishlist" id="wishlist-btn" data-product-id="<%= product._id %>">Add to Wishlist</button>
+                  <% } %>
                 </div>
               <% } else { %>
                 <div class="quantity-control">
@@ -209,18 +136,18 @@
                 </div>
                 <p class="final-price">Total Price: ₹<span id="final-price"></span></p>
                 <div class="product-actions">
-                  <a href="#" class="btn btn-add-to-cart add-to-cart" id="add-to-cart-btn" data-product-id="<%= product._id %>">Add to Cart</a>
+                  <% if (matchingCartItem) { %>
+                    <a href="/cart" class="btn btn-view-cart" id="view-cart-btn" >View Cart</a>
+                  <% } else { %>
+                  <a href="" class="btn btn-add-to-cart add-to-cart" id="add-to-cart-btn" data-product-id="<%= product._id %>">Add to Cart</a>
+                  <% } %>
                   <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now">Buy Now</a>
-                  <div class="product-wishlist">
-                    <a href="#" class="move-to-wishlist">
-                      <% const isInWishlist = wishlistProducts.find(item => item._id.toString() === product._id.toString()); %>
-                      <% if (isInWishlist) { %>
-                          <i class="fa fa-heart" style="color: black;"></i>
-                      <% } else { %>
-                          <i class="fa fa-heart" style="color:rgb(221, 218, 218);"></i>
-                      <% } %>
-                    </a>
-                  </div>
+                    <% const isInWishlist = wishlistProducts.find(item => item._id.toString() === product._id.toString()); %>
+                    <% if (isInWishlist) { %>
+                      <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
+                    <% } else { %>
+                      <button class="btn btn-add-to-wishlist add-to-wishlist " id="wishlist-btn" data-product-id="<%= product._id %>">Add to Wishlist</button>
+                    <% } %>
                 </div>
               <% } %>
             <div class="product-description">
@@ -259,10 +186,10 @@
             <p>An error occurred while fetching product details.</p>
           <% } %>
         </div>
-      
+      </div>
 
     <footer class="footer">
-        <div class="container">
+        <div class="container-footer">
           <div class="row">
             <div class="col-md-4">
               <h3 class="footer-heading">About Us</h3>
@@ -414,6 +341,57 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         });
 });
+if(addToCartBtn) {
+  addToCartBtn.addEventListener('click', (e) => {
+    const quantity = parseInt(quantityInput.value);
+    const productId = document.getElementById('product-id').value;
+    e.preventDefault();
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            productId,
+            quantity
+        })
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json()
+        .then(data => {
+          if (data.error === 'Not enough stock available') {
+            alert(`Only ${data.availableStock} items are available in stock for this product.`);
+          } else {
+            throw new Error('Network response was not ok');
+          }
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data) {
+        updateQuantityOnServer(productId, quantity);
+        cartBtn.textContent = 'View Cart';
+        cartBtn.classList.remove('btn-add-to-cart');
+        cartBtn.classList.add('btn-view-cart');
+        cartBtn.setAttribute('href', '/cart');
+        Swal.fire({
+           icon: 'success',
+           title: 'Added to Cart',
+           text: `${quantity} x ${productName} added to cart!`,
+           confirmButtonText: 'OK'
+        });            
+                                     
+      } else {
+         console.error('Error adding product to cart:', data.error);
+      }
+    })
+    .catch(error => {
+        console.error('Error adding product to cart:', error);
+    });
+});
+
 function updateQuantityOnServer(productId, quantity) {
   fetch('/update-quantity', {
     method: 'POST',
@@ -441,12 +419,13 @@ function updateQuantityOnServer(productId, quantity) {
     })
     .then(data => {
       if (data.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Added to Cart',
-          text: 'The item has been added to your cart.',
-          confirmButtonText: 'OK',
-        });
+        // Swal.fire({
+        //   icon: 'success',
+        //   title: 'Added to Cart',
+        //   text: 'The item has been added to your cart.',
+        //   confirmButtonText: 'OK',
+        // });
+        location.reload();
       } else {
         console.error('Error updating quantity on server:', data.error);
         Swal.fire({
@@ -467,50 +446,12 @@ function updateQuantityOnServer(productId, quantity) {
       });
     });
 }
-addToCartBtn.addEventListener('click', () => {
-    const quantity = parseInt(quantityInput.value);
-    const productId = document.getElementById('product-id').value;
-    
-    fetch('/add-to-cart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            productId,
-            quantity
-        })
-    })
-    .then(response => {
-      if (!response.ok) {
-        return response.json()
-        .then(data => {
-          if (data.error === 'Not enough stock available') {
-            alert(`Only ${data.availableStock} items are available in stock for this product.`);
-          } else {
-            throw new Error('Network response was not ok');
-          }
-        });
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data) {
-        updateQuantityOnServer(productId, quantity);
-        Swal.fire('Success!', `${quantity} x ${productName} added to cart!`, 'success');
-      } else {
-         console.error('Error adding product to cart:', data.error);
-      }
-    })
-    .catch(error => {
-        console.error('Error adding product to cart:', error);
-    });
-});
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-    const wishlistIcon = document.querySelector('.move-to-wishlist');
+    const wishlistBtn = document.querySelector('.add-to-wishlist');
 
-    wishlistIcon.addEventListener('click', function(e) {
+    wishlistBtn.addEventListener('click', function(e) {
         e.preventDefault();
         const productId = document.getElementById('product-id').value;
 
@@ -524,13 +465,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const icon = wishlistIcon.querySelector('.fa-heart');
+              if (data.isInWishlist) {
+                        wishlistBtn.textContent = 'View Wishlist';
+                        wishlistBtn.classList.remove('btn-add-to-wishlist');
+                        wishlistBtn.classList.add('btn-view-wishlist');
+                        wishlistBtn.setAttribute('href', '/wishlist');
+                    } else {
+                        wishlistBtn.textContent = 'Add to Wishlist';
+                        wishlistBtn.classList.remove('btn-view-wishlist');
+                        wishlistBtn.classList.add('btn-add-to-wishlist');
+                        wishlistBtn.removeAttribute('href');
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.isInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist',
+                        text: data.isInWishlist ? 'The item has been added to your wishlist.' : 'The item has been removed from your wishlist.',
+                        confirmButtonText: 'OK'
+                    });
 
-                if (data.isInWishlist) {
-                    icon.style.color = 'black';
-                } else {
-                    icon.style.color = 'rgb(221, 218, 218)';
-                }
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -599,6 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
 </script>
+
       
 </body>
 </html>
