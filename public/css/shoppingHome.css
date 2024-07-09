@@ -8,18 +8,42 @@ body {
 
 /* Header */
 header {
-  background-color: #333;
+  background-color: #080808;
   color: #fff;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px;
+}
+.nav-category{
+  background-color: #585858;
+  border-radius: 5px; 
+}
+.navbar .row {
+  width: 100%;
 }
 
-.brand-logo {
+.navbar .nav-link {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: #000000;
+}
+
+.navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand, .navbar-brand>span {
+  color: #ffffff;
   display: flex;
   align-items: center;
 }
@@ -108,36 +132,11 @@ header {
   align-items: center;
 }
 
-
 .user-actions a {
-  color: #fff;
+  color: #ffffff;
   font-size: 24px;
   margin-left: 10px;
 }
-
-.banner {
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-}
-
-
-.banner a {
-  color: #333;
-  text-decoration: none;
-  margin: 0 10px;
-}
-
-.banner form {
-  display: inline-block;
-}
-
-.banner select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 
 /* Profile Icon */
 .profile-dropdown {
@@ -232,6 +231,18 @@ header {
   overflow: hidden;
 }
 
+.product-category {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  z-index: 1;
+}
+
 .product-image img {
   width: 100%;
   height: auto;
@@ -313,6 +324,7 @@ header {
 .btn-add-to-cart:hover{
   background-color: black;
   color:white;
+  cursor: pointer;
 }
 
 .btn-buy-now:hover{
@@ -358,6 +370,13 @@ header {
   .col-sm-12 {
       flex: 0 0 100%;
       max-width: 100%;
+  }
+  .navbar-brand img {
+    width: 1rem;
+    height: 1rem
+  }
+  .navbar-brand span {
+    font-size: 10px;
   }
 }
 
@@ -419,3 +438,18 @@ header {
   margin-left: 10px;
 }
 
+@media (max-width: 991.98px) {
+  .navbar .row > div {
+    margin-bottom: 1rem;
+  }
+  
+  .navbar .nav {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .navbar .nav-item {
+    width: 100%;
+    text-align: center;
+  }
+} 

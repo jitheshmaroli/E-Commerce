@@ -6,9 +6,11 @@ const categoryController = require("../controllers/categoryController");
 const authentication = require("../middlewares/authMiddleware");
 const couponController = require("../controllers/couponController");
 const offerController = require('../controllers/offerController');
+const orderController = require("../controllers/orderController");
 
 //admin home
 router.get("/", authentication.isAdminAuthenticated, adminController.adminHome);
+router.get('/dashboard', authentication.isAdminAuthenticated, adminController.dashboard);
 
 //sales reports
 router.get('/sales-report',adminController.salesReport);
@@ -19,7 +21,6 @@ router.get('/sales-report/download',adminController.downloadReport);
 router.get("/allproducts", authentication.isAdminAuthenticated, productController.allProducts);
 router.get("/addProduct", authentication.isAdminAuthenticated, productController.addProductView);
 router.post("/addProduct", productController.photoUpload, productController.newProduct);
-router.get("/allProducts/:ProductId", authentication.isAdminAuthenticated, productController.productDetails);
 router.get("/allProducts/edit/:productId", authentication.isAdminAuthenticated, productController.updateProductView);
 router.post("/allProducts/edit/:productId", productController.photoUpload, productController.updateProduct);
 router.post('/allProducts/removeImage',productController.removeImage);
@@ -30,6 +31,7 @@ router.get("/orderslist", authentication.isAdminAuthenticated, adminController.o
 router.get("/orders/:orderId",authentication.isAdminAuthenticated,adminController.orderDetails);
 router.post("/updateOrderStatus/:orderId/:productId", adminController.updateOrderStatus);
 router.post("/cancelOrder/:orderId/:productId", adminController.cancelOrder);
+router.post('/approve-return/:orderId/:itemId', orderController.approveReturn);
 
 //coupons
 router.get("/couponlist", authentication.isAdminAuthenticated, couponController.couponListView);
@@ -52,7 +54,8 @@ router.get("/addcategory", authentication.isAdminAuthenticated, categoryControll
 router.post("/addcategory", categoryController.addCategory);
 router.get("/categoryList/edit/:id", categoryController.editCategoryView);
 router.put("/categoryList/edit/:id", categoryController.editCategory);
-router.delete("/categoryList/delete/:id", categoryController.deleteCategory);
+// router.delete("/categoryList/delete/:id", categoryController.deleteCategory);
+router.post('/categoryList/toggleStatus/:id',categoryController.toggleCategory);
 
 
 //user routes

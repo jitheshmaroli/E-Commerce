@@ -82,6 +82,9 @@ async function applyProductOffer(offer) {
             product.currentPrice = newPrice;
             product.offer = offer._id;
             await product.save();
+        }else{
+            product.currentPrice = product.price;
+            await product.save();
         }
   }
 }
@@ -99,6 +102,9 @@ async function applyCategoryOffer(offer) {
         if (newPrice < product.currentPrice) {
             product.currentPrice = newPrice;
             product.offer = offer._id;
+            await product.save();
+        }else{
+            product.currentPrice = product.price;
             await product.save();
         }
     }

@@ -121,6 +121,99 @@ table {
   .sidebar-list a{
     text-decoration: none;
   }
-  
 
+  /* body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+} */
+
+.dashboard {
+    max-width: 1200px;
+    margin: 10px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.chart-container {
+    margin-bottom: 30px;
+}
+
+#chartFilter {
+    margin-bottom: 10px;
+}
+
+.top-lists {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.top-list {
+    flex: 1;
+    margin: 0 10px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+.ledger-book {
+    margin-top: 30px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+  
+.sales-report{
+    max-width: 1200px;
+    margin: 10px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.recent-orders ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.recent-orders li {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.recent-orders{
+  max-width: 1200px;
+  margin: 10px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
   
