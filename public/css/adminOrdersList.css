@@ -25,7 +25,7 @@ body {
     text-decoration: none;
   }
   
-  .header, .main, .sidebar, .content {
+  .header, .main, .sidebar{
     box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
   }
   

@@ -10,6 +10,7 @@
   </head>
 <body>
   <%- include('../includes/userHeader.ejs') %>
+  <button id="sidebarToggle" class="d-md-none">Menu</button>
   <main class="main">
     <% if (user) { %>
     <aside class="sidebar">
@@ -179,6 +180,24 @@
     document.getElementById('selectedCategory').value = category;
     document.getElementById('categoryDropdown').querySelector('.dropdown-toggle-text').textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    sidebarToggle.addEventListener("click", function(event) {
+      event.stopPropagation();
+      sidebar.classList.toggle("active");
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener("click", function(event) {
+      if (!sidebar.contains(event.target) && sidebar.classList.contains("active")) {
+        sidebar.classList.remove("active");
+      }
+    });
+  });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

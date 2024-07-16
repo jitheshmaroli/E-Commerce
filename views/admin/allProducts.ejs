@@ -13,6 +13,9 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
+      <button id="sidebarToggle" class="navbar-toggler" type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
       <a class="navbar-brand" href="/admin">
         <img src="/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
         SportZilon
@@ -37,7 +40,7 @@
     </div>
   </nav> 
   <main class="main">
-    <aside class="sidebar">
+    <aside id="sidebar" class="sidebar">
       <div class="">
         <div class="list-group sidebar-list" id="myListGroup">
           <a href="/admin">
@@ -74,11 +77,10 @@
       <% if (products.length <= 0) { %>
         <h4 style="text-align: center;">NO PRODUCTS AVAILABLE</h4>
       <% }else { %>
-      
         <table class="table" id="myTable">
           <thead>
             <tr>
-              <th scope="col">IMAGE</th>
+              <th scope="col" class="d-none d-md-table-cell">IMAGE</th>
               <th scope="col">NAME</th>
               <th scope="col">CATEGORY</th>
               <th scope="col">QUANTITY</th>
@@ -90,7 +92,7 @@
           <tbody>
             <% products.forEach(product => { %>
             <tr>
-              <td>
+              <td class="d-none d-md-table-cell">
                 <div class="product-image-wrapper">
                   <% if (product.photos && product.photos.length > 0) { %>
                     <div class="image-navigation" style=<%= product.photos.length > 1 ? 'display: block' : 'display: none' %>>
@@ -133,7 +135,6 @@
             <% }) %>
           </tbody>
         </table>
-      
       <% } %>
     </section>     
   </main> 
@@ -184,7 +185,26 @@
     });
   </script>
   
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
   
+      sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+      });
+  
+      // Close sidebar when clicking outside of it
+      document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnToggleButton = sidebarToggle.contains(event.target);
+  
+        if (!isClickInsideSidebar && !isClickOnToggleButton && sidebar.classList.contains('active')) {
+          sidebar.classList.remove('active');
+        }
+      });
+    });
+  </script>
 
   
   

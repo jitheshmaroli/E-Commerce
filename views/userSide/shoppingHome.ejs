@@ -7,7 +7,7 @@
             <% if (products && products.length > 0) { %>
               <div id="productData"   data-current-page="<%= currentPage %>" data-products-per-page="<%= productsPerPage %>" data-total-products="<%= totalProducts %>" hidden></div>
               <% products.forEach(product => { %>
-                    <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12" style="margin-bottom: 20px;">
                         <div class="product-card <%= product.stock === 0 ? 'out-of-stock' : '' %>" data-product="<%= product._id %>">
                             <div class="product-image">
                               <a href="/product-details/<%= product._id %>">

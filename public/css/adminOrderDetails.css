@@ -69,3 +69,20 @@ a {
     color: #5465ff;
     text-decoration: none;
 }
+
+.invoice a{
+  text-decoration: none;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .modal-content * {
+    visibility: visible;
+  }
+  .modal-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
