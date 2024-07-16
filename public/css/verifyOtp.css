@@ -13,7 +13,7 @@ body {
   border: 1px solid #ddd;
   border-radius: 5px;
   border-color: #ddd; /* Neutral border color */
-  background-color: #97d6f8; /* Light background */
+  background-color: #ffffff; /* Light background */
 }
 
 h1 {
@@ -67,7 +67,7 @@ p {
 
 
 #otp-input:focus {
-  border-color: #007bff; /* Primary color on focus */
+  border-color: #000000; /* Primary color on focus */
 }
 
 
@@ -89,7 +89,7 @@ p {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: #97d6f8;
+  background-color: #ffffff;
 }
 .otp-form label {
   margin-bottom: 5px;
@@ -99,4 +99,43 @@ p {
 }
 .otp-form button {
   margin-top: 10px;
+}
+
+/* Header */
+.header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.brand-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 10px;
+  background-color: #f2f2f2; 
+  text-align: center;
+}
+
+
+
+.copyright {
+  color: #333; 
+  font-size: 14px; 
+  padding-top: 2px;
 }

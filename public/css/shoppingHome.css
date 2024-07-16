@@ -472,7 +472,9 @@ header {
   font-size: 24px;
   margin-left: 10px;
 }
-
+#sidebarToggle {
+  display: none;
+}
 @media (max-width: 576px) {
   .navbar {
     margin: 0;padding: 0;

@@ -22,7 +22,7 @@ const  isAdminAuthenticated = (req, res, next) => {
   //   redirect authenticated users/admin away from the login page
 const redirectToDashboard = (req, res, next) => {
     if (req.session.isAdminAuthenticated) {
-      res.redirect('/admin/dashboard');
+      res.redirect('/admin');
     }else if (req.session.isUserAuthenticated) {
       res.redirect('/');
     }else {

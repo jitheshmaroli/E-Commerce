@@ -391,7 +391,9 @@ header {
   font-size: 1.2em;
   text-align: center;
 }
-
+#sidebarToggle {
+  display: none;
+}
 
 /* Responsive Styles */
 @media (max-width: 767px) {

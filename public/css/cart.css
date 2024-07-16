@@ -188,7 +188,9 @@ header {
 .profile-dropdown-menu a:hover {
  color: black;
 }
-
+#sidebarToggle {
+  display: none;
+}
 
 /* Cart Container */
 .cart-container {

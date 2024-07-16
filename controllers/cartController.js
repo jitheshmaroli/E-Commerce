@@ -104,7 +104,7 @@ const cartView = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate('items.productId');
 
     if (!cart || cart.items.length === 0) {
-      return res.render('cart/cart', {items: "", message: "NO ITEMS IN CART", categoryList});
+      return res.render('cart/cart', {items: "", message: "NO ITEMS IN CART", user, categoryList});
     }
 
     const items = await Promise.all(cart.items.map(async (item) => {

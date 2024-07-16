@@ -361,6 +361,10 @@ header {
   margin-left: 10px;
 }
 
+#sidebarToggle {
+  display: none;
+}
+
   
   /* footer css ends here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
   
@@ -388,6 +392,7 @@ header {
       font-size: 0.5rem;
     }
   }
+  
   
   /* Responsive Styles */
   @media screen and (max-width: 768px) {
