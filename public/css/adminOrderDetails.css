@@ -36,6 +36,11 @@ body {
     min-height: 100vh; /* Set main content area height (minus header height) */
     background-color:#f0f0f0 ;
   }
+
+  .content {
+    flex: 1;
+    padding: 20px;
+  }
   
   .sidebar {
     width: 200px; /* Adjust sidebar width as needed */
