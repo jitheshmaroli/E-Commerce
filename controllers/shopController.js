@@ -10,8 +10,6 @@ const offerController = require("../controllers/offerController");
 
 const shoppingHomeView = async (req, res) => {
     try {
-      console.log(req.session)
-      // const sortBy = req.query.sort || 'default';
       await offerController.applyOffers();
       let wishlistProducts = [];
       let user = null;
@@ -260,7 +258,7 @@ const productSearchView = async (req, res) => {
 
     const getCurrentFilters = () => {
         const urlParams = new URLSearchParams(req.query);
-        urlParams.delete('page'); // Remove existing page parameter
+        urlParams.delete('page'); 
         return '&' + urlParams.toString();
       };
 
@@ -286,15 +284,14 @@ const productSearchView = async (req, res) => {
   
   const productDetailsView = async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
       const productId = req.params.productId;
-      const matchingCartItem = await Cart.findOne({
-        userId: user._id,
-        "items.productId": productId 
-      });
-  
+      let user;
+      let matchingCartItem;
+      if(req.session.userId){
+        user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
+        matchingCartItem = await Cart.findOne({ userId: user._id, "items.productId": productId});
+      }
       let wishlistProducts = [];
-  
       if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
         return res.status(400).send("Invalid product ID");
       }
@@ -349,9 +346,7 @@ const productSearchView = async (req, res) => {
       });
     } catch (err) {
       console.error(err);
-      res
-        .status(500)
-        .render("userSide/error", { message: "Internal server error" });
+      res.status(500).render("userSide/error", { message: "Internal server error" });
     }
   };
 

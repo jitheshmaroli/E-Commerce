@@ -102,7 +102,8 @@ const placeOrder =  async (req, res) => {
     }
   };
   
-  const validateOrderItems = async (orderItems) => {
+
+const validateOrderItems = async (orderItems) => {
     const validatedOrderItems = [];
   
     for (const { productId, quantity } of orderItems) {
@@ -117,7 +118,7 @@ const placeOrder =  async (req, res) => {
     }
   
     return validatedOrderItems;
-  };
+};
 
 const orderHistory = async (req, res) => {
   try {

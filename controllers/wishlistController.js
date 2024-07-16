@@ -93,14 +93,12 @@ const removeFromWishList = async (req, res) => {
     const user = await User.findOne({ email: req.session.userId || req.session.passport.user.userId });
     const userId = user._id; 
 
-    // Find the wishlist document for the user
     const wishlist = await Wishlist.findOne({ userId });
 
     if (!wishlist) {
       return res.status(404).json({ error: 'Wishlist not found' });
     }
 
-    // Remove the product from the products array
     wishlist.products = wishlist.products.filter(
       (product) => !product.equals(productId)
     );

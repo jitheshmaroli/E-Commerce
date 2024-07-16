@@ -106,7 +106,7 @@ router.post('/return-product/:orderId/:itemId', orderController.initiateReturn);
 
 //product search
 router.get("/search",shopController.productSearchView);
-router.get("/product-details/:productId",shopController.productDetailsView);
+router.get("/product-details/:productId", shopController.productDetailsView);
 
 //coupon
 router.get("/coupon-discount/:couponCode", authentication.isUserAuthenticated,couponController.couponDiscount);

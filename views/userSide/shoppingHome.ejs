@@ -80,21 +80,21 @@
                 <% }) %>
               
     </div>
-    <div class="pagination-controls" id="pagination-controls">
+    <div class="pagination-controls pagination" id="pagination-controls">
       <% if (currentPage > 1) { %>
-        <a href="?page=<%= currentPage - 1 %>" class="page-link ">Previous</a>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link  text-black rounded border-0">Previous</a>
       <% } %>
 
       <% for (let i = 1; i <= totalPages; i++) { %>
         <% if (i === currentPage) { %>
-          <span class="current-page"><%= i %></span>
+          <span class="current-page page-link active bg-black text-white rounded border-0"><%= i %></span>
         <% } else { %>
-          <a href="?page=<%= i %>" class="page-link "><%= i %></a>
+          <a href="?page=<%= i %>" class="page-link  text-black rounded border-0"><%= i %></a>
         <% } %>
       <% } %>
 
       <% if (currentPage < totalPages) { %>
-        <a href="?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link text-black rounded border-0">Next</a>
       <% } %>
     </div>
   <% } else{ %>

@@ -35,8 +35,8 @@
         <option value="brand3">Brand 3</option>
       </select>
 
-      <button class="btn btn-primary" id="applyFilters">Apply Filters</button>
-      <button class="btn btn-secondary mt-2" id="clearFilters">Clear Filters</button>
+      <button class="btn apply-filter-btn" id="applyFilters">Apply Filters</button>
+      <button class="btn clear-filter-btn mt-2" id="clearFilters">Clear Filters</button>
       </aside>
     <div class="container">
       <div class="row mb-3">
@@ -132,21 +132,21 @@
                 <% }) %>
               
     </div>
-    <div class="pagination-controls" id="pagination-controls">
+    <div class="pagination-controls pagination" id="pagination-controls">
       <% if (currentPage > 1) { %>
-        <a href="?page=<%= currentPage - 1 %><%= getCurrentFilters() %>"  class="page-link ">Previous</a>
+        <a href="?page=<%= currentPage - 1 %><%= getCurrentFilters() %>"  class="page-link text-black rounded border-0">Previous</a>
       <% } %>
 
       <% for (let i = 1; i <= totalPages; i++) { %>
         <% if (i === currentPage) { %>
-          <span class="current-page"><%= i %></span>
+          <span class="current-page page-link active bg-black text-white rounded border-0"><%= i %></span>
         <% } else { %>
-          <a href="?page=<%= i %><%= getCurrentFilters() %>" class="page-link "><%= i %></a>
+          <a href="?page=<%= i %><%= getCurrentFilters() %>" class="page-link text-black rounded border-0"><%= i %></a>
         <% } %>
       <% } %>
 
       <% if (currentPage < totalPages) { %>
-        <a href="?page=<%= currentPage + 1 %><%= getCurrentFilters() %>" class="page-link">Next</a>
+        <a href="?page=<%= currentPage + 1 %><%= getCurrentFilters() %>" class="page-link text-black rounded border-0">Next</a>
       <% } %>
     </div>
   <% } else{ %>

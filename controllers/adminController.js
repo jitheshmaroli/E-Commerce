@@ -306,7 +306,6 @@ const dashboard = async (req, res) => {
     const topProducts = await getTopProducts();
     const topCategories = await getTopCategories();
     const recentOrders = await getRecentOrders();
-    // topBrands = await getTopBrands(orders);
     
     res.json({
       chartData,
@@ -425,7 +424,6 @@ async function getTopProducts() {
   ]);
 }
 
-// Helper function to get top categories
 async function getTopCategories() {
   return await Order.aggregate([
     { $unwind: '$items' },
@@ -466,7 +464,6 @@ async function getTopCategories() {
   ]);
 }
 
-// Helper function to get recent orders
 async function getRecentOrders() {
   return await Order.aggregate([
     { $sort: { createdAt: -1 } },

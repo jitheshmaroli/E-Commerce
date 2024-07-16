@@ -191,7 +191,7 @@ header {
 
 .pagination-controls{
   display: flex;
-  justify-content: end;
+  justify-content: center;
   gap: 8px;
 }
 /* Product Section */
@@ -341,7 +341,7 @@ header {
   margin-bottom: 15px;
 }
 
-.btn-buy-now, .btn-add-to-cart {
+.btn-buy-now, .btn-add-to-cart, .apply-filter-btn, .clear-filter-btn{
   padding: 8px 16px;
   border: 1px solid ;
   border-radius: 4px;
@@ -349,7 +349,7 @@ header {
   transition: background-color 0.3s ease-in-out;
 }
 
-.btn-add-to-cart:hover{
+.btn-add-to-cart:hover, .apply-filter-btn:hover, .clear-filter-btn:hover{
   background-color: black;
   color:white;
   cursor: pointer;
