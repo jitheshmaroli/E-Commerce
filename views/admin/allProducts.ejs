@@ -14,7 +14,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="/admin">
-        <img src="/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        <img src="/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
         SportZilon
       </a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -58,6 +58,9 @@
           <a href="/admin/couponList">
             <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
           </a>
+          <a href="/admin/offers">
+            <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+          </a>
         </div>
       </div>
     </aside>
@@ -77,6 +80,7 @@
             <tr>
               <th scope="col">IMAGE</th>
               <th scope="col">NAME</th>
+              <th scope="col">CATEGORY</th>
               <th scope="col">QUANTITY</th>
               <th scope="col">PRICE</th>
               <th scope="col">EDIT</th>
@@ -120,6 +124,7 @@
                 </div>
               </td>
               <td><%= product.name %></td>
+              <td><%= product.category.categoryName %></td>
               <td><%= product.stock %></td>
               <td>₹<%= product.price %></td>
               <td><a href="/admin/allProducts/edit/<%= product._id %>">EDIT</a></td>

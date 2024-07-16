@@ -8,18 +8,42 @@ body {
 
 /* Header */
 header {
-  background-color: #333;
+  background-color: #080808;
   color: #fff;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px;
+}
+.nav-category{
+  background-color: #585858;
+  border-radius: 5px; 
+}
+.navbar .row {
+  width: 100%;
 }
 
-.brand-logo {
+.navbar .nav-link {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: #000000;
+}
+
+.navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand, .navbar-brand>span {
+  color: #ffffff;
   display: flex;
   align-items: center;
 }
@@ -108,36 +132,11 @@ header {
   align-items: center;
 }
 
-
 .user-actions a {
-  color: #fff;
+  color: #ffffff;
   font-size: 24px;
   margin-left: 10px;
 }
-
-.banner {
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-}
-
-
-.banner a {
-  color: #333;
-  text-decoration: none;
-  margin: 0 10px;
-}
-
-.banner form {
-  display: inline-block;
-}
-
-.banner select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 
 /* Profile Icon */
 .profile-dropdown {
@@ -194,7 +193,7 @@ header {
   
  
 
- .wishlist{
+ /* .wishlist{
   width: 100%;
     display: flex;
     background-color: #ccc;
@@ -231,7 +230,69 @@ header {
     aspect-ratio: 3/2;
     object-fit: contain;
  }
-  
+   */
+
+   /* wishList.css */
+
+.wishlist {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.image-container {
+  margin-right: 20px;
+}
+
+.image-container img {
+  max-width: 150px;
+  height: auto;
+}
+
+.product-details {
+  flex-grow: 1;
+}
+
+.product-details h1 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.button-container {
+  margin-left: 20px;
+}
+
+.button-container button {
+  margin-right: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.button-container button:last-child {
+  background-color: #4e4c4c;
+  color: white;
+}
+
+.button-container button:last-child:hover {
+  background-color: #0e0e0e;
+}
 
  
  

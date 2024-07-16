@@ -15,7 +15,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <img src="/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top" />
+        <img src="/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top" />
         SportZilon
       </a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -73,6 +73,9 @@
               COUPON LIST
             </button>
           </a>
+          <a href="/admin/offers">
+            <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+          </a>
         </div>
       </div>
     </aside>
@@ -85,11 +88,12 @@
         </ol>
       </nav>
       <a href="/admin/addcoupon" class="btn btn-primary"> NEW COUPON</a>
-      <div class="container">
+      <!-- <div class="container"> -->
         <% if (coupons && coupons.length > 0) { %>
-        <table class="table">
+        <table class="table" id="myTable">
           <thead>
             <tr>
+              <th scope="col">COUPON ID</th>
               <th scope="col">CODE</th>
               <th scope="col">DISCOUNT(%)</th>
               <th scope="col">EXPIRY DATE</th>
@@ -100,18 +104,20 @@
           <tbody>
             <% coupons.forEach(coupon => { %>
             <tr data-coupon-id="<%= coupon._id %>">
-              <td hidden><%= coupon._id %></td>
+              <td ><%= coupon._id %></td>
               <td><%= coupon.code %></td>
               <td><%= coupon.discount %></td>
-              <td><%= coupon.expiryDate %></td>
+              <td><%= new Date(coupon.expiryDate).toDateString()  %></td>
               <% if (coupon.expiryDate > Date.now()) { %>
               <td>ACTIVE</td>
               <% }else { %>
               <td>EXPIRED</td>
               <% } %>
               <td>
-                <a href="#" class="btn btn-warning edit-coupon">EDIT</a>
-                <a href="#" class="btn btn-danger">REMOVE</a>
+                <a href="#" class="btn btn-warning btn-sm edit-coupon">EDIT</a>
+                <form action="/admin/removecoupon/<%= coupon._id %>?_method=DELETE" method="POST" style="display: inline">
+                  <button type="submit" class="btn btn-sm btn-danger">REMOVE</button>
+                </form>
               </td>
             </tr>
             <% }) %>
@@ -120,7 +126,7 @@
         <% }else {%>
         <h2>NO COUPONS AVAILABLE</h2>
         <% } %>
-      </div>
+      <!-- </div> -->
     </section>
     <div id="editCouponPopup" class="modal" style="display: none">
       <div class="modal-dialog">
@@ -168,6 +174,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script>
+        $(document).ready( function () {
+            $('#myTable').DataTable();
+        } );
+      </script>
 
   <script>
     const editCouponButtons = document.querySelectorAll(".edit-coupon");
@@ -239,14 +251,19 @@
     const couponId = tr.getAttribute('data-coupon-id');
     const couponCode = tr.querySelector('td:nth-child(2)').textContent;
     const discount = tr.querySelector('td:nth-child(3)').textContent;
-    const expiryDate = tr.querySelector('td:nth-child(4)').textContent;
+    const expiryDateString = tr.querySelector('td:nth-child(4)').textContent;
+
+    // Parse the date string and format it for the input field
+    const expiryDate = new Date(expiryDateString);
+    const formattedDate = expiryDate.toISOString().split('T')[0];
 
     document.getElementById("couponId").value = couponId;
     document.getElementById("couponCode").value = couponCode;
     document.getElementById("discount").value = discount;
-    document.getElementById("expiryDate").value = expiryDate;
+    document.getElementById("expiryDate").value = formattedDate;
 
     const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
   });
 });
 
@@ -264,7 +281,7 @@
           expiryDate,
         };
 
-        fetch(`/admin/editCoupon/${couponId}`, {
+        fetch(`/admin/editCoupon/${couponId}?_method=put`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),

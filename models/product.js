@@ -41,7 +41,17 @@ const newProduct = new mongoose.Schema({
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
-      }]
+      }],
+    currentPrice: {
+        type: Number,
+        default: function() {
+            return this.price;
+        }
+    },
+    offer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Offer'
+    },
 },{timestamps:true});
 
 const product = mongoose.model("products",newProduct);

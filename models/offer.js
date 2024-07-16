@@ -35,16 +35,18 @@ const offerSchema = new mongoose.Schema(
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "product",
-      required: function () {
-        return this.offerType === "product";
-      },
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "category",
-      required: function () {
-        return this.offerType === "category";
-      },
+    },
+    applyToAllProducts: {
+      type: Boolean,
+      default: false,
+    },
+    applyToAllCategories: {
+      type: Boolean,
+      default: false,
     },
     isActive: {
       type: Boolean,

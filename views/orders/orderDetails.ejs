@@ -9,86 +9,7 @@
      <link rel="stylesheet" href="/css/orderHistory.css" />
   </head>
   <body>
-    <header>
-      <nav class="navbar">
-        <div class="brand-logo">
-          <a class="navbar-brand" href="/">
-            <img src="/images/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid d-inline-block align-text-top">
-            <span class="d-inline-block">ShoeZone</span>
-          </a>
-        </div>
-        <div class="search-bar">
-          <form action="/search" method="GET">
-            <div class="input-group">
-              <input type="text" name="query" class="form-control" placeholder="Search for products...">
-              <button type="submit" class="input-group-text search-btn">
-                  <i class="fas fa-search"></i>
-              </button>
-          </div>
-          <div class="dropdown">
-            <button class="dropdown-toggle btn dropdown-toggle-split" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <span class="dropdown-toggle-text">All categories</span>
-              <span class="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <% if (categoryList) { %>
-              <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                <li><a class="dropdown-item" href="#" onclick="setCategory('all')">All</a></li>
-                <% categoryList.forEach(category => { %>
-                  <li><a class="dropdown-item" href="#" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a></li>
-                <% }) %>
-              </ul>
-            <% } %>
-            <input type="hidden" name="category" id="selectedCategory" value="all">
-          </div>
-          </form>
-        </div>
-        
-        <div class="user-actions">
-          <div class="profile-dropdown">
-            <a class="profile-dropdown-toggle btn " href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user"></i>
-            </a>
-              <div class="profile-dropdown-menu" >
-                <a class="dropdown-item" href="/profile">Profile</a>
-                <a class="dropdown-item" href="/logout">Logout</a>
-              </div>
-          </div>
-          <a href="/cart">
-            <i class="fas fa-shopping-cart"></i>
-        </a>
-        <a href="/wishlist">
-          <i class="fas fa-heart"></i>
-      </a>
-      </div>
-      
-      </nav>
-      <div class="banner">
-        <div class="row pt-2 pb-2">
-          <div class="col">
-            <a href="/">HOME</a>
-          </div>
-          <% categoryList.forEach(category => { %>
-            <div class="col">
-              <a href="/<%= category.categoryName %>" class="category-link" id="category-<%= category.categoryName %>" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a>
-            </div>
-        <% }) %>
-          <div class="col sort">
-            <form id="sortForm" action="" method="GET">
-              <select name="sortBy" id="sortBy">
-                  <option value="">Sort</option>
-                  <option value="popularity">Popularity</option>
-                  <option value="priceLowToHigh">Price: Low to High</option>
-                  <option value="priceHighToLow">Price: High to Low</option>
-                  <option value="newArrival">New Arrivals</option>
-                  <option value="aToZ">A - Z</option>
-                  <option value="zToA">Z - A</option>
-              </select>
-          </form>
-          </div>
-        </div>
-      </div>
-   
-    </header>
+    <%- include('../includes/userHeader.ejs') %>
     <main class="main">
       <% if (user) { %>
       <aside class="sidebar">
@@ -100,49 +21,128 @@
             <li><a href="/profile">User Profile</a></li>
             <li><a href="/address">Address</a></li>
             <li><a href="/order-history">Order History</a></li>
-            <li><a href="/payment-methods">Payment Methods</a></li>
             <li><a href="/change-password">Change Password</a></li>
+            <li><a href="/wallet">Wallet</a></li>
           </ul>
         </div>
         <% } %>
       </aside>
-      <section class="">
-        <% if (orders) { %>
-            <% orders.forEach(order => { %>         
-        <div class="card">
-            <div class="card-header">
-              Order ID: <%= order._id %>
-            </div>
-            <div class="card-body">
-              <h5 class="card-title">Order Details</h5>
-              <% order.items.forEach(item => { %>
-              <div class="row mb-3">
-                <div class="col-md-3">
-                  <img src="/uploads/<%= item.image %>" class="img-fluid" alt="Product Image" />
-                </div>
-                <div class="col-md-9">
-                  <h6><%= item.name %></h6>
-                  <p>Quantity: <%= item.quantity %></p>
-                  <p>Price: $<%= item.price %></p>
+      <div class="container-fluid">
+        <% if (order) { %>
+        <div class="container">
+          <div class="d-flex justify-content-between align-items-center py-3">
+            <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> Order <%= order.uniqueOrderId %></h2>
+          </div>
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="mb-3 d-flex justify-content-between">
+                    <div>
+                      <span class="me-3"><%= new Date(order.createdAt).toDateString() %></span>
+                      <span class="me-3"><%= order.uniqueOrderId %></span>
+                      <!-- <span class="me-3">Visa -1234</span> -->
+                    </div>
+                    <div class="invoice">
+                      <a href="#" data-bs-toggle="modal" data-bs-target="#invoiceModal">Invoice</a>
+                    </div>
+                  </div>
+                  <table class="table table-borderless">
+                    <tbody>
+                      <% order.items.forEach(item => { %>
+                      <tr>
+                        <td>
+                          <div class="d-flex mb-2">
+                            <div class="flex-shrink-0">
+                              <img src="/uploads/<%= item.productId.photos[0].filename %>" alt="" width="35" class="img-fluid">
+                            </div>
+                            <div class="flex-lg-grow-1 ms-3">
+                              <h6 class="small mb-0"><a href="/product-details/<%= item.productId._id %>" class="text-reset"><%= item.productId.name %></a></h6>
+                              <!-- <span class="small">Color: White</span> -->
+                            </div>
+                          </div>
+                        </td>
+                        <td><%= item.quantity %></td>
+                        <td class="text-end">₹<%= item.productId.price %></td>
+                        <td><span class="badge rounded-pill bg-info"><%= item.status %></span></td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="2">Discount(code: <%= order.couponCode %>)</td>
+                        <td class="text-danger text-end">-₹<%= order.priceDetails.discountAmount %></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2">Subtotal</td>
+                        <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2">Delivery charge</td>
+                        <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2">Sales Tax</td>
+                        <td class="text-end"><%= order.priceDetails.salesTax %></td>
+                      </tr>
+                      <tr class="fw-bold">
+                        <td colspan="2">TOTAL</td>
+                        <td class="text-end">₹<%= order.totalCost %></td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
               </div>
-              <% }) %>
-              <div class="row">
-                <div class="col-md-6">
-                  <p>Total Amount: $<%= order.totalCost %></p>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <h3 class="h6">Payment Method</h3>
+                      <p><%= order.paymentMethod %><br>
+                      Total: ₹<%= order.totalCost %> 
+                      <% if (order.paymentMethod === "online"  && order.paymentStatus === 'confirmed' || order.paymentMethod === "wallet"  && order.paymentStatus === 'confirmed' ) { %>
+                        <span class="badge bg-success rounded-pill">PAID</span></p>
+                      <% } else if(order.paymentMethod === "online"  && order.paymentStatus === 'pending') { %>
+                        
+                        <span class="badge bg-success rounded-pill">PENDING</span></p>
+                        <button id="retry-payment" data-order-id = '<%= order._id %>'>Retry Payment</button>
+                      <% } %>
+                    </div>
+                    <div class="col-lg-6">
+                      <h3 class="h6">Billing address</h3>
+                      <address>
+                        <strong><%= order.deliveryAddress.address.name %></strong><br>
+                        <%= order.deliveryAddress.address.houseName %><br>
+                        <%= order.deliveryAddress.address.street %>,<%= order.deliveryAddress.address.city %><br>
+                        <%= order.deliveryAddress.address.district %><br>
+                        <%= order.deliveryAddress.address.state %>-<%= order.deliveryAddress.address.pinCode %><br>
+                        <!-- <abbr title="Phone">P:</abbr> (123) 456-7890 -->
+                      </address>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-md-6">
-                  <% if (order.couponApplied) { %>
-                  <p>Coupon Applied: <%= order.couponCode %></p>
-                  <p>Discounted Amount: $<%= order.discountedAmount %></p>
-                  <% } %>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="h6">Shipping Information</h3> <hr>
+                  <h3 class="h6">Address</h3>
+                  <address>
+                    <strong><%= order.deliveryAddress.address.name %></strong><br>
+                    <%= order.deliveryAddress.address.houseName %><br>
+                    <%= order.deliveryAddress.address.street %>,<%= order.deliveryAddress.address.city %><br>
+                    <%= order.deliveryAddress.address.district %><br>
+                    <%= order.deliveryAddress.address.state %>-<%= order.deliveryAddress.address.pinCode %><br>
+                    <!-- <abbr title="Phone">P:</abbr> (123) 456-7890 -->
+                  </address>
                 </div>
               </div>
             </div>
           </div>
-          <% }) %>
-          <% } %>
-      </section>
+        </div>
+        <% } %>
+     </div>
     </main>
 
     <footer class="footer">
@@ -197,6 +197,139 @@
         </div>
       </div>
     </footer>
+    <!-- Invoice Modal -->
+<div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="invoiceModalLabel">Invoice</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Invoice content will be here -->
+        <% if (order) { %>
+          <div class="container">
+            <div class="row">
+              <!-- BEGIN INVOICE -->
+              <div class="col-xs-12">
+                <div class="grid invoice">
+                  <div class="grid-body">
+                    <div class="invoice-title">
+                      <div class="row">
+                        <div class="col-xs-12">
+                          <img src="/images/test.jpg" alt="Brand Logo" height="35">
+                        </div>
+                      </div>
+                      <br>
+                      <div class="row">
+                        <div class="col-xs-12">
+                          <h2>Invoice<br>
+                          <span class="small">Order #<%= order._id %></span></h2>
+                        </div>
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                      <div class="col-xs-6">
+                        <address>
+                          <strong>Billed To:</strong><br>
+                          <%= order.deliveryAddress.address.name %><br>
+                          <%= order.deliveryAddress.address.houseName %><br>
+                          <%= order.deliveryAddress.address.street %>, <%= order.deliveryAddress.address.city %><br>
+                          <%= order.deliveryAddress.address.district %>, <%= order.deliveryAddress.address.state %> - <%= order.deliveryAddress.address.pinCode %>
+                        </address>
+                      </div>
+                      <div class="col-xs-6 text-right">
+                        <address>
+                          <strong>Shipped To:</strong><br>
+                          <%= order.deliveryAddress.address.name %><br>
+                          <%= order.deliveryAddress.address.houseName %><br>
+                          <%= order.deliveryAddress.address.street %>, <%= order.deliveryAddress.address.city %><br>
+                          <%= order.deliveryAddress.address.district %>, <%= order.deliveryAddress.address.state %> - <%= order.deliveryAddress.address.pinCode %>
+                        </address>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-6">
+                        <address>
+                          <strong>Payment Method:</strong><br>
+                          <%= order.paymentMethod %><br>
+                        </address>
+                      </div>
+                      <div class="col-xs-6 text-right">
+                        <address>
+                          <strong>Order Date:</strong><br>
+                          <%= new Date(order.createdAt).toDateString() %>
+                        </address>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h3>ORDER SUMMARY</h3>
+                        <table class="table table-striped">
+                          <thead>
+                            <tr class="line">
+                              <td><strong>#</strong></td>
+                              <td class="text-center"><strong>ITEM</strong></td>
+                              <td class="text-center"><strong>QTY</strong></td>
+                              <td class="text-right"><strong>RATE</strong></td>
+                              <td class="text-right"><strong>SUBTOTAL</strong></td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% order.items.forEach((item, index) => { %>
+                              <tr>
+                                <td><%= index + 1 %></td>
+                                <td><strong><%= item.productId.name %></strong></td>
+                                <td class="text-center"><%= item.quantity %></td>
+                                <td class="text-center">₹<%= item.productId.currentPrice %></td>
+                                <td class="text-right">₹<%= item.quantity * item.productId.currentPrice %></td>
+                              </tr>
+                            <% }); %>
+                            <tr>
+                              <td colspan="3"></td>
+                              <td class="text-right"><strong>Subtotal</strong></td>
+                              <td class="text-right"><strong>₹<%= order.priceDetails.subTotal %></strong></td>
+                            </tr>
+                            <tr>
+                              <td colspan="3"></td>
+                              <td class="text-right"><strong>Discount</strong></td>
+                              <td class="text-right"><strong>-₹<%= order.priceDetails.discountAmount %></strong></td>
+                            </tr>
+                            <tr>
+                              <td colspan="3"></td>
+                              <td class="text-right"><strong>Delivery Charge</strong></td>
+                              <td class="text-right"><strong>₹<%= order.priceDetails.deliveryCharge %></strong></td>
+                            </tr>
+                            <tr>
+                              <td colspan="3"></td>
+                              <td class="text-right"><strong>Sales Tax</strong></td>
+                              <td class="text-right"><strong><%= order.priceDetails.salesTax %></strong></td>
+                            </tr>
+                            <tr>
+                              <td colspan="3"></td>
+                              <td class="text-right"><strong>Total</strong></td>
+                              <td class="text-right"><strong>₹<%= order.totalCost %></strong></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>									
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- END INVOICE -->
+            </div>
+          </div>
+        <% } %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+      </div>
+    </div>
+  </div>
+</div>
     <script>
       function setCategory(category) {
         document.getElementById("selectedCategory").value = category;
@@ -206,7 +339,107 @@
           category.charAt(0).toUpperCase() + category.slice(1);
       }
     </script>
+    <script>
+      const retryButton = document.getElementById('retry-payment');
+      const orderId = retryButton.dataset.orderId;
+      console.log(orderId,"client")
 
+      retryButton.addEventListener('click', async () => {
+        try {
+          const response = await fetch('/retry-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({orderId} ), 
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+          const options = {
+            key:  "rzp_test_Tb5YYNqwWeIaYk" , 
+            amount: data.razorpayOrder.amount,
+            currency: data.razorpayOrder.currency,
+            name: 'ShoeZone',
+            description: 'Order Description',
+            order_id: data.razorpayOrder.id, // Razorpay Order ID
+
+            handler: async function (response) {
+            if (response.razorpay_payment_id) {
+              console.log(response,"order",data.razorpayOrder,"orderId:",data.orderId);
+              response.orderId = data.orderId;
+            
+                fetch('/checkout/verify', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(response)
+                })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.message === 'Payment verified') {
+                    window.location.href = `/order-details/${data.orderId}`; 
+                  } else {
+                    console.error('Payment verification failed!');
+                  }
+                })
+                .catch(error => {
+                  console.error('Error verifying payment:', error);
+                });
+              } else {
+                window.location.href = `/order-details/${data.orderId}?payment=pending`;
+              }
+            },
+            prefill: {
+              name: 'User Name',
+              email: 'user@example.com',
+              contact: '9876543210'
+            },
+            notes: {
+              address: 'Address Details'
+            }
+          };
+
+          const razorpayCheckout = new window.Razorpay(options);
+          razorpayCheckout.open();
+        
+          razorpayCheckout.on('payment.failed', async function (response) {
+            console.error('Payment failed:', response.error,"data:",data);
+            window.location.href = `/order-details/${data.orderId}?payment=failed`;
+
+          });
+
+          razorpayCheckout.on('payment.dismissed', function (response) {
+            console.log('Payment dismissed:', response);
+            window.location.href = `/order-details/${data.orderId}?payment=failed`;
+          });
+
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.error,
+            confirmButtonText: 'OK'
+          });
+        }
+        } catch (error) {
+          console.error('Error retrying payment:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while placing the order.',
+            confirmButtonText: 'OK'
+          });
+        }
+      });
+
+    </script>
+
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
   </body>
 </html>

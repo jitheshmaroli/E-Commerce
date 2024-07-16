@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <img src="/assets/images/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        <img src="/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
         SportZilon
       </a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -58,6 +57,9 @@
                   <a href="/admin/couponList">
                     <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
                   </a>
+                  <a href="/admin/offers">
+                    <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+                  </a>
                 </div>
             </div>
    </aside>
@@ -82,25 +84,27 @@
               <input type="text" class="form-control" id="name" value="" placeholder="product name" name="name" maxlength="20">
               <span id="name-error" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
               <label for="description">Product description</label>
               <input type="text" class="form-control" id="description" value="" placeholder="Product description" name="description" maxlength="150">
               <span id="description-error" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
               <% if (categoryList) { %>
-                  <label for="category">CATEGORY</label>
-                  <select class="form-control" id="category" name="category">
-                      <option value="" disabled selected>Select Category</option>
-                      <% categoryList.forEach(category => { %>
-                          <option value="<%= category.categoryName %>"><%= category.categoryName %></option> 
-                      <% }) %>
-                  </select>
-                  <span id="category-error" class="text-danger"></span>
+                <label for="category">CATEGORY</label>
+                <select class="form-control" id="category" name="category">
+                  <option value="" disabled selected>Select Category</option>
+                  <% categoryList.forEach(category => { %>
+                    <option value="<%= category.categoryName %>"><%= category.categoryName %></option> 
+                  <% }) %>
+                </select>
+                <span id="category-error" class="text-danger"></span>
               <% } %>
-          </div>
-          
-            <div class=" form-group text-left">
+            </div>
+            
+            <div class="form-group">
               <div class="row">
                 <div class="col">
                   <label for="brandname">Brand Name</label>
@@ -109,44 +113,37 @@
                 </div>
                 <div class="col">
                   <label for="stockQuantity">Stock Quantity</label>
-              <input type="text" class="form-control" id="stockQuantity" value="" placeholder="Stock Quantity" name="stock" maxlength="3">
-              <span id="stockQuantity-error" class="text-danger"></span>
+                  <input type="text" class="form-control" id="stockQuantity" value="" placeholder="Stock Quantity" name="stock" maxlength="3">
+                  <span id="stockQuantity-error" class="text-danger"></span>
                 </div>
                 <div class="col">
                   <label for="price">Price</label>
-              <input type="text" class="form-control" id="price" value="" placeholder="Price" name="price">
-              <span id="price-error" class="text-danger"></span>
+                  <input type="text" class="form-control" id="price" value="" placeholder="Price" name="price">
+                  <span id="price-error" class="text-danger"></span>
                 </div>
               </div>
             </div>
+            
             <div class="form-group">
               <label for="tags">Tags</label>
               <input type="text" class="form-control" id="tags" value="" placeholder="Tags" name="tags">
               <span id="tags-error" class="text-danger"></span>
             </div>
-            <div class="row">
-              <button type="submit" class="btn btn-primary mr-1 ">ADD PRODUCT</button>
-            <button type="submit" class="btn btn-primary">CLEAR FIELDS</button>
-            <a href="/admin/allProducts" class="ml-auto">BACK</a>
+            
+            <div class="form-group">
+              <label for="photos">Upload Product Images</label>
+              <input type="file" class="form-control-file" id="photos" name="photos" accept="image/*" multiple>
+              <span id="photo-error" class="text-danger"></span>
             </div>
-          
-        </div>
-        <div class="col-md-5">
-          <div class="row justify-content-center align-items-center">
-              <div class="product-gallery">
-                  <h4 class="product-gallery-heading">Upload Product Images</h4>
-                  <div class="image-uploads">
-                      <input type="file" name="photos" id="photos" accept="image/*" multiple>
-                  </div>
-                  <span id="photo-error" class="text-danger"></span>
-                  <div class="image-preview-container" id="preview">
-                      
-                  </div>
-              </div>
-          </div>
-      </div>
-      
-      </form> 
+            
+            <div class="image-preview-container" id="preview"></div>
+            
+            <div class="row mt-3">
+              <button type="submit" class="btn btn-primary mr-1">ADD PRODUCT</button>
+              <button type="reset" class="btn btn-secondary">CLEAR FIELDS</button>
+              <a href="/admin/allProducts" class="btn btn-link ml-auto">BACK</a>
+            </div>
+          </form>
       </div>
         </div>
    </section>     
@@ -157,17 +154,14 @@
       </div>
     </footer>
     <!-- Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.0/cropper.min.js"></script>
 <script>
-  const photoInput = document.getElementById('photos');
-  const imagePreviewContainer = document.querySelector('.image-preview-container');
 const form = document.getElementById('myForm');
+const photoInput = document.getElementById('photos');
+const imagePreviewContainer = document.getElementById('preview');
 const photoError = document.getElementById('photo-error');
-
 const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
 function validateProductName(name) {
@@ -176,19 +170,24 @@ function validateProductName(name) {
     return 'Product name cannot be empty.';
   } else if (!startsWithCharacterRegex.test(name)) {
     return 'Input must start with a character.';
-  }else if (name.length < 3) {
+  } else if (name.length < 3) {
     return 'Product name must be at least 3 characters long.';
   }
-  return ''; 
+  return '';
 }
-
-
 
 function validateDescription(description) {
   if (description.trim() === '') {
     return 'Product description cannot be empty.';
   } else if (description.length < 10) {
     return 'Product description must be at least 10 characters long.';
+  }
+  return '';
+}
+
+function validateCategory(category) {
+  if (category === '') {
+    return 'Please select a category.';
   }
   return '';
 }
@@ -219,18 +218,20 @@ function validatePrice(price) {
 }
 
 function validateTags(tags) {
-
   if (tags.trim() === '') {
     return 'Tags cannot be empty.';
   }
   return '';
 }
-function validatePhoto(photoInput){
+
+function validatePhoto(photoInput) {
   const selectedFiles = photoInput.files;
-  if (selectedFiles.length === 0) {
-    return 'Please select at least one photo.';    
-  }
- return '';
+  if (selectedFiles.length === 0 || selectedFiles.length < 4) {
+    return 'Please select 4 photos.';    
+  } else if (selectedFiles.length > 4) {
+    return 'Maximum 4 photos allowed.';
+  } 
+  return '';
 }
 
 function displayImagePreviews(files) {
@@ -238,11 +239,10 @@ function displayImagePreviews(files) {
 
   for (const file of files) {
     if (!validImageTypes.includes(file.type)) {
-        alert('Only images (JPEG, PNG, GIF) are allowed.');
-        photoInput.value = '';
-        return;
-      }
-
+      alert('Only images (JPEG, PNG, GIF) are allowed.');
+      photoInput.value = '';
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = function (event) {
@@ -256,48 +256,33 @@ function displayImagePreviews(files) {
   }
 }
 
-// photoInput.addEventListener('change', (event) => {
-//   const selectedFiles = event.target.files;
-//   if (selectedFiles.length !== 3) {
-//     alert('Please select exactly 3 photos');
-//     photoError.textContent = 'Photo input cannot be empty.';
-//     photoInput.value = ''; 
-//   }else {
-//     photoError.textContent = '';
-//     displayImagePreviews(selectedFiles);
-//   }
-// });
-
 photoInput.addEventListener('change', (event) => {
-  console.log(event.target.files)
   const selectedFiles = event.target.files;
-  if (selectedFiles.length === 0) {
-    photoError.textContent = 'Please select at least one photo.';
-    photoInput.value = ''; // Clear the input value (optional)
-  } else if (selectedFiles.length > 3) {
-    alert('Please select a maximum of 3 photos');
-    photoError.textContent = 'Maximum 3 photos allowed.';
-    photoInput.value = ''; // Clear the input value (optional)
-  } else {
-    // Existing code for handling valid selections (3 photos)
-    photoError.textContent = '';
+  const errorMessage = validatePhoto(photoInput);
+  photoError.textContent = errorMessage;
+  
+  if (!errorMessage) {
     displayImagePreviews(selectedFiles);
+  } else {
+    photoInput.value = ''; // Clear the input value
+    imagePreviewContainer.innerHTML = ''; // Clear previews
   }
 });
 
-
-const textInputs = form.querySelectorAll('input[type="text"]');
+const textInputs = form.querySelectorAll('input[type="text"], select');
 textInputs.forEach(input => {
-  input.addEventListener('change', (event) => {
+  const handleInputEvent = (event) => {
     const errorId = `${event.target.id}-error`; 
     const errorMessageElement = document.getElementById(errorId);
     if (errorMessageElement) {
       const errorMessage = validateInput(event.target.id, event.target.value);
       errorMessageElement.textContent = errorMessage;
     }
-  });
-});
+  };
 
+  input.addEventListener('keyup', handleInputEvent);
+  input.addEventListener('change', handleInputEvent);
+});
 
 function validateInput(inputId, inputValue) {
   switch (inputId) {
@@ -319,13 +304,10 @@ function validateInput(inputId, inputValue) {
       return ''; 
   }
 }
-const selectedFiles = photoInput.files;
-  if(selectedFiles.length !== 3) {
-    photoError.textContent = 'Photo input cannot be empty.';
-  }
 
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
-form.addEventListener('submit', (event) => {
   const name = document.getElementById('name').value;
   const description = document.getElementById('description').value;
   const category = document.getElementById('category').value;
@@ -333,9 +315,8 @@ form.addEventListener('submit', (event) => {
   const stockQuantity = document.getElementById('stockQuantity').value;
   const price = document.getElementById('price').value;
   const tags = document.getElementById('tags').value;
-  const photoInput = document.getElementById('photos');
 
-  
+  // Perform client-side validation
   const nameError = document.getElementById('name-error');
   const descriptionError = document.getElementById('description-error');
   const categoryError = document.getElementById('category-error');
@@ -343,8 +324,7 @@ form.addEventListener('submit', (event) => {
   const stockQuantityError = document.getElementById('stockQuantity-error');
   const priceError = document.getElementById('price-error');
   const tagsError = document.getElementById('tags-error');
-  const photoError = document.getElementById("photo error");
-
+  const photoError = document.getElementById('photo-error');
 
   nameError.textContent = validateProductName(name);
   descriptionError.textContent = validateDescription(description);
@@ -355,20 +335,16 @@ form.addEventListener('submit', (event) => {
   tagsError.textContent = validateTags(tags);
   photoError.textContent = validatePhoto(photoInput);
 
- 
+  const hasErrors = [nameError, descriptionError, categoryError, brandNameError, 
+                     stockQuantityError, priceError, tagsError, photoError]
+                    .some(error => error.textContent !== '');
 
-  let hasErrors = false; 
-  if (nameError.textContent || descriptionError.textContent || categoryError.textContent || brandNameError.textContent || stockQuantityError.textContent || priceError.textContent || tagsError.textContent || photoError.textContent ) {
-    hasErrors = true;
+  if (!hasErrors) {
+    form.submit(); 
   }
 
-  if (hasErrors) {
-    console.log()
-    event.preventDefault();
-  }
+  
 });
-
-
 </script>
  
 </body>

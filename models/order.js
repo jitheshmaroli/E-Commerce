@@ -7,6 +7,10 @@ const OrderSchema = new Schema({
         ref: 'User',
         required: true
     },
+    uniqueOrderId: {
+        type: String,
+        unique: true
+    },
     items: [
         {
             productId: {
@@ -14,26 +18,22 @@ const OrderSchema = new Schema({
                 ref: 'products',
                 required: true
             },
-            name: {
-                type: String,
-                required: true
-            },
-            price: {
-                type: Number,
-                required: true
-            },
             quantity: {
                 type: Number,
-                required: true
-            },
-            image: {
-                type: String,
                 required: true
             },
             status: {
                 type: String,
                 enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
                 default: 'Pending'
+            },
+            returnStatus: {
+                type: String,
+                enum: ['None', 'Requested', 'Approved', 'Rejected', 'Refunded'],
+                default: 'None'
+              },
+            returnReason: {
+                type: String
             }
         }
     ],
@@ -44,13 +44,39 @@ const OrderSchema = new Schema({
     paymentMethod: {
         type: String,
         enum: ['online', 'cod', 'wallet'],
-        required: true
+        //required: true
     },
     couponCode: {
-        type:String
+        type: String
     },
     paymentDetails: {
         type: Schema.Types.Mixed
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'confirmed'],
+    },
+    priceDetails: {
+        discountAmount: {
+            type: Number,
+            required: true
+        },
+        salesTax: {
+            type: Number,
+            required: true
+        },
+        deliveryCharge: {
+            type: Number,
+            required: true
+        },
+        subTotal: {
+            type: Number,
+            required: true
+        }
+    },
+    deliveryAddress:{
+        type: Schema.Types.Mixed,
+        required: true
     },
     createdAt: {
         type: Date,
@@ -58,6 +84,5 @@ const OrderSchema = new Schema({
     }
 });
 
-
-const order = mongoose.model("Order",OrderSchema);
-module.exports = order ;
+const Order = mongoose.model("Order", OrderSchema);
+module.exports = Order;

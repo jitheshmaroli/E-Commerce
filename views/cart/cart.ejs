@@ -9,73 +9,7 @@
     <link rel="stylesheet" href="/css/cart.css">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-          <div class="brand-logo">
-            <a class="navbar-brand" href="/">
-              <img src="/images/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid d-inline-block align-text-top">
-              <span class="d-inline-block">ShoeZone</span>
-            </a>
-          </div>
-          <div class="search-bar">
-            <form action="/search" method="GET">
-              <div class="input-group">
-                <input type="text" name="query" class="form-control" placeholder="Search for products...">
-                <button type="submit" class="input-group-text search-btn">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            <div class="dropdown">
-              <button class="dropdown-toggle btn dropdown-toggle-split" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="dropdown-toggle-text">All categories</span>
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <% if (categoryList) { %>
-                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                  <li><a class="dropdown-item" href="#" onclick="setCategory('all')">All</a></li>
-                  <% categoryList.forEach(category => { %>
-                    <li><a class="dropdown-item" href="#" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a></li>
-                  <% }) %>
-                </ul>
-              <% } %>
-              <input type="hidden" name="category" id="selectedCategory" value="all">
-            </div>
-            </form>
-          </div>
-          
-          <div class="user-actions">
-            <div class="profile-dropdown">
-              <a class="profile-dropdown-toggle btn " href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user"></i>
-              </a>
-                <div class="profile-dropdown-menu" >
-                  <a class="dropdown-item" href="/profile">Profile</a>
-                  <a class="dropdown-item" href="/logout">Logout</a>
-                </div>
-            </div>
-            <a href="/cart">
-              <i class="fas fa-shopping-cart"></i>
-          </a>
-          <a href="/wishlist">
-            <i class="fas fa-heart"></i>
-        </a>
-        </div>
-        
-        </nav>
-        <div class="banner">
-          <div class="row pt-2 pb-2">
-            <div class="col">
-              <a href="/">HOME</a>
-            </div>
-            <% categoryList.forEach(category => { %>
-              <div class="col">
-                <a href="/<%= category.categoryName %>" class="category-link" id="category-<%= category.categoryName %>" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a>
-              </div>
-          <% }) %>
-          </div>
-        </div>
-     
-      </header>
+    <%- include('../includes/userHeader.ejs') %>
 <h1 style="text-align: center;">SHOPPING CART</h1>
 <% if (items.length <= 0) { %>
     <div class="empty-cart-message">
@@ -99,7 +33,14 @@
                         </div>
                         <div class="item-info">
                             <a href="/product-details/<%= item.productId %>" data-product="<%=item.productId%>"><h3 class="product-name"><%= item.name.toUpperCase() %></h3></a>
-                            <p class="product-price">$<%= item.price.toFixed(2) %></p>
+                            <p class="product-price"><% if (item.offer) { %>
+                                <span class="price" style="text-decoration: line-through;">₹<%= item.price.toFixed(2) %></span>
+                                <span class="current-price">₹<%= item.currentPrice.toFixed(2) %></span>
+                                <i class="fas fa-info-circle offer-icon" data-bs-toggle="modal" data-bs-target="#offerModal<%= item.productId %>"></i>
+                              <% } else { %>
+                                ₹<%= item.currentPrice.toFixed(2) %>
+                              <% } %>
+                            </p>
                             <div class="quantity-control">
                                 <button class="quantity-btn">-</button>
                                 <input type="number" value="<%= item.quantity %>" min="1" data-stock="<%= item.stock %>">
@@ -110,7 +51,23 @@
                     <div class="item-action">
                         <a href="#" class="move-to-wishlist"><i class="fa fa-heart"></i></a>
                     </div>
-                </div>                
+                </div> 
+                <% if (item.offer) { %>
+                    <div class="modal fade" id="offerModal<%= item.productId %>" tabindex="-1" aria-labelledby="offerModalLabel<%= item.productId %>" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="offerModalLabel<%= item.productId %>">Offer Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <%= item.offer.name %>: 
+                            <%= item.offer.discountType === 'percentage' ? item.offer.discountValue + '% off' : '₹' + item.offer.discountValue + ' off' %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% } %>               
             <% }) %>
         </div>
     </section>
@@ -296,6 +253,13 @@
         });
     }
 
+    function checkAllItems() {
+        document.querySelectorAll('.cart-item-checkbox-input').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        updateOrderSummary();
+    }
+    checkAllItems();
     function updateOrderSummary() {
     let totalItems = 0;
     let totalCost = 0.0;
@@ -304,7 +268,13 @@
         const checkbox = item.querySelector('.cart-item-checkbox-input');
         if (checkbox.checked) {
             const qty = parseInt(item.querySelector('.quantity-control input').value);
-            const price = parseFloat(item.querySelector('.product-price').textContent.replace('$', ''));
+            let price;
+            const currentPriceElement = item.querySelector('.current-price');
+            if (currentPriceElement) {
+                price = parseFloat(currentPriceElement.textContent.replace('₹', ''));
+            } else {
+                price = parseFloat(item.querySelector('.product-price').textContent.replace('₹', ''));
+            }
 
             totalItems += qty;
             totalCost += qty * price;
@@ -313,7 +283,7 @@
     
 
     document.getElementById('total-items').textContent = totalItems;
-    document.getElementById('total-cost').textContent = `$${totalCost.toFixed(2)}`;
+    document.getElementById('total-cost').textContent = `₹${totalCost.toFixed(2)}`;
 }
 
 document.querySelectorAll('.cart-item-checkbox-input').forEach(checkbox => {
@@ -323,11 +293,13 @@ document.querySelectorAll('.cart-item-checkbox-input').forEach(checkbox => {
 const checkoutBtn = document.getElementById('checkout-btn');
 checkoutBtn.addEventListener('click', () => {
     const selectedItems = Array.from(document.querySelectorAll('.cart-item-checkbox-input:checked'))
-        .map(checkbox => ({
-            productId: checkbox.getAttribute('data-product'),
-            quantity: parseInt(checkbox.getAttribute('data-quantity'))
-        }));
-
+        .map(checkbox => {
+            const item = checkbox.closest('.cart-item');
+            return {
+                productId: checkbox.getAttribute('data-product'),
+                quantity: parseInt(item.querySelector('.quantity-control input').value)
+            };
+        });
     if (selectedItems.length === 0) {
         Swal.fire({
             icon: 'warning',

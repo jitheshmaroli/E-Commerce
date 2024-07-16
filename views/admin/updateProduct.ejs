@@ -60,6 +60,9 @@
             <a href="/admin/couponList">
               <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
             </a>
+            <a href="/admin/offers">
+              <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+            </a>
           </div>
       </div>
       <div class="col-10">
@@ -333,8 +336,8 @@
     const selectedFiles = event.target.files;
     const existingImages = imagePreviewContainer.querySelectorAll('.image-wrapper').length;
 
-    if (selectedFiles.length + existingImages !== 3) {
-      alert('Please ensure a total of exactly 3 photos are selected after additions.');
+    if (selectedFiles.length + existingImages !== 4) {
+      alert('Please ensure a total of exactly 4 photos are selected after additions.');
       photoInput.value = '';
     } else {
       displayImagePreviews(selectedFiles);

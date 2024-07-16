@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/addCategory.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="/test.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            SportZilon
+          </a>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  ADMIN
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <main class="main">
+        <aside class="sidebar">
+          <div class="">
+            <div class="list-group sidebar-list" id="myListGroup">
+              <a href="/admin">
+                <button type="button" class="list-group-item list-group-item-action">HOME </button>
+              </a>
+              <a href="/admin/allproducts">
+                <button type="button" class="list-group-item list-group-item-action">ALL PRODUCTS</button>
+              </a>
+              <a href="/admin/ordersList">
+                <button type="button" class="list-group-item list-group-item-action">ORDERS LIST</button>
+              </a>
+              <a href="/admin/usersList">
+                <button type="button" class="list-group-item list-group-item-action">USERS LIST</button>
+              </a>
+              <a href="/admin/categoryList">
+                <button type="button" class="list-group-item list-group-item-action">CATEGORY LIST</button>
+              </a>
+              <a href="/admin/couponList">
+                <button type="button" class="list-group-item list-group-item-action">COUPON LIST</button>
+              </a>
+              <a href="/admin/offers">
+                <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
+              </a>
+            </div>
+          </div>
+        </aside>
+        <section class="content">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/admin/offers">OFFERS LIST</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">EDIT OFFER</li>
+                </ol>
+              </nav>
+    <div class="container mt-5">
+        <h1 class="mb-4">Offers List</h1>
+        <a href="/admin/offers/add-offer" class="btn btn-primary mb-3">Add New Offer</a>
+        <table class="table table-striped" id="myTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Discount</th>
+                    <th>Offer Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% offers.forEach(offer => { %>
+                    <tr>
+                        <td><%= offer.name %></td>
+                        <td><%= offer.description %></td>
+                        <td><%= offer.discountType === 'percentage' ? offer.discountValue + '%' : '$' + offer.discountValue %></td>
+                        <td><%= offer.offerType %></td>
+                        <td><%= offer.startDate.toLocaleDateString() %></td>
+                        <td><%= offer.endDate.toLocaleDateString() %></td>
+                        <td><%= offer.isActive ? 'Active' : 'Inactive' %></td>
+                        <td>
+                            <a href="/admin/offers/edit/<%= offer._id %>" class="btn btn-sm btn-primary">Edit</a>
+                            <form action="/admin/offers/delete/<%= offer._id %>" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this offer?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="container">
+    <p class="copyright">© 2024 ShoesZone.</p>
+  </div>
+</footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script>
+        $(document).ready( function () {
+            $('#myTable').DataTable();
+        } );
+      </script>
+</body>
+</html>

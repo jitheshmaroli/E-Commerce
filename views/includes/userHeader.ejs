@@ -1,0 +1,64 @@
+<header>
+    <nav class="navbar navbar-expand-sm navbar-light ">
+      <div class="container-fluid">
+        <div class="row w-100">
+          <div class="col-12 d-flex justify-content-between align-items-center">
+            <a class="navbar-brand nav-link" href="/">
+              <img src="/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid brand-logo d-inline-block align-text-top">
+              <span >ShoeZone</span>
+            </a>
+            <div class="search-bar">
+              <form action="/search" method="GET">
+                <div class="input-group">
+                  <input type="text" name="query" class="form-control" placeholder="Search for products...">
+                  <button type="submit" class="input-group-text search-btn">
+                      <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="user-actions">
+              <% if (user !== null && user !== undefined) { %>
+                <div class="profile-dropdown">
+                  <a class="profile-dropdown-toggle nav-link btn " href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                  </a>
+                  <div class="profile-dropdown-menu" >
+                      <a class="dropdown-item nav-link" href="/profile">Profile</a>
+                      <a class="dropdown-item nav-link" href="/logout">Logout</a>
+                  </div>
+                </div>
+                <% } else {%>
+                  <div class="profile">
+                   <a href="/profile"><i class="fas fa-user"></i></a>
+                  </div>
+                <% } %>
+                <a href="/cart">
+                  <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="/wishlist">
+                  <i class="fas fa-heart"></i>
+                </a>
+            </div>
+          </div>
+          <div class="col-12 nav-category mt-2">
+            <ul class="nav justify-content-center">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">HOME</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  CATEGORIES
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <li><a class="dropdown-item" href="/search?category=MEN">Men</a></li>
+                  <li><a class="dropdown-item" href="/search?category=WOMEN">Women</a></li>
+                  <li><a class="dropdown-item" href="/search?category=KIDS">Kids</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>

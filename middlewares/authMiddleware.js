@@ -3,25 +3,26 @@ const  isAdminAuthenticated = (req, res, next) => {
     if (req.session.isAdminAuthenticated) {
       next();
     } else {
-      res.render('auth/loginregister',{message:"login to continue"});
+      res.render('auth/login',{message:"login to continue"});
     }
   }
   
   //  user authentication
   const isUserAuthenticated = (req, res, next) => {
-    if (req.session.isUserAuthenticated || req.session.passport && req.session.passport.user ) {
+    if (req.session.isUserAuthenticated || req.session.passport && req.session.passport.user.isUserAuthenticated ) {
       console.log("user is authenticated")
       next();
     } else {
-      console.log("user is not authenticated")
-      res.redirect('/login');
+      req.session.returnTo = req.originalUrl;
+      console.log("user is not authenticated:",req.originalUrl)
+      res.redirect('/login?message=please login to continue');
     }
   }
 
   //   redirect authenticated users/admin away from the login page
 const redirectToDashboard = (req, res, next) => {
     if (req.session.isAdminAuthenticated) {
-      res.redirect('/admin');
+      res.redirect('/admin/dashboard');
     }else if (req.session.isUserAuthenticated) {
       res.redirect('/');
     }else {

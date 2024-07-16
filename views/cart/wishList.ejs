@@ -9,73 +9,7 @@
     <link rel="stylesheet" href="/css/wishList.css">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-          <div class="brand-logo">
-            <a class="navbar-brand" href="/">
-              <img src="/images/test.jpg" alt="Brand Logo" width="50" height="50" class="img-fluid d-inline-block align-text-top">
-              <span class="d-inline-block">ShoeZone</span>
-            </a>
-          </div>
-          <div class="search-bar">
-            <form action="/search" method="GET">
-              <div class="input-group">
-                <input type="text" name="query" class="form-control" placeholder="Search for products...">
-                <button type="submit" class="input-group-text search-btn">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            <div class="dropdown">
-              <button class="dropdown-toggle btn dropdown-toggle-split" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="dropdown-toggle-text">All categories</span>
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <% if (categoryList) { %>
-                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                  <li><a class="dropdown-item" href="#" onclick="setCategory('all')">All</a></li>
-                  <% categoryList.forEach(category => { %>
-                    <li><a class="dropdown-item" href="#" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a></li>
-                  <% }) %>
-                </ul>
-              <% } %>
-              <input type="hidden" name="category" id="selectedCategory" value="all">
-            </div>
-            </form>
-          </div>
-          
-          <div class="user-actions">
-            <div class="profile-dropdown">
-              <a class="profile-dropdown-toggle btn " href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user"></i>
-              </a>
-                <div class="profile-dropdown-menu" >
-                  <a class="dropdown-item" href="/profile">Profile</a>
-                  <a class="dropdown-item" href="/logout">Logout</a>
-                </div>
-            </div>
-            <a href="/cart">
-              <i class="fas fa-shopping-cart"></i>
-          </a>
-          <a href="/wishlist">
-            <i class="fas fa-heart"></i>
-        </a>
-        </div>
-        
-        </nav>
-        <div class="banner">
-          <div class="row pt-2 pb-2">
-            <div class="col">
-              <a href="/">HOME</a>
-            </div>
-            <% categoryList.forEach(category => { %>
-              <div class="col">
-                <a href="/<%= category.categoryName %>" class="category-link" id="category-<%= category.categoryName %>" onclick="setCategory('<%= category.categoryName %>')"><%= category.categoryName %></a>
-              </div>
-          <% }) %>
-          </div>
-        </div>
-     
-      </header>
+  <%- include('../includes/userHeader.ejs') %>
 <h1 style="text-align: center;">WISHLIST ITEMS</h1>
 <div class="container">
     <% if (wishlist && wishlist.length > 0) { %>
@@ -87,11 +21,11 @@
         </div>
         <div class="product-details">
             <h1 class="name"><%= item.name %></h1>
-            <p>$<%= item.price.toFixed(2) %></p>
+            <p>₹<%= item.price.toFixed(2) %></p>
         </div>
       </div>
         <div class="button-container">
-            <form action="/add-to-cart" method="POST" style="display: inline;">
+            <form action="/move-to-cart/<%= item._id %>" method="POST" style="display: inline;">
                 <input type="hidden" name="productId" value="<%= item._id %>">
                 <button type="submit">ADD TO CART</button>
             </form>
@@ -143,6 +77,7 @@
         </div>
     </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     (function () {
         window.onpageshow = function (event) {
@@ -152,30 +87,28 @@
         };
     })();
 
-document.querySelectorAll('.add-to-cart-button').forEach(button => {
-    button.addEventListener('click', async (event) => {
-        const form = event.target.closest('form');
-        const formData = new FormData(form);
+// document.querySelectorAll('.add-to-cart-button').forEach(button => {
+//     button.addEventListener('click', async (event) => {
+//         const form = event.target.closest('form');
+//         const formData = new FormData(form);
 
-        try {
-            const response = await fetch('/add-to-cart', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(result.message);
-            } else {
-                alert('Failed to add to cart: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error adding to cart:', error);
-            alert('An error occurred while adding to cart.');
-        }
-    });
-});
+//            fetch('/move-to-cart', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: formData
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//               if (data.success) {
+//                 Swal.fire('Success!', data.message, 'success');
+//               } else {
+//                 console.error('Error adding product to cart:', data.error);
+//               }
+//             })
+//     });
+// });
 
 </script>
 <script>

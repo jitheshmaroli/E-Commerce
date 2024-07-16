@@ -1,9 +1,10 @@
 const Category = require("../models/category");
+const Product = require("../models/product");
 
 const categoryListView = async (req, res) => {
   try {
     console.log("view category");
-    const categoryList = await Category.find({ isBlocked: false });
+    const categoryList = await Category.find();
 
     res.render("admin/categoryList", { categoryList });
   } catch (error) {
@@ -83,24 +84,49 @@ const editCategory = async (req, res) => {
   }
 };
 
-const deleteCategory = async (req, res) => {
-  try {
-    const categoryId = req.params.id;
+// const deleteCategory = async (req, res) => {
+//   try {
+//     const categoryId = req.params.id;
 
-    const categoryData = await Category.findById(categoryId);
-    await Category.findByIdAndUpdate(
-      { _id: categoryId },
-      { $set: { isBlocked: !categoryData.isBlocked } },
-      { new: true }
+//     await Category.findByIdAndUpdate(
+//       { _id: categoryId },
+//       { $set: { isBlocked: true } },
+//       { new: true }
+//     );
+
+
+//     await Product.updateMany(
+//       { category: categoryId },
+//       { $set: { isDeleted:true } },
+//       { new: true }
+//     );
+
+//     res.redirect("/admin/categoryList");
+//   } catch (err) {
+//     res.status(500).send(err);
+//   }
+// };
+ 
+const toggleCategory = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found' });
+    }
+    
+    category.isBlocked = !category.isBlocked;
+    await category.save();
+
+    await Product.updateMany(
+      { category: category._id },
+      { $set: { isDeleted: category.isBlocked } }
     );
 
-    if (!categoryData) {
-      return res.status(404).json({ error: "category not found" });
-    }
-
-    res.redirect("/admin/categoryList");
-  } catch (err) {
-    res.status(500).send(err);
+    console.log(category,"category");
+    res.json({ success: true, isBlocked: category.isBlocked });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -109,6 +135,6 @@ module.exports = {
   addCategory,
   categoryListView,
   editCategory,
-  deleteCategory,
   editCategoryView,
+  toggleCategory
 };

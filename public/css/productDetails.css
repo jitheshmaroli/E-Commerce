@@ -9,18 +9,42 @@ body {
 
 /* Header */
 header {
-  background-color: #333;
+  background-color: #080808;
   color: #fff;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px;
+}
+.nav-category{
+  background-color: #585858;
+  border-radius: 5px; 
+}
+.navbar .row {
+  width: 100%;
 }
 
-.brand-logo {
+.navbar .nav-link {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: #000000;
+}
+
+.navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand, .navbar-brand>span {
+  color: #ffffff;
   display: flex;
   align-items: center;
 }
@@ -109,36 +133,11 @@ header {
   align-items: center;
 }
 
-
 .user-actions a {
-  color: #fff;
+  color: #ffffff;
   font-size: 24px;
   margin-left: 10px;
 }
-
-.banner {
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-}
-
-
-.banner a {
-  color: #333;
-  text-decoration: none;
-  margin: 0 10px;
-}
-
-.banner form {
-  display: inline-block;
-}
-
-.banner select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 
 /* Profile Icon */
 .profile-dropdown {
@@ -190,47 +189,60 @@ header {
 .profile-dropdown-menu a:hover {
  color: black;
 }
- 
 
-/* section */
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    margin: auto;
-    padding: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
-.product-image-wrapper {
-    flex-basis: 50%;
+/* Breadcrumb styles */
+.breadcrumb {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+.breadcrumb a {
+  text-decoration: none;
+  color: #000000;
 }
 
-.product-image {
-    width: 100%;
-    display: none;
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
 }
 
-.product-image.active {
-    display: block;
-}
 
-.image-navigation {
-    display: flex;
-    justify-content: center;
-}
-
-.prev-btn,
-.next-btn {
-    background-color: transparent;
-    border: none;
-    color: #8b0e0e;
-    padding: 5px 10px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
+/* Product details styles */
 .product-details {
-    flex-basis: content;
-    padding: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#product-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.product-category {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.rating {
+  margin-bottom: 10px;
+}
+
+.rating i {
+  font-size: 16px;
+  color: black;
 }
 
 .reviews{
@@ -249,19 +261,11 @@ header {
   display: flex;
   justify-content: center;
 }
-.rating {
-    margin-bottom: 10px;
-    width: 40%;
-}
-
-.rating i {
-    font-size: 16px;
-    color: black;
-}
 
 .price {
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
 .stock-alert {
@@ -280,7 +284,7 @@ header {
 .quantity-control {
   display: flex;
   align-items: center;
-  margin-top: 10px;
+  /* margin-top: 10px; */
   margin-bottom: 10px;
 }
 
@@ -289,6 +293,7 @@ header {
   height: 30px;
   background-color: #ccc;
   border: none;
+  padding: 5px 10px;
   cursor: pointer;
 }
 .quantity-btn:hover {
@@ -299,9 +304,9 @@ header {
 
 .quantity-control input {
   width: 50px;
-  height: 30px;
+  /* height: 30px; */
   text-align: center;
-  margin: 0 5px;
+  margin: 0 10px;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -309,7 +314,7 @@ input::-webkit-inner-spin-button {
   margin: 0; 
 }
 
-.btn-buy-now, .btn-add-to-cart {
+.btn-buy-now, .btn-add-to-cart, .btn-view-cart, .btn-view-wishlist, .btn-add-to-wishlist{
   padding: 8px 16px;
   border: 1px solid ;
   border-radius: 4px;
@@ -321,8 +326,20 @@ input::-webkit-inner-spin-button {
   background-color: black;
   color:white;
 }
+.btn-view-cart:hover{
+  background-color: black;
+  color:white;
+}
 
 .btn-buy-now:hover{
+  background-color: black;
+  color:white;
+}
+.btn-view-wishlist:hover{
+  background-color: black;
+  color:white;
+}
+.btn-add-to-wishlist:hover{
   background-color: black;
   color:white;
 }
@@ -348,12 +365,30 @@ h1, h2 {
     margin-bottom: 10px;
 }
 
+.final-price {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+
 
    /* Footer */
 .footer {
-  background-color: #333;
+  background-color: #343a40;
+    color: #fff;
+    padding: 40px 0;
+    margin-top: 40px;
+}
+
+.container-footer{
+  background-color: #343a40;
   color: #fff;
   padding: 20px;
+  padding-bottom: 0px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-top: 20px;
 }
 
 .footer-heading {
@@ -394,15 +429,34 @@ h1, h2 {
 }
   
   /* footer css ends here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+  * {box-sizing: border-box;}
 
-.container {
+  .img-zoom-container {
+    position: relative;
+  }
+  
+  .img-zoom-lens {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    /*set the size of the lens:*/
+    width: 40px;
+    height: 40px;
+  }
+  
+  .img-zoom-result {
+    border: 1px solid #d4d4d4;
+    /*set the size of the result div:*/
+    width: 300px;
+    height: 300px;
+  }
+/* .container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Horizontally center the container */
+    justify-content: center; 
     margin: auto;
     padding: 20px;
     max-width: 1200px; 
-}
+} */
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
@@ -440,3 +494,48 @@ h1, h2 {
         font-size: 18px;
     }
 }
+
+.product-image-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px;
+}
+
+.image-preview-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.image-preview {
+  flex: 1;
+  max-width: 25%;
+  cursor: pointer;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.main-image-wrapper {
+  width: 100%;
+}
+
+.main-image img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 991.98px) {
+  .image-preview-wrapper {
+    display: none;
+  }
+  .main-image {
+    display: none !important;
+  }
+}
+
+
