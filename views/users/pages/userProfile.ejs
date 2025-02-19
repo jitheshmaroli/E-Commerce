@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>userhome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/userProfile.css">
+  </head>
+<body>
+  <%- include('../../includes/userHeader.ejs') %>
+  <button id="sidebarToggle" class="d-md-none">Menu</button>
+  <main class="main">
+    <% if (user) { %>
+    <aside class="sidebar">
+        <div class="profile-section">
+          <div class="avatar">
+            <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
+            <img src="/uploads/<%= user.photo == !null ? user.photo[0].filename  :"../images/avatar.jpg" %>">      
+            <input type="file" accept="image/*" id="profile-pic-input" name="profile-pic">
+            <label for="profile-pic-input"></label>
+          </div>
+          <ul class="profile-links">
+            <li><a href="/profile">User Profile</a></li>
+            <li><a href="/address">Address</a></li>
+            <li><a href="/order-history">Order History</a></li>
+            <li><a href="/change-password">Change Password</a></li>
+            <li><a href="/wallet">Wallet</a></li>
+          </ul>
+        </div>
+      </aside>
+      <section class="content">
+        <div class="profile-edit">
+          <h2>Edit Profile</h2>
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" id="name" name="name" value="<%= user.name %>" maxlength="50">
+            </div>
+            <% if (user.gender) { %>
+                <div class="form-group">
+                  <label for="gender">Gender:</label>
+                  <select id="gender" name="gender" >
+                    <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
+                    <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
+                    <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                </div>
+              <% } else { %>
+                <div class="form-group">
+                  <label for="gender">Gender:</label>
+                  <select id="gender" name="gender">
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              <% } %>
+              
+            <div class="form-group">
+              <label for="email">Email Address:</label>
+              <input type="email" id="email" name="email" value="<%= user.email %>" readonly>
+            </div>
+            <button type="submit">Save Changes</button>
+          </form>
+        </div>
+        <% } %>
+      </section>
+      
+          
+ </main> 
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h3 class="footer-heading">About Us</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci orci, porta nec magna ac, placerat vestibulum ligula. Sed posuere consectetur est at lobortis.</p>
+          <a href="#" class="btn btn-outline-light">Learn More</a>
+        </div>
+        <div class="col-md-4">
+          <h3 class="footer-heading">Information</h3>
+          <ul class="list-unstyled">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h3 class="footer-heading">Newsletter</h3>
+          <p>Subscribe to our newsletter to receive updates on new products and promotions.</p>
+          <form action="#" method="POST" class="d-flex">
+            <input type="email" class="form-control" placeholder="Enter Email Address">
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="row mt-5">
+        <div class="col">
+          <p class="text-center text-muted">© 2024 Brand Name. All Rights Reserved.</p>
+        </div>
+        <div class="col d-flex justify-content-end">
+          <a href="#" class="social-link"><i class="fab fa-facebook"></i>fb</a>
+          <a href="#" class="social-link"><i class="fab fa-twitter"></i>tw</a>
+          <a href="#" class="social-link"><i class="fab fa-instagram"></i>in</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+   document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("profileForm");
+    let originalFormData = new FormData(form); 
+    // const hasImage = originalFormData.get('profile-pic') !== null;
+    // console.log(hasImage);
+
+    form.addEventListener("change", function(event) {
+        if (event.target.files) {
+            const file = event.target.files[0];
+            originalFormData.set(event.target.name, file);
+        }
+    });
+
+    
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        let isDataChanged = false;
+
+        const validateName = (name) => {
+            const regex = /^[a-zA-Z\s]+$/; 
+            return regex.test(name.trim());
+        };
+
+        // if (hasImage) {
+        //   console.log("image selected")
+        //   isDataChanged = true;
+        // } else {
+        //   alert("Please select an image to update your profile picture.");
+        // }
+
+        const name = formData.get("name");
+        const age = formData.get("age");
+
+        if (!name.trim()) {
+            alert("Name cannot be empty or contain only spaces.");
+            return;
+        }
+        if (!validateName(name)) {
+            alert("Name cannot contain numbers or special characters.");
+            return;
+        }
+
+        console.log("formData:", formData);
+        console.log("originalFormData:", originalFormData);
+
+        for (const [key, value] of formData.entries()) {
+            if (value !== originalFormData.get(key)) {
+              console.log(value)
+                isDataChanged = true;
+                break;
+            }
+        }
+
+        if (isDataChanged) {
+            form.submit();
+            alert("Changes updated");
+        } else {
+            console.log("No changes detected");
+        }
+    });
+});
+</script>
+<script>
+  function setCategory(category) {
+    document.getElementById('selectedCategory').value = category;
+    document.getElementById('categoryDropdown').querySelector('.dropdown-toggle-text').textContent = category.charAt(0).toUpperCase() + category.slice(1);
+  }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    sidebarToggle.addEventListener("click", function(event) {
+      event.stopPropagation();
+      sidebar.classList.toggle("active");
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener("click", function(event) {
+      if (!sidebar.contains(event.target) && sidebar.classList.contains("active")) {
+        sidebar.classList.remove("active");
+      }
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

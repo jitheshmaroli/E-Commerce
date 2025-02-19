@@ -2,19 +2,19 @@ const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
 const passport = require("passport");
-const userController = require("../controllers/userController");
-const couponController = require("../controllers/couponController");
+const userController = require("../controllers/user/userController");
+const couponController = require("../controllers/admin/couponController");
 const authentication = require("../middlewares/authMiddleware");
-const cartController = require("../controllers/cartController");
-const addressController = require("../controllers/addressController");
-const authController = require("../controllers/authController");
-const passwordController = require("../controllers/passwordController");
-const otpController = require("../controllers/otpController");
-const shopController = require("../controllers/shopController");
-const wishlistController = require("../controllers/wishlistController");
-const orderController = require("../controllers/orderController");
-const paymentController = require("../controllers/paymentController");
-const reviewController = require("../controllers/reviewController");
+const cartController = require("../controllers/user/cartController");
+const addressController = require("../controllers/user/addressController");
+const authController = require("../controllers/auth/authController");
+const passwordController = require("../controllers/auth/passwordController");
+const otpController = require("../controllers/auth/otpController");
+const shopController = require("../controllers/user/shopController");
+const wishlistController = require("../controllers/user/wishlistController");
+const orderController = require("../controllers/user/orderController");
+const paymentController = require("../controllers/user/paymentController");
+const reviewController = require("../controllers/user/reviewController");
 
 // passport
 require("../passport");
@@ -105,8 +105,8 @@ router.get('/return-product/:orderId/:itemId', orderController.returnProductPage
 router.post('/return-product/:orderId/:itemId', orderController.initiateReturn);
 
 //product search
-router.get("/search",shopController.productSearchView);
-router.get("/product-details/:productId", shopController.productDetailsView);
+router.get("/products",shopController.productSearchView);
+router.get("/products/:productId", shopController.productDetailsView);
 
 //coupon
 router.get("/coupon-discount/:couponCode", authentication.isUserAuthenticated,couponController.couponDiscount);

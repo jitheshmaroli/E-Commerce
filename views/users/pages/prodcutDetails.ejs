@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail Page</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/productDetails.css" type="text/css">
+</head>
+<body>
+  <%- include('../../includes/userHeader.ejs') %>
+      <div class="container">
+        <% if (product) { %>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/category/<%= product.category._id %>"><%= product.category.categoryName %></a></li>
+              <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+            </ol>
+          </nav>
+          <div class="product-image-wrapper">
+            <div class="carousel-wrapper d-md-none">
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img src="/uploads/<%= product.photos[0].filename %>" class="d-block w-100 zoomable" alt="Product Image 1">
+                </div>
+                <div class="carousel-item">
+                  <img src="/uploads/<%= product.photos[1].filename %>" class="d-block w-100 zoomable" alt="Product Image 2">
+                </div>
+                <div class="carousel-item">
+                  <img src="/uploads/<%= product.photos[2].filename %>" class="d-block w-100 zoomable" alt="Product Image 3">
+                </div>
+                <div class="carousel-item">
+                  <img src="/uploads/<%= product.photos[3].filename %>" class="d-block w-100 zoomable" alt="Product Image 4">
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+            <div class="image-preview-wrapper row d-none d-md-flex">
+              <div class="image-preview col">
+                <img src="/uploads/<%= product.photos[0].filename %>" alt="Product Image 1" class="product-image img-fluid active zoomable">
+              </div>
+              <div class="image-preview col">
+                <img src="/uploads/<%= product.photos[1].filename %>" alt="Product Image 2" class="product-image img-fluid zoomable">
+              </div>
+              <div class="w-100"></div>
+              <div class="image-preview col-6">
+                <img src="/uploads/<%= product.photos[2].filename %>" alt="Product Image 3" class="product-image img-fluid zoomable">
+              </div>
+              <div class="image-preview col-6">
+                <img src="/uploads/<%= product.photos[3].filename %>" alt="Product Image 4" class="product-image img-fluid zoomable">
+              </div>
+            </div>
+          </div>
+    
+          <div class="product-details">
+            <h1 id="product-name"><%= product.name.toUpperCase() %></h1>
+            <div class="product-category">
+              <%= product.category.categoryName %>
+            </div>
+            <input type="hidden" id="product-id" value="<%= product._id %>">
+            <div class="rating">
+              
+              <% for (let i = 1; i <= 5; i++) { %>
+                <% if (i <= product.averageRating) { %>
+                   <i class="fas fa-star"></i>
+                <% } else { %>
+                  <i class="far fa-star"></i>
+                <% } %>
+              <% } %>
+            </div>
+            <span>(<%= product.averageRating %> out of 5)</span>
+            <% if (product.bestOffer) { %>
+              <p id="product-price" data-product-price="<%= product.currentPrice %>" data-original-price="<%= product.price %>">
+                Price: <span style="text-decoration: line-through;">₹<%= product.price.toFixed(2) %></span>
+                ₹<%= product.currentPrice.toFixed(2) %>
+                <i class="fas fa-info-circle offer-icon" data-bs-toggle="modal" data-bs-target="#offerModal<%= product._id %>"></i>
+              </p>
+            <% } else { %>
+              <p id="product-price" data-product-price="<%= product.price %>">
+                Price: ₹<%= product.price.toFixed(2) %>
+              </p>
+            <% } %>            
+            <!-- Offer Modal -->
+            <% if (product.bestOffer) { %>
+            <div class="modal fade" id="offerModal<%= product._id %>" tabindex="-1" aria-labelledby="offerModalLabel<%= product._id %>" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="offerModalLabel<%= product._id %>">Offer Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Offer Name: <%= product.bestOffer.name %></p>
+                    <p>Discount: <%= product.bestOffer.discountType === 'percentage' ? product.bestOffer.discountValue + '%' : '₹' + product.bestOffer.discountValue %></p>
+                    <p>Valid until: <%= product.bestOffer.endDate.toLocaleDateString() %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+            <% if (product.stock == 0) { %>
+                <div class="text-danger">The product is currently out of stock</div>
+                <div class="quantity-control disabled">
+                  <button class="quantity-btn" disabled>-</button>
+                  <input type="number" id="quantity-input" value="1" min="1" data-product-id="<%= product._id %>" data-stock="<%= product.stock %>" disabled>
+                  <button class="quantity-btn" disabled>+</button>
+                </div>
+                <p class="final-price">Total Price: ₹<span id="final-price"></span></p>
+                <div class="product-actions">
+                  <a href="#" class="btn btn-add-to-cart add-to-cart disabled" id="add-to-cart-btn" data-product-id="<%= product._id %>" disabled>Add to Cart</a>
+                  <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now disabled" disabled>Buy Now</a>
+                  <% const isInWishlist = wishlistProducts.find(item => item._id.toString() === product._id.toString()); %>
+                  <% if (isInWishlist) { %>
+                    <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
+                  <% } else { %>
+                    <button class="btn btn-add-to-wishlist  add-to-wishlist" id="wishlist-btn" data-product-id="<%= product._id %>">Add to Wishlist</button>
+                  <% } %>
+                </div>
+              <% } else { %>
+                <div class="quantity-control">
+                  <button class="quantity-btn">-</button>
+                  <input type="number" id="quantity-input" value="1" min="1" data-product-id="<%= product._id %>" data-stock="<%= product.stock %>">
+                  <button class="quantity-btn">+</button>
+                </div>
+                <p class="final-price">Total Price: ₹<span id="final-price"></span></p>
+                <div class="product-actions">
+                  <% if (matchingCartItem) { %>
+                    <a href="/cart" class="btn btn-view-cart" id="view-cart-btn" >View Cart</a>
+                  <% } else { %>
+                  <a href="" class="btn btn-add-to-cart add-to-cart" id="add-to-cart-btn" data-product-id="<%= product._id %>">Add to Cart</a>
+                  <% } %>
+                  <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now">Buy Now</a>
+                    <% const isInWishlist = wishlistProducts.find(item => item._id.toString() === product._id.toString()); %>
+                    <% if (isInWishlist) { %>
+                      <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
+                    <% } else { %>
+                      <button class="btn btn-add-to-wishlist add-to-wishlist " id="wishlist-btn" data-product-id="<%= product._id %>">Add to Wishlist</button>
+                    <% } %>
+                </div>
+              <% } %>
+            <div class="product-description">
+                <h2>Product Description</h2>
+                <p><%= product.description %></p>
+            </div>
+            <div class="reviews">
+              <h3>Reviews</h3>
+              <% if (product.reviews.length > 0) { %>
+                <div id="review-list" class="review-list">
+                  <% product.reviews.slice(0, 3).forEach(review => { %>
+                    <div class="review" data-review-id="<%= review._id %>">
+                      <div class="rating">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                          <% if (i <= review.rating) { %>
+                            <i class="fas fa-star"></i>
+                          <% } else { %>
+                            <i class="far fa-star"></i>
+                          <% } %>
+                        <% } %>
+                        <p class="user">By User: <%= review.userId.name %></p>
+                        <p class="date">Posted on: <%= review.createdAt.toDateString() %></p>
+                      </div>
+                      <div class="comment"><p><%= review.comment %></p></div>
+                    </div>
+                  <% }) %>
+                </div>
+                <% if (product.reviews.length > 3) { %>
+                  <button id="load-more-btn" class="btn btn-secondary" data-reviews="<%= JSON.stringify(product.reviews.slice(3)) %>">Load More</button>
+                <% } %>
+              <% } else { %>
+                <p>No reviews available for this product.</p>
+              <% } %>
+            </div>
+          <% } else { %>
+            <p>An error occurred while fetching product details.</p>
+          <% } %>
+        </div>
+      </div>
+
+    <footer class="footer">
+        <div class="container-footer">
+          <div class="row">
+            <div class="col-md-4">
+              <h3 class="footer-heading">About Us</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci orci, porta nec magna ac, placerat vestibulum ligula. Sed posuere consectetur est at lobortis.</p>
+              <a href="#" class="btn btn-outline-light">Learn More</a>
+            </div>
+            <div class="col-md-4">
+              <h3 class="footer-heading">Information</h3>
+              <ul class="list-unstyled">
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Contact Us</a></li>
+              </ul>
+            </div>
+            <div class="col-md-4">
+              <h3 class="footer-heading">Newsletter</h3>
+              <p>Subscribe to our newsletter to receive updates on new products and promotions.</p>
+              <form action="#" method="POST" class="d-flex">
+                <input type="email" class="form-control" placeholder="Enter Email Address">
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+              </form>
+            </div>
+          </div>
+          <div class="row mt-5">
+            <div class="col">
+              <p class="text-center text-muted">© 2024 Brand Name. All Rights Reserved.</p>
+            </div>
+            <div class="col d-flex justify-content-end">
+              <a href="#" class="social-link"><i class="fab fa-facebook"></i>fb</a>
+              <a href="#" class="social-link"><i class="fab fa-twitter"></i>tw</a>
+              <a href="#" class="social-link"><i class="fab fa-instagram"></i>in</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const zoomableImages = document.querySelectorAll('.zoomable');
+    mediumZoom(zoomableImages, {
+      margin: 50,
+      background: '#000'
+    });
+  });
+</script>
+<script>
+const quantityInput = document.getElementById("quantity-input");
+// const originalPriceSpan = document.getElementById('price');
+// console.log(originalPriceSpan)
+const productPriceElement = document.getElementById("product-price");
+const currentPrice = productPriceElement.dataset.productPrice;
+const originalPrice = productPriceElement.dataset.originalPrice;
+console.log(originalPrice)
+const finalPriceSpan = document.getElementById('final-price');
+const addToCartBtn = document.getElementById('add-to-cart-btn');
+//const originalPrice = parseFloat(originalPriceSpan.textContent);
+const productName = document.getElementById("product-name").textContent;
+
+function updateTotalPrice() {
+        const quantity = parseInt(quantityInput.value);
+        const totalPrice = currentPrice ? currentPrice * quantity : originalPrice * quantity;
+        finalPriceSpan.textContent = totalPrice.toFixed(2); 
+    }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const maxQtyPerUser = 5;
+
+    document.querySelectorAll('.quantity-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const input = e.target.closest('.quantity-control').querySelector('input');
+            let currentQty = parseInt(input.value);
+            const stockQty = parseInt(input.getAttribute('data-stock'));
+            const productId = input.getAttribute('data-product-id');
+
+         
+            if (e.target.textContent === '+') {
+                if (currentQty < maxQtyPerUser) {
+                    if (currentQty < stockQty) {
+                        input.value = currentQty + 1;
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stock Alert',
+                            text: 'Stock is less!',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Limit Exceeded',
+                        text: 'You can only buy up to 5 units of this item.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } else if(e.target.textContent === '-') {
+                if (currentQty > 1) {
+                    input.value = currentQty - 1;
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Minimum Order',
+                        text: 'The minimum order is 1 item.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+            currentQty=input.value;
+             updateTotalPrice()
+        });
+    });
+
+    updateTotalPrice();
+    document.querySelectorAll('.quantity-control input').forEach(input => {
+        input.addEventListener('change', function(e) {
+            const stockQty = parseInt(e.target.getAttribute('data-stock'));
+            let newQty = parseInt(e.target.value);
+            const productId = input.getAttribute('data-product-id');
+
+            if (newQty > maxQtyPerUser) {
+                newQty = maxQtyPerUser;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limit Exceeded',
+                    text: 'You can only buy up to 5 units of this item.',
+                    confirmButtonText: 'OK'
+                });
+            } else if (newQty > stockQty) {
+                newQty = stockQty;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Alert',
+                    text: 'Stock is less!',
+                    confirmButtonText: 'OK'
+                });
+            } else if (newQty < 1) {
+                newQty = 1;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Minimum Order',
+                    text: 'The minimum order is 1 item.',
+                    confirmButtonText: 'OK'
+                });
+            }
+            updateTotalPrice();
+        })
+        });
+});
+if(addToCartBtn) {
+  addToCartBtn.addEventListener('click', (e) => {
+    const quantity = parseInt(quantityInput.value);
+    const productId = document.getElementById('product-id').value;
+    e.preventDefault();
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            productId,
+            quantity
+        })
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json()
+        .then(data => {
+          if (data.error === 'Not enough stock available') {
+            alert(`Only ${data.availableStock} items are available in stock for this product.`);
+          } else {
+            throw new Error('Network response was not ok');
+          }
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data) {
+        updateQuantityOnServer(productId, quantity);
+        cartBtn.textContent = 'View Cart';
+        cartBtn.classList.remove('btn-add-to-cart');
+        cartBtn.classList.add('btn-view-cart');
+        cartBtn.setAttribute('href', '/cart');
+        Swal.fire({
+           icon: 'success',
+           title: 'Added to Cart',
+           text: `${quantity} x ${productName} added to cart!`,
+           confirmButtonText: 'OK'
+        });            
+                                     
+      } else {
+         console.error('Error adding product to cart:', data.error);
+      }
+    })
+    .catch(error => {
+        console.error('Error adding product to cart:', error);
+    });
+});
+
+function updateQuantityOnServer(productId, quantity) {
+  fetch('/update-quantity', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ productId, quantity }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(data => {
+          if (data.error === 'Not enough stock available') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: `Only ${data.availableStock} items are available in stock for this product.`,
+              confirmButtonText: 'OK',
+            });
+          } else {
+            throw new Error('Network response was not ok');
+          }
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        // Swal.fire({
+        //   icon: 'success',
+        //   title: 'Added to Cart',
+        //   text: 'The item has been added to your cart.',
+        //   confirmButtonText: 'OK',
+        // });
+        location.reload();
+      } else {
+        console.error('Error updating quantity on server:', data.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was an error updating the quantity.',
+          confirmButtonText: 'OK',
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error updating quantity on server:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'There was an error updating the quantity.',
+        confirmButtonText: 'OK',
+      });
+    });
+}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistBtn = document.querySelector('.add-to-wishlist');
+
+    wishlistBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = document.getElementById('product-id').value;
+
+        fetch('/toggle-wishlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId: productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+              if (data.isInWishlist) {
+                        wishlistBtn.textContent = 'View Wishlist';
+                        wishlistBtn.classList.remove('btn-add-to-wishlist');
+                        wishlistBtn.classList.add('btn-view-wishlist');
+                        wishlistBtn.setAttribute('href', '/wishlist');
+                    } else {
+                        wishlistBtn.textContent = 'Add to Wishlist';
+                        wishlistBtn.classList.remove('btn-view-wishlist');
+                        wishlistBtn.classList.add('btn-add-to-wishlist');
+                        wishlistBtn.removeAttribute('href');
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.isInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist',
+                        text: data.isInWishlist ? 'The item has been added to your wishlist.' : 'The item has been removed from your wishlist.',
+                        confirmButtonText: 'OK'
+                    });
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+});
+</script>
+      <script>
+        function setCategory(category) {
+          document.getElementById('selectedCategory').value = category;
+          document.getElementById('categoryDropdown').querySelector('.dropdown-toggle-text').textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        }
+      </script>
+<script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        const reviewList = document.getElementById('review-list');
+    
+        if (loadMoreBtn) {
+          const additionalReviews = JSON.parse(loadMoreBtn.getAttribute('data-reviews'));
+          let visibleReviews = 3;
+    
+          loadMoreBtn.addEventListener('click', function () {
+            const reviewsToRender = additionalReviews.slice(0, 3);
+    
+            reviewsToRender.forEach(review => {
+              const reviewHtml = `
+                <div class="review">
+                  <div class="rating">
+                    ${generateStarRating(review.rating)}
+                    <p class="user">By User: ${review.userId.name}</p>
+                    <p class="date">Posted on: ${new Date(review.createdAt).toDateString()}</p>
+                  </div>
+                  <div class="comment">
+                     <p >${review.comment}</p>
+                  </div>
+                </div>
+              `;
+              reviewList.insertAdjacentHTML('beforeend', reviewHtml);
+            });
+    
+            visibleReviews += reviewsToRender.length;
+            additionalReviews.splice(0, 3);
+    
+            if (additionalReviews.length === 0) {
+              loadMoreBtn.style.display = 'none';
+            }
+          });
+        }
+    
+        function generateStarRating(rating) {
+          let starRating = '';
+          for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+              starRating += '<i class="fas fa-star"></i>';
+            } else {
+              starRating += '<i class="far fa-star"></i>';
+            }
+          }
+          return starRating;
+        }
+      });
+</script>
+
+      
+</body>
+</html>

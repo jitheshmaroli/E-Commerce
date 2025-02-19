@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>userhome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+    <%- include('../../includes/userHeader.ejs') %>
+<h1 style="text-align: center;">SHOPPING CART</h1>
+<% if (items.length <= 0) { %>
+    <div class="empty-cart-message">
+        <h2>Your cart is empty</h2>
+        <p>Add items to your cart</p>
+        <button onclick="window.location.href = '/'" class="btn ">Go to Home Page</button>
+    </div>
+<% } else { %>
+<div class="cart-container">
+    <section class="cart-section">
+        <div class="cart">
+            <% items.forEach(item => { %>
+                <div class="cart-item" data-product="<%= item.productId %>">
+                    <span class="close-btn">&times;</span>
+                    <div class="item-details">
+                        <div class="cart-item-checkbox">
+                            <input type="checkbox" class="cart-item-checkbox-input" data-product="<%= item.productId %>" data-quantity="<%= item.quantity %>" >
+                        </div>
+                        <div class="item-image">
+                            <a href="/products/<%= item.productId %>"><img src="/uploads/<%= item.image %>" alt="Product Image"></a>
+                        </div>
+                        <div class="item-info">
+                            <a href="/products/<%= item.productId %>" data-product="<%=item.productId%>"><h3 class="product-name"><%= item.name.toUpperCase() %></h3></a>
+                            <p class="product-price"><% if (item.offer) { %>
+                                <span class="price" style="text-decoration: line-through;">₹<%= item.price.toFixed(2) %></span>
+                                <span class="current-price">₹<%= item.currentPrice.toFixed(2) %></span>
+                                <i class="fas fa-info-circle offer-icon" data-bs-toggle="modal" data-bs-target="#offerModal<%= item.productId %>"></i>
+                              <% } else { %>
+                                ₹<%= item.currentPrice.toFixed(2) %>
+                              <% } %>
+                            </p>
+                            <div class="quantity-control">
+                                <button class="quantity-btn">-</button>
+                                <input type="number" value="<%= item.quantity %>" min="1" data-stock="<%= item.stock %>">
+                                <button class="quantity-btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-action">
+                        <a href="#" class="move-to-wishlist"><i class="fa fa-heart"></i></a>
+                    </div>
+                </div> 
+                <% if (item.offer) { %>
+                    <div class="modal fade" id="offerModal<%= item.productId %>" tabindex="-1" aria-labelledby="offerModalLabel<%= item.productId %>" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="offerModalLabel<%= item.productId %>">Offer Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <%= item.offer.name %>: 
+                            <%= item.offer.discountType === 'percentage' ? item.offer.discountValue + '% off' : '₹' + item.offer.discountValue + ' off' %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% } %>               
+            <% }) %>
+        </div>
+    </section>
+
+    <section class="order-summary-section">
+        <aside class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-details">
+                <p>Total Items: <span id="total-items"></span></p>
+                <p>Total Cost: <span id="total-cost"></span></p>
+            </div>
+            <button id="checkout-btn">Proceed to Checkout</button>
+        </aside>
+    </section>
+</div>
+<% } %>
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h3 class="footer-heading">About Us</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci orci, porta nec magna ac, placerat vestibulum ligula. Sed posuere consectetur est at lobortis.</p>
+                <a href="#" class="btn btn-outline-light">Learn More</a>
+            </div>
+            <div class="col-md-4">
+                <h3 class="footer-heading">Information</h3>
+                <ul class="list-unstyled">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h3 class="footer-heading">Newsletter</h3>
+                <p>Subscribe to our newsletter to receive updates on new products and promotions.</p>
+                <form action="#" method="POST" class="d-flex">
+                    <input type="email" class="form-control" placeholder="Enter Email Address">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <p class="text-center text-muted">© 2024 Brand Name. All Rights Reserved.</p>
+            </div>
+            <div class="col d-flex justify-content-end">
+                <a href="#" class="social-link"><i class="fab fa-facebook"></i>fb</a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i>tw</a>
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i>in</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script>
+    (function () {
+        window.onpageshow = function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        };
+    })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const maxQtyPerUser = 5;
+
+    document.querySelectorAll('.quantity-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const input = e.target.closest('.quantity-control').querySelector('input');
+            let currentQty = parseInt(input.value);
+            const stockQty = parseInt(input.getAttribute('data-stock'));
+            const item = e.target.closest('.cart-item');
+            const productId = item.getAttribute('data-product');
+
+         
+            if (e.target.textContent === '+') {
+                if (currentQty < maxQtyPerUser) {
+                    if (currentQty < stockQty) {
+                        input.value = currentQty + 1;
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stock Alert',
+                            text: 'Stock is less!',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Limit Exceeded',
+                        text: 'You can only buy up to 5 units of this item.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } else if(e.target.textContent === '-') {
+                if (currentQty > 1) {
+                    input.value = currentQty - 1;
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Minimum Order',
+                        text: 'The minimum order is 1 item.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+            currentQty=input.value;
+            updateQuantityOnServer(productId, currentQty);
+            updateOrderSummary();
+        });
+    });
+
+    document.querySelectorAll('.quantity-control input').forEach(input => {
+        input.addEventListener('change', function(e) {
+            const stockQty = parseInt(e.target.getAttribute('data-stock'));
+            let newQty = parseInt(e.target.value);
+            const item = e.target.closest('.cart-item');
+            const productId = item.getAttribute('data-product');
+
+            if (newQty > maxQtyPerUser) {
+                newQty = maxQtyPerUser;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limit Exceeded',
+                    text: 'You can only buy up to 5 units of this item.',
+                    confirmButtonText: 'OK'
+                });
+            } else if (newQty > stockQty) {
+                newQty = stockQty;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Alert',
+                    text: 'Stock is less!',
+                    confirmButtonText: 'OK'
+                });
+            } else if (newQty < 1) {
+                newQty = 1;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Minimum Order',
+                    text: 'The minimum order is 1 item.',
+                    confirmButtonText: 'OK'
+                });
+            }
+            updateQuantityOnServer(productId, newQty);
+        })
+        });
+    });
+
+    function updateQuantityOnServer(productId, quantity) {
+        fetch('/update-quantity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId: productId, quantity: quantity })
+        })
+        .then(response =>  response.json())
+        .then(data => {
+            if (data.success) {
+                updateOrderSummary();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was an error updating the quantity.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error updating the quantity.',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+
+    function checkAllItems() {
+        document.querySelectorAll('.cart-item-checkbox-input').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        updateOrderSummary();
+    }
+    checkAllItems();
+    function updateOrderSummary() {
+    let totalItems = 0;
+    let totalCost = 0.0;
+
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const checkbox = item.querySelector('.cart-item-checkbox-input');
+        if (checkbox.checked) {
+            const qty = parseInt(item.querySelector('.quantity-control input').value);
+            let price;
+            const currentPriceElement = item.querySelector('.current-price');
+            if (currentPriceElement) {
+                price = parseFloat(currentPriceElement.textContent.replace('₹', ''));
+            } else {
+                price = parseFloat(item.querySelector('.product-price').textContent.replace('₹', ''));
+            }
+
+            totalItems += qty;
+            totalCost += qty * price;
+        }
+    });
+    
+
+    document.getElementById('total-items').textContent = totalItems;
+    document.getElementById('total-cost').textContent = `₹${totalCost.toFixed(2)}`;
+}
+
+document.querySelectorAll('.cart-item-checkbox-input').forEach(checkbox => {
+    checkbox.addEventListener('change', updateOrderSummary);
+});
+
+const checkoutBtn = document.getElementById('checkout-btn');
+checkoutBtn.addEventListener('click', () => {
+    const selectedItems = Array.from(document.querySelectorAll('.cart-item-checkbox-input:checked'))
+        .map(checkbox => {
+            const item = checkbox.closest('.cart-item');
+            return {
+                productId: checkbox.getAttribute('data-product'),
+                quantity: parseInt(item.querySelector('.quantity-control input').value)
+            };
+        });
+    if (selectedItems.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Items Selected',
+            text: 'Please select at least one item to proceed to checkout.',
+            confirmButtonText: 'OK'
+        });
+    } else {
+
+        console.log('Selected Items:', selectedItems);
+        // Assuming you have an array of cart items `cartItems`
+        selectedItems.forEach((item, index) => {
+        localStorage.setItem(`cartQuantity_${item.productId}`, item.quantity);
+        });
+        redirectToCheckout(selectedItems);
+        function redirectToCheckout(cartItems) {
+            const queryString = new URLSearchParams({ cartItems: JSON.stringify(cartItems) });
+            window.location.href = `/checkout?${queryString}`; // Replace with your checkout page URL
+        }
+    }
+});
+
+
+    updateOrderSummary();
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.move-to-wishlist').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const item = e.target.closest('.cart-item');
+            const productId = item.getAttribute('data-product');
+            
+            fetch('/cart/move-to-wishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetch('/remove-from-cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId: productId })
+                    })
+                    .then(response => response.json())
+                    .then(removeData => {
+                        if (removeData.success) {
+                            item.querySelector('.fa-heart').style.color = 'black';
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Added to Wishlist',
+                                text: 'The item has been added to your wishlist and removed from the cart.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                item.remove();
+                                updateOrderSummary();
+
+                                // Check if cart is empty
+                                const cartItemsCount = document.querySelectorAll('.cart-item').length;
+                                if (cartItemsCount === 0) {
+                                    const cartContainer = document.querySelector('.cart-container');
+                                    cartContainer.innerHTML = `
+                                        <div class="empty-cart-message">
+                                            <h2>Your cart is empty</h2>
+                                            <p>Add items to your cart</p>
+                                            <button onclick="window.location.href = '/'" class="btn btn-primary">Go to Home Page</button>
+                                        </div>
+                                    `;
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'There was an error removing the item from your cart.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was an error adding the item to your wishlist.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    });
+});
+
+
+   // Remove from cart functionality
+   document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const item = btn.closest('.cart-item');
+            const productId = item.getAttribute('data-product');
+            
+            fetch('/remove-from-cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    item.remove();
+                    updateOrderSummary();
+
+                    Swal.fire({
+                         icon: 'success',
+                         title: 'Removed From Cart',
+                         text: 'The item has been removed from your cart.',
+                         confirmButtonText: 'OK'
+                    })
+                    
+                    // Check if cart is empty
+                    const cartItemsCount = document.querySelectorAll('.cart-item').length;
+                    if (cartItemsCount === 0) {
+                        const cartContainer = document.querySelector('.cart-container');
+                        cartContainer.innerHTML = `
+                            <div class="empty-cart-message">
+                                <h2>Your cart is empty</h2>
+                                <p>Add items to your cart</p>
+                                <button onclick="window.location.href = '/'" class="btn btn-primary">Go to Home Page</button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was an error removing the item from your cart.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was an error removing the item from your cart.',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+    });
+
+</script>
+
+
+<script>
+    function setCategory(category) {
+      document.getElementById('selectedCategory').value = category;
+      document.getElementById('categoryDropdown').querySelector('.dropdown-toggle-text').textContent = category.charAt(0).toUpperCase() + category.slice(1);
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

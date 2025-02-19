@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const adminController = require("../controllers/adminController");
-const productController = require("../controllers/productController");
-const categoryController = require("../controllers/categoryController");
+const adminController = require("../controllers/admin/adminController");
+const productController = require("../controllers/admin/productController");
+const categoryController = require("../controllers/admin/categoryController");
 const authentication = require("../middlewares/authMiddleware");
-const couponController = require("../controllers/couponController");
-const offerController = require('../controllers/offerController');
-const orderController = require("../controllers/orderController");
+const couponController = require("../controllers/admin/couponController");
+const offerController = require('../controllers/admin/offerController');
+const orderController = require("../controllers/user/orderController");
 
 //admin home
 router.get("/", authentication.isAdminAuthenticated, adminController.adminHome);
