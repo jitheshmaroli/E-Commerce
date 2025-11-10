@@ -1,68 +1,83 @@
-<header>
-  <nav class="navbar navbar-expand-sm navbar-light">
+<header class="navbar-header">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-transparent fixed-top">
     <div class="container-fluid">
-      <div class="row w-100">
-        <!-- First row: Logo, brand name, and icons -->
-        <div class="col-12 d-flex justify-content-between align-items-center mb-2">
-          <button id="sidebarToggle" class="navbar-toggler d-md-none" type="button">
-            <i class="fa-solid fa-bars" style="color: #ffffff;"></i>
-          </button>
-          <a class="navbar-brand nav-link" href="/">
-            <img src="/test.jpg" alt="Brand Logo" width="40" height="40" class="img-fluid brand-logo d-inline-block align-text-top">
-            <span class="brand-name">ShoeZone</span>
-          </a>
-          <div class="user-actions">
-            <% if (user !== null && user !== undefined) { %>
-              <div class="profile-dropdown">
-                <a class="profile-dropdown-toggle nav-link btn" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fas fa-user"></i>
-                </a>
-                <div class="profile-dropdown-menu" style="background-color: rgb(0, 0, 0); color: white;">
-                  <a class="dropdown-item nav-link" style="color: #ffffff;" href="/profile">Profile</a>
-                  <a class="dropdown-item nav-link" style="color: #ffffff;" href="/logout">Logout</a>
-                </div>
-              </div>
-            <% } else { %>
-              <a href="/profile"><i class="fas fa-user"></i></a>
-            <% } %>
-            <a href="/cart"><i class="fas fa-shopping-cart"></i></a>
-            <a href="/wishlist"><i class="fas fa-heart"></i></a>
-          </div>
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/test.jpg" alt="ShoeZone Logo" width="40" height="40" class="me-2 rounded">
+        <span class="brand-name fw-bold">ShoeZone</span>
+      </a>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible Nav Content -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- Search and Nav -->
+        <div class="navbar-nav mx-auto">
+          <form action="/products" method="GET" class="d-flex search-form mx-lg-4">
+            <div class="input-group w-100">
+              <input type="text" name="query" class="form-control border-0 ps-3" placeholder="Search shoes..." aria-label="Search">
+              <select name="category" class="form-select border-0 px-2" style="max-width: 120px;">
+                <option value="">All Categories</option>
+                <option value="MEN">Men</option>
+                <option value="WOMEN">Women</option>
+                <option value="KIDS">Kids</option>
+              </select>
+              <button type="submit" class="btn btn-dark px-3">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
         </div>
-        
-        <!-- Second row: Search bar -->
-        <div class="col-12 mb-2">
-          <div class="search-bar">
-            <form action="/search" method="GET">
-              <div class="input-group">
-                <input type="text" name="query" class="form-control" placeholder="Search for products...">
-                <button type="submit" class="input-group-text search-btn">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        
-        <!-- Third row: Navigation links -->
-        <div class="col-12">
-          <ul class="nav justify-content-center">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/">HOME</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                CATEGORIES
+
+        <!-- User Actions -->
+        <div class="navbar-nav ms-auto d-flex align-items-center">
+          <% if (user) { %>
+            <div class="dropdown">
+              <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                <% if (user.photo && user.photo.length > 0) { %>
+                  <img src="/uploads/<%= user.photo[0].filename %>" alt="Profile Photo" class="rounded-circle me-1" style="width: 30px; height: 30px; object-fit: cover;">
+                <% } else { %>
+                  <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-1" style="width: 30px; height: 30px; font-size: 12px; font-weight: bold;"><%= user.name ? user.name.charAt(0).toUpperCase() : 'P' %></span>
+                <% } %>
+                <%= user.name || 'Profile' %>
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li><a class="dropdown-item" href="/search?category=MEN">Men</a></li>
-                <li><a class="dropdown-item" href="/search?category=WOMEN">Women</a></li>
-                <li><a class="dropdown-item" href="/search?category=KIDS">Kids</a></li>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                <li><a class="dropdown-item" href="/orders">Orders</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
               </ul>
-            </li>
-          </ul>
+            </div>
+          <% } else { %>
+            <a class="nav-link text-white" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+          <% } %>
+          <a class="nav-link text-white ms-2" href="/cart"><i class="fas fa-shopping-cart"></i></a>
+          <a class="nav-link text-white ms-2" href="/wishlist"><i class="fas fa-heart"></i></a>
         </div>
       </div>
     </div>
   </nav>
 </header>
+<script>
+  (function() {
+    const hasHero = document.querySelector('.hero-banner');
+    const nav = document.querySelector('.navbar');
+    if (!nav) return;
+    if (!hasHero) {
+      nav.classList.remove('navbar-transparent');
+      return;
+    }
+    const onScroll = () => {
+      if (window.scrollY > 10) {
+        nav.classList.remove('navbar-transparent');
+      } else {
+        nav.classList.add('navbar-transparent');
+      }
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+</script>

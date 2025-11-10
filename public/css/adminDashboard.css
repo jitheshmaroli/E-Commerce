@@ -1,11 +1,13 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif; /* Choose a suitable font family */
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif; /* Choose a suitable font family */
 }
 
-.main, .sidebar, .content {
-    box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
+.main,
+.sidebar,
+.content {
+  box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
 }
 
 .navbar {
@@ -16,120 +18,117 @@ body {
   color: #ffffff;
 }
 
-
-
-
 .main {
-    display: flex;
-    min-height: 100vh; /* Set main content area height (minus header height) */
-    background-color:#f0f0f0 ;
+  display: flex;
+  min-height: 100vh; /* Set main content area height (minus header height) */
+  background-color: #f0f0f0;
 }
 
 .sidebar {
-    width: 200px; /* Adjust sidebar width as needed */
-    background-color: #e0e0e0; /* Light gray background */
-    padding: 10px;
+  width: 200px; /* Adjust sidebar width as needed */
+  background-color: #e0e0e0; /* Light gray background */
+  padding: 10px;
 }
-
 
 .content {
-    flex: 1;
-    padding: 20px;
-  }
-
-  .container {
-    display: flex;
-    flex-wrap: wrap; /* Allow cards to wrap to a new line if needed */
-    justify-content: space-between; /* Distribute cards evenly */
-  }
-
-  /* Basic table styles */
-table {
-    width: 100%; /* Make table full width */
-    border-collapse: collapse; /* Remove borders between table cells */
-
-  }
-  
-  th, td {
-    padding: 10px; /* Adjust padding as needed */
-    border: 1px solid #ddd; /* Optional border for each cell */
-    text-align: left; /* Align content left within cells */
-  }
-  
-  th {
-    background-color: #f0f0f0; /* Light gray background for table headers */
-    font-weight: bold;
-  }
-
-  .sidebar-list a{
-    text-decoration: none;
-  }
-
-.dashboard {
-    max-width: 1200px;
-    margin: 10px auto;
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  flex: 1;
+  padding: 20px;
 }
 
-h1, h2 {
-    color: #333;
+.container {
+  display: flex;
+  flex-wrap: wrap; /* Allow cards to wrap to a new line if needed */
+  justify-content: space-between; /* Distribute cards evenly */
+}
+
+/* Basic table styles */
+table {
+  width: 100%; /* Make table full width */
+  border-collapse: collapse; /* Remove borders between table cells */
+}
+
+th,
+td {
+  padding: 10px; /* Adjust padding as needed */
+  border: 1px solid #ddd; /* Optional border for each cell */
+  text-align: left; /* Align content left within cells */
+}
+
+th {
+  background-color: #f0f0f0; /* Light gray background for table headers */
+  font-weight: bold;
+}
+
+.sidebar-list a {
+  text-decoration: none;
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 10px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1,
+h2 {
+  color: #333;
 }
 
 .chart-container {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
 #chartFilter {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .top-lists {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
 }
 
 .top-list {
-    flex: 1;
-    margin: 0 10px;
+  flex: 1;
+  margin: 0 10px;
 }
 
 ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 li {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .ledger-book {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
-  
-.sales-report{
-    max-width: 1200px;
-    margin: 10px auto;
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+.sales-report {
+  max-width: 1200px;
+  margin: 10px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .recent-orders ul {
@@ -144,7 +143,7 @@ button:hover {
   border-radius: 5px;
 }
 
-.recent-orders{
+.recent-orders {
   max-width: 1200px;
   margin: 10px auto;
   background-color: white;
@@ -152,4 +151,3 @@ button:hover {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-  

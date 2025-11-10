@@ -1,25 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>userhome</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="css/userProfile.css">
-  </head>
-<body>
-  <%- include('../includes/userHeader.ejs') %>
-  <button id="sidebarToggle" class="d-md-none">Menu</button>
-  <main class="main">
-    <% if (user) { %>
-    <aside class="sidebar">
+<%- include('../includes/userHead.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="/css/userProfile.css">
+
+<%- include('../includes/userHeader.ejs') %>
+
+<main class="main">
+  <% if (user) { %>
+    <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
+      <aside class="sidebar">
         <div class="profile-section">
           <div class="avatar">
-            <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
-            <img src="/uploads/<%= user.photo == !null ? user.photo[0].filename  :"../images/avatar.jpg" %>">      
+            <img id="profileImg" src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>" alt="Profile Avatar">
             <input type="file" accept="image/*" id="profile-pic-input" name="profile-pic">
-            <label for="profile-pic-input"></label>
+            <label for="profile-pic-input" class="avatar-overlay">
+              <span class="upload-text">Upload Photo</span>
+              <button type="button" id="cancel-upload" class="cancel-btn" style="display: none;">Cancel</button>
+            </label>
           </div>
           <ul class="profile-links">
             <li><a href="/profile">User Profile</a></li>
@@ -32,173 +28,184 @@
       </aside>
       <section class="content">
         <div class="profile-edit">
-          <h2>Edit Profile</h2>
-            <div class="form-group">
-              <label for="name">Name:</label>
-              <input type="text" id="name" name="name" value="<%= user.name %>" maxlength="50">
-            </div>
-            <% if (user.gender) { %>
-                <div class="form-group">
-                  <label for="gender">Gender:</label>
-                  <select id="gender" name="gender" >
-                    <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
-                    <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
-                    <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
-                  </select>
-                </div>
-              <% } else { %>
-                <div class="form-group">
-                  <label for="gender">Gender:</label>
-                  <select id="gender" name="gender">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              <% } %>
-              
-            <div class="form-group">
-              <label for="email">Email Address:</label>
-              <input type="email" id="email" name="email" value="<%= user.email %>" readonly>
-            </div>
-            <button type="submit">Save Changes</button>
-          </form>
+          <h2 class="page-title">Edit Profile</h2>
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="<%= user.name %>" maxlength="50">
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+              <option value="">Select Gender</option>
+              <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
+              <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
+              <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" value="<%= user.email %>" readonly>
+          </div>
+          <button type="submit" id="saveBtn" class="btn product-btn" disabled>Save</button>
         </div>
-        <% } %>
       </section>
-      
-          
- </main> 
+    </form>
+  <% } %>
+</main>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <h3 class="footer-heading">About Us</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci orci, porta nec magna ac, placerat vestibulum ligula. Sed posuere consectetur est at lobortis.</p>
-          <a href="#" class="btn btn-outline-light">Learn More</a>
-        </div>
-        <div class="col-md-4">
-          <h3 class="footer-heading">Information</h3>
-          <ul class="list-unstyled">
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms & Conditions</a></li>
-            <li><a href="#">Contact Us</a></li>
-          </ul>
-        </div>
-        <div class="col-md-4">
-          <h3 class="footer-heading">Newsletter</h3>
-          <p>Subscribe to our newsletter to receive updates on new products and promotions.</p>
-          <form action="#" method="POST" class="d-flex">
-            <input type="email" class="form-control" placeholder="Enter Email Address">
-            <button type="submit" class="btn btn-primary">Subscribe</button>
-          </form>
-        </div>
-      </div>
-      <div class="row mt-5">
-        <div class="col">
-          <p class="text-center text-muted">© 2024 Brand Name. All Rights Reserved.</p>
-        </div>
-        <div class="col d-flex justify-content-end">
-          <a href="#" class="social-link"><i class="fab fa-facebook"></i>fb</a>
-          <a href="#" class="social-link"><i class="fab fa-twitter"></i>tw</a>
-          <a href="#" class="social-link"><i class="fab fa-instagram"></i>in</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <script>
-   document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById("profileForm");
-    let originalFormData = new FormData(form); 
-    // const hasImage = originalFormData.get('profile-pic') !== null;
-    // console.log(hasImage);
+<%- include('../includes/userFooter.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
 
-    form.addEventListener("change", function(event) {
-        if (event.target.files) {
-            const file = event.target.files[0];
-            originalFormData.set(event.target.name, file);
-        }
-    });
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profileForm');
+    if (!form) return;
 
-    
+    const profileImg = document.getElementById('profileImg');
+    const fileInput = document.getElementById('profile-pic-input');
+    const cancelBtn = document.getElementById('cancel-upload');
+    const saveBtn = document.getElementById('saveBtn');
+    const nameInput = document.getElementById('name');
+    const genderSelect = document.getElementById('gender');
+    const overlay = document.querySelector('.avatar-overlay');
 
-    form.addEventListener("submit", function(event) {
-        event.preventDefault();
+    // Store initial values for change detection
+    const initialName = nameInput.value.trim();
+    const initialGender = genderSelect.value;
+    const originalImgSrc = profileImg.src;
+    let previewSrc = null; // Track if preview is active
+    let fileChanged = false; // Track if file was selected (changed)
 
-        const formData = new FormData(form);
-        let isDataChanged = false;
+    // Show success alert if updated via query param
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('updated') === 'true') {
+      Swal.fire({
+        title: 'Success!',
+        text: 'Profile updated successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        // Clear query param by reloading without it
+        window.history.replaceState({}, document.title, window.location.pathname);
+      });
+    }
 
-        const validateName = (name) => {
-            const regex = /^[a-zA-Z\s]+$/; 
-            return regex.test(name.trim());
+    // Function to check if any changes and toggle button
+    function checkChanges() {
+      const currentName = nameInput.value.trim();
+      const currentGender = genderSelect.value;
+      const hasChanges = currentName !== initialName || currentGender !== initialGender || fileChanged;
+      saveBtn.disabled = !hasChanges;
+    }
+
+    // File preview and cancel
+    fileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewSrc = e.target.result;
+          profileImg.src = previewSrc;
+          overlay.style.opacity = '1';
+          cancelBtn.style.display = 'block';
+          const uploadText = document.querySelector('.upload-text');
+          if (uploadText) uploadText.style.display = 'none';
+          fileChanged = true;
+          checkChanges();
         };
-
-        // if (hasImage) {
-        //   console.log("image selected")
-        //   isDataChanged = true;
-        // } else {
-        //   alert("Please select an image to update your profile picture.");
-        // }
-
-        const name = formData.get("name");
-        const age = formData.get("age");
-
-        if (!name.trim()) {
-            alert("Name cannot be empty or contain only spaces.");
-            return;
-        }
-        if (!validateName(name)) {
-            alert("Name cannot contain numbers or special characters.");
-            return;
-        }
-
-        console.log("formData:", formData);
-        console.log("originalFormData:", originalFormData);
-
-        for (const [key, value] of formData.entries()) {
-            if (value !== originalFormData.get(key)) {
-              console.log(value)
-                isDataChanged = true;
-                break;
-            }
-        }
-
-        if (isDataChanged) {
-            form.submit();
-            alert("Changes updated");
-        } else {
-            console.log("No changes detected");
-        }
-    });
-});
-</script>
-<script>
-  function setCategory(category) {
-    document.getElementById('selectedCategory').value = category;
-    document.getElementById('categoryDropdown').querySelector('.dropdown-toggle-text').textContent = category.charAt(0).toUpperCase() + category.slice(1);
-  }
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const sidebar = document.querySelector(".sidebar");
-
-    sidebarToggle.addEventListener("click", function(event) {
-      event.stopPropagation();
-      sidebar.classList.toggle("active");
-    });
-
-    // Close sidebar when clicking outside
-    document.addEventListener("click", function(event) {
-      if (!sidebar.contains(event.target) && sidebar.classList.contains("active")) {
-        sidebar.classList.remove("active");
+        reader.readAsDataURL(file);
       }
+    });
+
+    // Cancel upload
+    cancelBtn.addEventListener('click', function() {
+      fileInput.value = '';
+      profileImg.src = originalImgSrc;
+      previewSrc = null;
+      fileChanged = false;
+      cancelBtn.style.display = 'none';
+      const uploadText = document.querySelector('.upload-text');
+      if (uploadText) uploadText.style.display = 'block';
+      overlay.style.opacity = '0';
+      checkChanges();
+    });
+
+    // Listen for name changes
+    nameInput.addEventListener('input', checkChanges);
+
+    // Listen for gender changes
+    genderSelect.addEventListener('change', checkChanges);
+
+    // Initial check (should disable button)
+    checkChanges();
+
+    // Validation helpers
+    const validateName = (name) => /^[a-zA-Z\s]+$/.test(name.trim()) && name.trim().length > 0;
+    const validateFile = (file) => {
+      if (!file) return true; // No file is ok
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Profile picture must be under 5MB.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return false;
+      }
+      if (!/\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Please select a valid image file (JPG, JPEG, PNG, GIF).',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return false;
+      }
+      return true;
+    };
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const currentName = nameInput.value.trim();
+      const currentGender = genderSelect.value;
+      const currentFile = fileInput.files[0];
+
+      // Validate name
+      if (!validateName(currentName)) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Name cannot be empty, contain only spaces, numbers, or special characters.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+
+      // Validate gender (optional, but warn if unchanged and empty)
+      if (!currentGender && initialGender === '') {
+        Swal.fire({
+          title: 'Confirm',
+          text: 'Gender is optional. Proceed without selecting?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Proceed',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+        return;
+      }
+
+      // Validate file
+      if (!validateFile(currentFile)) {
+        return;
+      }
+
+      form.submit();
     });
   });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
-</html>

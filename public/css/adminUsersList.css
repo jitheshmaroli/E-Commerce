@@ -1,4 +1,3 @@
-/* Custom Styles */
 body {
   margin: 0;
   padding: 0;
@@ -13,19 +12,20 @@ body {
   color: #ffffff;
 }
 
-
 .table th,
 .table td {
   vertical-align: middle;
   text-align: center;
 }
 
-
-.sidebar-list a{
+.sidebar-list a {
   text-decoration: none;
 }
 
-.header, .main, .sidebar, .content {
+.header,
+.main,
+.sidebar,
+.content {
   box-sizing: border-box; /* Ensure elements consider borders in width/height calculations */
 }
 
@@ -41,7 +41,7 @@ body {
 .main {
   display: flex;
   min-height: 100vh; /* Set main content area height (minus header height) */
-  background-color:#f0f0f0 ;
+  background-color: #f0f0f0;
 }
 
 .sidebar {
@@ -49,7 +49,6 @@ body {
   background-color: #e0e0e0; /* Light gray background */
   padding: 10px;
 }
-
 
 .content {
   flex: 1;

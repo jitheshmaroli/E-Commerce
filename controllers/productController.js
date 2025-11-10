@@ -17,7 +17,6 @@ const upload = multer({ storage: storage });
 
 const photoUpload = upload.array("photos", 4);
 
-
 const addProductView = async (req, res) => {
   try {
     const categoryList = await Category.find({ isBlocked: false });
@@ -30,7 +29,8 @@ const addProductView = async (req, res) => {
 
 const newProduct = async (req, res) => {
   try {
-    const { name, description, category, brandName, stock, price, tags } = req.body;
+    const { name, description, category, brandName, stock, price, tags } =
+      req.body;
 
     if (!name || !category || !brandName || !stock || !price) {
       const categoryList = await Category.find();
@@ -48,12 +48,12 @@ const newProduct = async (req, res) => {
     if (!existingProduct) {
       let uploadedPhotos = [];
       if (req.files && req.files.length > 0) {
-        for (const file of req.files) {       
-            uploadedPhotos.push({
-              filename: file.filename,
-              originalname: file.originalname,
-              mimetype: 'image/jpeg',
-            });
+        for (const file of req.files) {
+          uploadedPhotos.push({
+            filename: file.filename,
+            originalname: file.originalname,
+            mimetype: "image/jpeg",
+          });
         }
       }
 
@@ -78,10 +78,8 @@ const newProduct = async (req, res) => {
       await newProduct.save();
 
       res.redirect("/admin/allproducts");
-      console.log("New product added");
     } else {
       res.redirect("/admin/allproducts");
-      console.log("Product already exists");
     }
   } catch (error) {
     console.error("An error occurred while adding the product:", error.message);
@@ -114,19 +112,14 @@ const updateProduct = async (req, res) => {
   const { existingPhotos } = req.body || [];
   const newPhotos = req.files || [];
 
-  console.log("existing photos type:" + typeof(existingPhotos))
+  console.log("existing photos type:" + typeof existingPhotos);
 
   try {
-    console.log("trying");
     async function getCategoryObjectId(categoryName) {
-      console.log("function called");
       const category = await Category.findOne({ categoryName: categoryName });
-      console.log(`${category}:category`);
-      console.log(`${categoryName}:category name`);
       return category ? category._id : null;
     }
     const categoryId = await getCategoryObjectId(req.body.category);
-    console.log(categoryId);
 
     const product = await Product.findById(productId);
     product.name = req.body.name;
@@ -137,10 +130,7 @@ const updateProduct = async (req, res) => {
     product.price = req.body.price;
     product.tags = req.body.tags;
 
-   
-
     if (Array.isArray(newPhotos) && newPhotos.length > 0) {
-      console.log("Adding new photos");
       newPhotos.forEach((photo) => {
         product.photos.push({
           filename: photo.filename,
@@ -150,11 +140,9 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    console.log("updated product" + product);
     await product
       .save()
       .then(() => {
-        console.log("Product updated successfully");
         res.redirect("/admin/allProducts");
       })
       .catch((error) => {
@@ -166,50 +154,54 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const removeImage =  async (req, res) => {
+const removeImage = async (req, res) => {
   try {
-    console.log("image removing")
     const { filename } = req.body;
 
-    const imagePath = path.join('public/uploads', filename);
-    console.log(imagePath)
+    const imagePath = path.join("public/uploads", filename);
     fs.unlink(imagePath, (unlinkErr) => {
       if (unlinkErr) {
-        console.error('Error removing file:', unlinkErr);
-        return res.status(500).json({ error: 'Failed to remove image' });
+        console.error("Error removing file:", unlinkErr);
+        return res.status(500).json({ error: "Failed to remove image" });
       }
 
-
-    res.status(200).json({success:true , message: 'Image removed successfully' });
+      res
+        .status(200)
+        .json({ success: true, message: "Image removed successfully" });
     });
   } catch (error) {
-    console.error('Error removing image:', error);
-    res.status(500).json({ error: 'Failed to remove image' });
+    console.error("Error removing image:", error);
+    res.status(500).json({ error: "Failed to remove image" });
   }
 };
-
 
 const updatePhotos = async (req, res) => {
   try {
     const { productId } = req.params;
     const { photos } = req.body;
 
-    const product = await Product.findByIdAndUpdate(productId, { photos }, { new: true });
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      { photos },
+      { new: true }
+    );
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: "Product not found" });
     }
 
     res.status(200).json({ success: true, product });
   } catch (error) {
-    console.error('Error updating product photos:', error);
-    res.status(500).json({ error: 'Failed to update product photos' });
+    console.error("Error updating product photos:", error);
+    res.status(500).json({ error: "Failed to update product photos" });
   }
 };
 
 const allProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isDeleted: false }).populate('category');
+    const products = await Product.find({ isDeleted: false }).populate(
+      "category"
+    );
     res.render("admin/allProducts", { products });
   } catch (error) {
     console.log(error);
@@ -243,5 +235,5 @@ module.exports = {
   updateProductView,
   deleteProduct,
   removeImage,
-  updatePhotos
+  updatePhotos,
 };

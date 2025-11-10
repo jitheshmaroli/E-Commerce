@@ -1,47 +1,54 @@
 const mongoose = require("mongoose");
-const newUser = new mongoose.Schema({
-    name:{
-        type:String,
-        require:true
+const newUser = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      require: true,
     },
-    email:{
-        type:String,
-        require:true
+    email: {
+      type: String,
+      require: true,
     },
-    password:{
-        type:String,
-        require:true
+    password: {
+      type: String,
+      require: true,
     },
-    gender:{
-        type:String
+    gender: {
+      type: String,
     },
-    photo: [{
+    photo: [
+      {
         filename: { type: String, required: true },
         originalname: { type: String },
-        mimetype: { type: String, required: true }
-    }],
-    isVerified:{
-        type:Boolean,
-        default:false
+        mimetype: { type: String, required: true },
+      },
+    ],
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
-    isAdmin:{
-        type:Boolean,
-        default:false
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
-    isBlocked:{
-        type:Boolean,
-        default:false
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
     wallet: {
-        type: Number,
-        default: 1000  
+      type: Number,
+      default: 1000,
     },
-    walletTransactions: [{
+    walletTransactions: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Wallet'
-    }]
-},{timestamps:true});
+        ref: "Wallet",
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-const User = mongoose.model("User",newUser);
+const User = mongoose.model("User", newUser);
 
-module.exports = User ;
+module.exports = User;

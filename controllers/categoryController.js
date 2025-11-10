@@ -3,7 +3,6 @@ const Product = require("../models/product");
 
 const categoryListView = async (req, res) => {
   try {
-    console.log("view category");
     const categoryList = await Category.find();
 
     res.render("admin/categoryList", { categoryList });
@@ -26,7 +25,9 @@ const addCategory = async (req, res) => {
   try {
     const { categoryName, description } = req.body;
     if (!categoryName || !description) {
-      console.log("incomplete details");
+      return res
+        .status(400)
+        .json({ success: false, message: "Incomplete details" });
     }
 
     const existingCategory = await Category.findOne({
@@ -34,7 +35,6 @@ const addCategory = async (req, res) => {
     });
 
     if (existingCategory) {
-      console.log("the category already exists");
       res.render("admin/addCategory", {
         message: "the category already exists",
       });
@@ -59,7 +59,7 @@ const editCategoryView = async (req, res) => {
     const categoryId = req.params.id;
     const categoryList = await Category.findById(categoryId);
 
-    res.render("admin/editCategory", { categoryList, message:'' });
+    res.render("admin/editCategory", { categoryList, message: "" });
   } catch (error) {
     console.log(error);
     res.status(500).send("internal server error");
@@ -67,12 +67,10 @@ const editCategoryView = async (req, res) => {
 };
 
 const editCategory = async (req, res) => {
-  try { 
-    console.log("updating category");
+  try {
     const categoryId = req.params.id;
     const { categoryName, description } = req.body;
 
-    console.log("updating category");
     await Category.findByIdAndUpdate(categoryId, {
       categoryName,
       description,
@@ -94,7 +92,6 @@ const editCategory = async (req, res) => {
 //       { new: true }
 //     );
 
-
 //     await Product.updateMany(
 //       { category: categoryId },
 //       { $set: { isDeleted:true } },
@@ -106,14 +103,16 @@ const editCategory = async (req, res) => {
 //     res.status(500).send(err);
 //   }
 // };
- 
+
 const toggleCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) {
-      return res.status(404).json({ success: false, message: 'Category not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
     }
-    
+
     category.isBlocked = !category.isBlocked;
     await category.save();
 
@@ -122,11 +121,10 @@ const toggleCategory = async (req, res) => {
       { $set: { isDeleted: category.isBlocked } }
     );
 
-    console.log(category,"category");
     res.json({ success: true, isBlocked: category.isBlocked });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -136,5 +134,5 @@ module.exports = {
   categoryListView,
   editCategory,
   editCategoryView,
-  toggleCategory
+  toggleCategory,
 };
