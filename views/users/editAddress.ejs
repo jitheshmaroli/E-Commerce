@@ -10,30 +10,29 @@
       <div class="avatar">
         <img
           src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar" />
+          alt="Profile Avatar"
+        />
       </div>
       <ul class="profile-links">
         <li><a href="/user-profile">User Profile</a></li>
-        <li><a href="/address">Address</a></li>
+        <li><a href="/address" class="active">Address</a></li>
         <li><a href="/order-history">Order History</a></li>
         <li><a href="/change-password">Change Password</a></li>
         <li><a href="/wallet">Wallet</a></li>
       </ul>
     </div>
   </aside>
+
   <section class="content">
     <h2 class="page-title">Edit Address</h2>
+
     <% if (address) { %>
     <form action="/address/edit?addressId=<%= address._id %>" method="POST">
       <div class="form-group">
         <label for="name">Name</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value="<%= address.name %>"
-          required />
+        <input type="text" id="name" name="name" value="<%= address.name %>" required />
       </div>
+
       <div class="form-group">
         <label for="houseName">House Name</label>
         <input
@@ -41,44 +40,30 @@
           id="houseName"
           name="houseName"
           value="<%= address.houseName %>"
-          required />
+          required
+        />
       </div>
+
       <div class="form-group">
         <label for="street">Street</label>
-        <input
-          type="text"
-          id="street"
-          name="street"
-          value="<%= address.street %>"
-          required />
+        <input type="text" id="street" name="street" value="<%= address.street %>" required />
       </div>
+
       <div class="form-group">
         <label for="city">City</label>
-        <input
-          type="text"
-          id="city"
-          name="city"
-          value="<%= address.city %>"
-          required />
+        <input type="text" id="city" name="city" value="<%= address.city %>" required />
       </div>
+
       <div class="form-group">
         <label for="district">District</label>
-        <input
-          type="text"
-          id="district"
-          name="district"
-          value="<%= address.district %>"
-          required />
+        <input type="text" id="district" name="district" value="<%= address.district %>" required />
       </div>
+
       <div class="form-group">
         <label for="state">State</label>
-        <input
-          type="text"
-          id="state"
-          name="state"
-          value="<%= address.state %>"
-          required />
+        <input type="text" id="state" name="state" value="<%= address.state %>" required />
       </div>
+
       <div class="form-group">
         <label for="pinCode">Pin Code</label>
         <input
@@ -89,39 +74,39 @@
           minlength="6"
           maxlength="6"
           required
-          onkeyup="limitPincode(this)" />
-        <% if (message) { %><span class="alert alert-danger"
-          ><%= message %></span
-        ><% } %>
+          onkeyup="limitPincode(this)"
+        />
+        <% if (message) { %>
+        <span class="alert alert-danger d-block mt-2"><%= message %></span>
+        <% } %>
       </div>
-      <div class="form-group">
-        <label class="form-check-label">Set as Default</label>
-        <input type="checkbox" class="form-check-input" id="isDefault"
-        name="isDefault" <%= address.isDefault ? 'checked' : '' %>>
+
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" />
+        <% if (address.isDefault) { %>
+        checked="checked"
+        <% } %>
+        <label class="form-check-label" for="isDefault">Set as Default</label>
       </div>
+
       <div class="form-group">
         <button type="submit" class="btn product-btn">Update Address</button>
       </div>
     </form>
+    <% } else { %>
+    <p class="text-danger">Address not found.</p>
     <% } %>
   </section>
   <% } %>
 </main>
 
-<%- include('../includes/userFooter.ejs') %> <%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userFooter.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
 
 <script>
   function limitPincode(input) {
-    if (input.value.length > 6) input.value = input.value.slice(0, 6);
-  }
-
-  function setCategory(category) {
-    const selectedCategory = document.getElementById("selectedCategory");
-    if (selectedCategory) selectedCategory.value = category;
-    const dropdownText = document.querySelector(".dropdown-toggle-text");
-    if (dropdownText)
-      dropdownText.textContent =
-        category.charAt(0).toUpperCase() + category.slice(1);
+    if (input.value.length > 6) {
+      input.value = input.value.slice(0, 6);
+    }
   }
 </script>

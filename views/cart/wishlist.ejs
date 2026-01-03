@@ -10,9 +10,7 @@
     <div class="product-container">
       <div class="image-container">
         <a href="/product-details/<%= item._id %>">
-          <img
-            src="/uploads/<%= item.photos[0].filename %>"
-            alt="Product Image" />
+          <img src="/uploads/<%= item.photos[0].filename %>" alt="Product Image" />
         </a>
       </div>
       <div class="product-details">
@@ -21,22 +19,17 @@
       </div>
     </div>
     <div class="button-container">
-      <form
-        action="/move-to-cart/<%= item._id %>"
-        method="POST"
-        class="wishlist-form">
+      <form action="/move-to-cart/<%= item._id %>" method="POST" class="wishlist-form">
         <input type="hidden" name="productId" value="<%= item._id %>" />
         <button type="submit" class="btn product-btn">ADD TO CART</button>
       </form>
-      <form
-        action="/wishlist/remove/<%= item._id %>"
-        method="POST"
-        class="wishlist-form">
+      <form action="/wishlist/remove/<%= item._id %>" method="POST" class="wishlist-form">
         <button type="submit" class="btn product-btn delete-btn">DELETE</button>
       </form>
     </div>
   </div>
-  <% }) %> <% } else { %>
+  <% }) %>
+  <% } else { %>
   <div class="empty-state">
     <h2>NO ITEMS IN WISHLIST</h2>
     <a href="/products" class="btn product-btn">SHOP NOW</a>
@@ -44,7 +37,8 @@
   <% } %>
 </div>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -75,9 +69,7 @@ include('../includes/userScripts.ejs') %>
 <script>
   function setCategory(category) {
     document.getElementById("selectedCategory").value = category;
-    document
-      .getElementById("categoryDropdown")
-      .querySelector(".dropdown-toggle-text").textContent =
+    document.getElementById("categoryDropdown").querySelector(".dropdown-toggle-text").textContent =
       category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

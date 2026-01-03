@@ -4,14 +4,8 @@ const Razorpay = require("razorpay");
 
 const verifyPayment = async (req, res) => {
   try {
-    const {
-      razorpay_payment_id,
-      razorpay_order_id,
-      razorpay_signature,
-      orderId,
-    } = req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, orderId } = req.body;
 
-    // eslint-disable-next-line no-undef
     let hmac = crypto.createHmac("sha256", process.env.KEY_SECRET);
     hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
     hmac = hmac.digest("hex");
@@ -22,9 +16,7 @@ const verifyPayment = async (req, res) => {
         res.json({ orderId, message: "Payment verified" });
       } else {
         console.error("Error updating order status!");
-        res
-          .status(500)
-          .json({ message: "Payment verified but order update failed" });
+        res.status(500).json({ message: "Payment verified but order update failed" });
       }
     } else {
       console.error("Payment verification failed!");
@@ -52,12 +44,11 @@ async function updateOrderStatus(orderId, newStatus) {
 }
 
 const retryPayment = async (req, res) => {
-  const orderId = req.body.orderId; // Get order ID from request
-  const orderData = await Order.findById(orderId); // Fetch order details
+  const orderId = req.body.orderId;
+  const orderData = await Order.findById(orderId);
   const razorpay = new Razorpay({
-    // eslint-disable-next-line no-undef
     key_id: process.env.KEY_ID,
-    // eslint-disable-next-line no-undef
+
     key_secret: process.env.KEY_SECRET,
   });
 
@@ -72,9 +63,7 @@ const retryPayment = async (req, res) => {
     res.json({ success: true, orderId, razorpayOrder });
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
-    res
-      .status(500)
-      .json({ success: false, error: "Failed to initiate retry payment." });
+    res.status(500).json({ success: false, error: "Failed to initiate retry payment." });
   }
 };
 

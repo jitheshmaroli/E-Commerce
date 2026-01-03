@@ -17,7 +17,6 @@ dotenv.config();
 
 const MongoStore = require("connect-mongo");
 const sessionStore = MongoStore.create({
-  // eslint-disable-next-line no-undef
   mongoUrl: process.env.MONGO_URL,
   collectionName: "session",
 });
@@ -25,7 +24,6 @@ const sessionStore = MongoStore.create({
 // db connection
 connectDB();
 
-// eslint-disable-next-line no-undef
 const port = process.env.PORT || 3000;
 
 // Middleware setup
@@ -34,15 +32,14 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.set("view engine", "ejs");
-// eslint-disable-next-line no-undef
+
 app.set("views", path.join(__dirname, "views"));
-// eslint-disable-next-line no-undef
+
 app.use(express.static(path.join(__dirname, "public")));
 
 // Session management
 app.use(
   session({
-    // eslint-disable-next-line no-undef
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,

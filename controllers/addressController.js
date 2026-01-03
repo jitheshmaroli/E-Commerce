@@ -39,8 +39,7 @@ const addAddress = async (req, res) => {
     const user = await User.findOne({
       email: req.session.userId || req.session.passport.user.userId,
     });
-    const { name, houseName, street, city, district, state, pinCode } =
-      req.body;
+    const { name, houseName, street, city, district, state, pinCode } = req.body;
 
     const newAddress = {
       name,
@@ -76,16 +75,7 @@ const addNewAddress = async (req, res) => {
     const user = await User.findOne({
       email: req.session.userId || req.session.passport.user.userId,
     });
-    const {
-      name,
-      houseName,
-      street,
-      city,
-      district,
-      state,
-      pinCode,
-      isDefault,
-    } = req.body;
+    const { name, houseName, street, city, district, state, pinCode, isDefault } = req.body;
 
     const newAddress = {
       name,
@@ -136,9 +126,7 @@ const setDefault = async (req, res) => {
     const addressDoc = await Addresses.findOne({ userId: userId });
 
     if (!addressDoc) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Address document not found" });
+      return res.status(404).json({ success: false, message: "Address document not found" });
     }
 
     // Update isDefault for all addresses (using atomic operator)
@@ -209,14 +197,10 @@ const editAddressView = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!addressDoc) {
-      return res
-        .status(404)
-        .json({ error: "No addresses found for this user" });
+      return res.status(404).json({ error: "No addresses found for this user" });
     }
 
-    const address = addressDoc.address.find(
-      (addr) => addr._id.toString() === addressId
-    );
+    const address = addressDoc.address.find((addr) => addr._id.toString() === addressId);
 
     if (!address) {
       return res.status(404).json({ error: "Address not found" });
@@ -247,9 +231,7 @@ const updateAddress = async (req, res) => {
       return res.status(404).json({ error: "Address not found" });
     }
 
-    const addressIndex = addressDoc.address.findIndex(
-      (addr) => addr._id.toString() === addressId
-    );
+    const addressIndex = addressDoc.address.findIndex((addr) => addr._id.toString() === addressId);
 
     if (addressIndex === -1) {
       return res.status(404).json({ error: "Address not found" });
@@ -293,9 +275,7 @@ const deleteAddress = async (req, res) => {
       return res.status(404).json({ error: "Address not found" });
     }
 
-    const addressIndex = addressDoc.address.findIndex(
-      (addr) => addr._id.toString() === addressId
-    );
+    const addressIndex = addressDoc.address.findIndex((addr) => addr._id.toString() === addressId);
 
     if (addressIndex === -1) {
       return res.status(404).json({ error: "Address not found" });

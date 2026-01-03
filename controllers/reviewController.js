@@ -23,9 +23,7 @@ const reviewView = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    const product = order.items.find(
-      (item) => item.productId.toString() === productId
-    );
+    const product = order.items.find((item) => item.productId.toString() === productId);
 
     if (!product) {
       return res.status(404).send("Product not found in the order");
@@ -59,7 +57,6 @@ const review = async (req, res) => {
     const userId = user._id;
     const { orderId, productId } = req.params;
 
-    // Create a new review
     const review = new Review({
       userId,
       productId,
@@ -69,11 +66,7 @@ const review = async (req, res) => {
     });
 
     await review.save();
-    await Product.findByIdAndUpdate(
-      productId,
-      { $push: { reviews: review._id } },
-      { new: true }
-    );
+    await Product.findByIdAndUpdate(productId, { $push: { reviews: review._id } }, { new: true });
 
     res.redirect("/order-history");
   } catch (error) {

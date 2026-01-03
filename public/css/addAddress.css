@@ -2,9 +2,29 @@
   max-width: 400px;
   margin: 0 auto;
   padding: 1.5rem;
-  border: 1px solid var(--grey-200);
+  border: 1px solid #dee2e6; /* Light border */
   border-radius: 5px;
-  background: var(--bg-light);
+  background: #ffffff; /* White for form */
+  box-shadow: var(--shadow-sm);
+}
+.address-form label {
+  color: #000000; /* Black labels */
+  font-weight: 500;
+}
+.address-form input {
+  background: #ffffff; /* White inputs */
+  color: #000000; /* Black text */
+  border: 1px solid #dee2e6; /* Light border */
+  border-radius: 4px;
+}
+.address-form input:focus {
+  border-color: #000000; /* Black on focus */
+}
+.address-form .product-btn {
+  background: #000000; /* Black button */
+  color: #ffffff;
+  border: 1px solid #000000;
+  width: 100%;
 }
 .form-group input[type="number"]::-webkit-outer-spin-button,
 .form-group input[type="number"]::-webkit-inner-spin-button {
@@ -16,5 +36,6 @@
 @media (max-width: 576px) {
   .address-form {
     padding: 1rem;
+    margin: 1rem;
   }
 }

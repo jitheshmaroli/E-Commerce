@@ -24,7 +24,8 @@
                 type="checkbox"
                 class="cart-item-checkbox-input"
                 data-product="<%= item.productId %>"
-                data-quantity="<%= item.quantity %>" />
+                data-quantity="<%= item.quantity %>"
+              />
             </div>
             <div class="item-image">
               <a href="/product-details/<%= item.productId %>">
@@ -32,24 +33,21 @@
               </a>
             </div>
             <div class="item-info">
-              <a
-                href="/product-details/<%= item.productId %>"
-                data-product="<%= item.productId %>">
+              <a href="/product-details/<%= item.productId %>" data-product="<%= item.productId %>">
                 <h3 class="product-name"><%= item.name.toUpperCase() %></h3>
               </a>
               <p class="product-price">
                 <% if (item.offer) { %>
-                <span class="original-price"
-                  >₹<%= item.price.toFixed(2) %></span
-                >
-                <span class="current-price"
-                  >₹<%= item.currentPrice.toFixed(2) %></span
-                >
+                <span class="original-price">₹<%= item.price.toFixed(2) %></span>
+                <span class="current-price">₹<%= item.currentPrice.toFixed(2) %></span>
                 <i
                   class="fas fa-info-circle offer-icon"
                   data-bs-toggle="modal"
-                  data-bs-target="#offerModal<%= item.productId %>"></i>
-                <% } else { %> ₹<%= item.currentPrice.toFixed(2) %> <% } %>
+                  data-bs-target="#offerModal<%= item.productId %>"
+                ></i>
+                <% } else { %>
+                ₹<%= item.currentPrice.toFixed(2) %>
+                <% } %>
               </p>
               <div class="quantity-control">
                 <button class="quantity-btn" aria-label="Decrease">-</button>
@@ -57,7 +55,8 @@
                   type="number"
                   value="<%= item.quantity %>"
                   min="1"
-                  data-stock="<%= item.stock %>" />
+                  data-stock="<%= item.stock %>"
+                />
                 <button class="quantity-btn" aria-label="Increase">+</button>
               </div>
             </div>
@@ -72,30 +71,28 @@
           id="offerModal<%= item.productId %>"
           tabindex="-1"
           aria-labelledby="offerModalLabel<%= item.productId %>"
-          aria-hidden="true">
+          aria-hidden="true"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5
-                  class="modal-title"
-                  id="offerModalLabel<%= item.productId %>">
-                  Offer Details
-                </h5>
+                <h5 class="modal-title" id="offerModalLabel<%= item.productId %>">Offer Details</h5>
                 <button
                   type="button"
                   class="btn-close"
                   data-bs-dismiss="modal"
-                  aria-label="Close"></button>
+                  aria-label="Close"
+                ></button>
               </div>
               <div class="modal-body">
-                <%= item.offer.name %>: <%= item.offer.discountType ===
-                'percentage' ? item.offer.discountValue + '% off' : '₹' +
-                item.offer.discountValue + ' off' %>
+                <%= item.offer.name %>: <%= item.offer.discountType === 'percentage' ?
+                item.offer.discountValue + '% off' : '₹' + item.offer.discountValue + ' off' %>
               </div>
             </div>
           </div>
         </div>
-        <% } %> <% }) %>
+        <% } %>
+        <% }) %>
       </div>
     </section>
 
@@ -106,26 +103,22 @@
           <p>Total Items: <span id="total-items">0</span></p>
           <p>Total Cost: <span id="total-cost">₹0.00</span></p>
         </div>
-        <button id="checkout-btn" class="btn product-btn">
-          Proceed to Checkout
-        </button>
+        <button id="checkout-btn" class="btn product-btn">Proceed to Checkout</button>
       </aside>
     </section>
   </div>
   <% } %>
 </div>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   (function () {
     window.onpageshow = function (event) {
-      if (
-        event.persisted ||
-        (window.performance && window.performance.navigation.type === 2)
-      ) {
+      if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         window.location.reload();
       }
     };
@@ -138,9 +131,7 @@ include('../includes/userScripts.ejs') %>
 
     document.querySelectorAll(".quantity-btn").forEach((btn) => {
       btn.addEventListener("click", function (e) {
-        const input = e.target
-          .closest(".quantity-control")
-          .querySelector("input");
+        const input = e.target.closest(".quantity-control").querySelector("input");
         let currentQty = parseInt(input.value);
         const stockQty = parseInt(input.getAttribute("data-stock"));
         const item = e.target.closest(".cart-item");
@@ -254,11 +245,9 @@ include('../includes/userScripts.ejs') %>
   }
 
   function checkAllItems() {
-    document
-      .querySelectorAll(".cart-item-checkbox-input")
-      .forEach((checkbox) => {
-        checkbox.checked = true;
-      });
+    document.querySelectorAll(".cart-item-checkbox-input").forEach((checkbox) => {
+      checkbox.checked = true;
+    });
     updateOrderSummary();
   }
   checkAllItems();
@@ -269,17 +258,13 @@ include('../includes/userScripts.ejs') %>
     document.querySelectorAll(".cart-item").forEach((item) => {
       const checkbox = item.querySelector(".cart-item-checkbox-input");
       if (checkbox.checked) {
-        const qty = parseInt(
-          item.querySelector(".quantity-control input").value
-        );
+        const qty = parseInt(item.querySelector(".quantity-control input").value);
         let price;
         const currentPriceElement = item.querySelector(".current-price");
         if (currentPriceElement) {
           price = parseFloat(currentPriceElement.textContent.replace("₹", ""));
         } else {
-          price = parseFloat(
-            item.querySelector(".product-price").textContent.replace("₹", "")
-          );
+          price = parseFloat(item.querySelector(".product-price").textContent.replace("₹", ""));
         }
 
         totalItems += qty;
@@ -288,9 +273,7 @@ include('../includes/userScripts.ejs') %>
     });
 
     document.getElementById("total-items").textContent = totalItems;
-    document.getElementById("total-cost").textContent = `₹${totalCost.toFixed(
-      2
-    )}`;
+    document.getElementById("total-cost").textContent = `₹${totalCost.toFixed(2)}`;
   }
 
   document.querySelectorAll(".cart-item-checkbox-input").forEach((checkbox) => {
@@ -370,11 +353,9 @@ include('../includes/userScripts.ejs') %>
                       updateOrderSummary();
 
                       // Check if cart is empty
-                      const cartItemsCount =
-                        document.querySelectorAll(".cart-item").length;
+                      const cartItemsCount = document.querySelectorAll(".cart-item").length;
                       if (cartItemsCount === 0) {
-                        const cartContainer =
-                          document.querySelector(".cart-container");
+                        const cartContainer = document.querySelector(".cart-container");
                         cartContainer.innerHTML = `
                                         <div class="empty-cart-message">
                                             <h2>Your cart is empty</h2>
@@ -433,8 +414,7 @@ include('../includes/userScripts.ejs') %>
             });
 
             // Check if cart is empty
-            const cartItemsCount =
-              document.querySelectorAll(".cart-item").length;
+            const cartItemsCount = document.querySelectorAll(".cart-item").length;
             if (cartItemsCount === 0) {
               const cartContainer = document.querySelector(".cart-container");
               cartContainer.innerHTML = `
@@ -470,9 +450,7 @@ include('../includes/userScripts.ejs') %>
 <script>
   function setCategory(category) {
     document.getElementById("selectedCategory").value = category;
-    document
-      .getElementById("categoryDropdown")
-      .querySelector(".dropdown-toggle-text").textContent =
+    document.getElementById("categoryDropdown").querySelector(".dropdown-toggle-text").textContent =
       category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

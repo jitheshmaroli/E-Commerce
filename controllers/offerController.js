@@ -58,17 +58,13 @@ const applyOffers = async function () {
   });
 
   // Apply category offers first
-  const categoryOffers = activeOffers.filter(
-    (offer) => offer.offerType === "category"
-  );
+  const categoryOffers = activeOffers.filter((offer) => offer.offerType === "category");
   for (const offer of categoryOffers) {
     await applyCategoryOffer(offer);
   }
 
   // Then apply product offers, which will override category offers if better
-  const productOffers = activeOffers.filter(
-    (offer) => offer.offerType === "product"
-  );
+  const productOffers = activeOffers.filter((offer) => offer.offerType === "product");
   for (const offer of productOffers) {
     await applyProductOffer(offer);
   }

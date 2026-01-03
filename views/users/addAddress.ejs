@@ -10,7 +10,8 @@
       <div class="avatar">
         <img
           src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar" />
+          alt="Profile Avatar"
+        />
       </div>
       <ul class="profile-links">
         <li><a href="/user-profile">User Profile</a></li>
@@ -27,7 +28,8 @@
       id="add-address-form"
       action="/addresses/add"
       method="post"
-      onsubmit="return validateForm()">
+      onsubmit="return validateForm();"
+    >
       <input type="hidden" id="userId" name="userId" value="<%= user._id %>" />
       <div class="form-group">
         <label for="name">Full Name:</label>
@@ -35,12 +37,7 @@
       </div>
       <div class="form-group">
         <label for="houseName">House Name/Number:</label>
-        <input
-          type="text"
-          id="houseName"
-          name="houseName"
-          maxlength="50"
-          required />
+        <input type="text" id="houseName" name="houseName" maxlength="50" required />
       </div>
       <div class="form-group">
         <label for="street">Street Address:</label>
@@ -52,12 +49,7 @@
       </div>
       <div class="form-group">
         <label for="district">District:</label>
-        <input
-          type="text"
-          id="district"
-          name="district"
-          maxlength="50"
-          required />
+        <input type="text" id="district" name="district" maxlength="50" required />
       </div>
       <div class="form-group">
         <label for="state">State:</label>
@@ -72,7 +64,8 @@
           minlength="6"
           maxlength="6"
           required
-          onkeyup="limitPincode(this)" />
+          onkeyup="limitPincode(this)"
+        />
       </div>
       <div class="form-group">
         <button type="submit" class="btn product-btn">Add Address</button>
@@ -82,7 +75,8 @@
   <% } %>
 </main>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script>
@@ -102,9 +96,7 @@ include('../includes/userScripts.ejs') %>
     const namePattern = /^[a-zA-Z\s]+$/;
 
     if (!name || !namePattern.test(name)) {
-      alert(
-        "Name must not be empty, contain only spaces, or have special characters."
-      );
+      alert("Name must not be empty, contain only spaces, or have special characters.");
       return false;
     }
 
@@ -126,7 +118,6 @@ include('../includes/userScripts.ejs') %>
     if (selectedCategory) selectedCategory.value = category;
     const dropdownText = document.querySelector(".dropdown-toggle-text");
     if (dropdownText)
-      dropdownText.textContent =
-        category.charAt(0).toUpperCase() + category.slice(1);
+      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

@@ -1,0 +1,65 @@
+{
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.donotShowInfoMsg": true,
+
+  "explorer.confirmDelete": false,
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+
+  // "files.autoSave": "onFocusChange",
+
+  // "editor.formatOnSave": true,
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[ejs]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "files.associations": {
+    "*.ejs": "html"
+  },
+
+  "eslint.validate": ["javascript"],
+  "eslint.debug": true,
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "prettier.bracketSameLine": true,
+
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  "emmet.includeLanguages": {
+    "ejs": "html"
+  },
+
+  "launch": {
+    "configurations": [
+      {
+        "name": "Attach to Node",
+        "port": 9229,
+        "request": "attach",
+        "skipFiles": ["<node_internals>/**"],
+        "type": "node"
+      }
+    ]
+  }
+}

@@ -10,7 +10,8 @@
       <div class="avatar">
         <img
           src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar" />
+          alt="Profile Avatar"
+        />
       </div>
       <ul class="profile-links">
         <li><a href="/profile">User Profile</a></li>
@@ -33,9 +34,7 @@
             <div class="card-body">
               <div class="mb-3 d-flex justify-content-between">
                 <div>
-                  <span class="me-3"
-                    ><%= new Date(order.createdAt).toDateString() %></span
-                  >
+                  <span class="me-3"><%= new Date(order.createdAt).toDateString() %></span>
                   <span class="me-3">#<%= order.uniqueOrderId %></span>
                 </div>
                 <div class="invoice">
@@ -43,7 +42,8 @@
                     type="button"
                     class="btn product-btn btn-sm"
                     data-bs-toggle="modal"
-                    data-bs-target="#invoiceModal">
+                    data-bs-target="#invoiceModal"
+                  >
                     <i class="fa fa-download me-1"></i> Invoice
                   </button>
                 </div>
@@ -60,7 +60,8 @@
                               src="/uploads/<%= item.productId.photos[0].filename %>"
                               alt="<%= item.productId.name %>"
                               class="img-fluid rounded"
-                              width="60" />
+                              width="60"
+                            />
                           </div>
                           <div class="flex-grow-1 ms-3">
                             <h6 class="mb-1">
@@ -75,13 +76,17 @@
                       </td>
                       <td><%= item.quantity %></td>
                       <td class="text-end">
-                        ₹<%= item.productId.currentPrice || item.productId.price
-                        %>
+                        ₹<%= item.productId.currentPrice || item.productId.price %>
                       </td>
                       <td>
-                        <span class="badge bg-info rounded-pill"
-                          ><%= item.status %></span
+                        <span class="badge bg-info rounded-pill"><%= item.status %></span>
+                        <% if (item.status === 'Delivered') { %>
+                        <a
+                          href="/review/<%= order._id %>/<%= item.productId._id %>"
+                          class="btn btn-sm review-btn ms-1"
+                          >Review</a
                         >
+                        <% } %>
                       </td>
                     </tr>
                     <% }) %>
@@ -89,9 +94,7 @@
                   <tfoot class="table-light">
                     <tr>
                       <td colspan="3" class="text-end">
-                        <strong
-                          >Discount (<%= order.couponCode || 'N/A' %>)</strong
-                        >
+                        <strong>Discount (<%= order.couponCode || 'N/A' %>)</strong>
                       </td>
                       <td class="text-end text-danger">
                         -₹<%= order.priceDetails.discountAmount %>
@@ -101,25 +104,19 @@
                       <td colspan="3" class="text-end">
                         <strong>Subtotal</strong>
                       </td>
-                      <td class="text-end">
-                        ₹<%= order.priceDetails.subTotal %>
-                      </td>
+                      <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
                     </tr>
                     <tr>
                       <td colspan="3" class="text-end">
                         <strong>Delivery Charge</strong>
                       </td>
-                      <td class="text-end">
-                        ₹<%= order.priceDetails.deliveryCharge %>
-                      </td>
+                      <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
                     </tr>
                     <tr>
                       <td colspan="3" class="text-end">
                         <strong>Sales Tax</strong>
                       </td>
-                      <td class="text-end">
-                        ₹<%= order.priceDetails.salesTax %>
-                      </td>
+                      <td class="text-end">₹<%= order.priceDetails.salesTax %></td>
                     </tr>
                     <tr class="fw-bold">
                       <td colspan="3" class="text-end">
@@ -142,7 +139,8 @@
                     %>
                   </p>
                   <span
-                    class="badge <%= order.paymentStatus === 'paid' ? 'bg-success' : 'bg-warning' %> rounded-pill">
+                    class="badge <%= order.paymentStatus === 'paid' ? 'bg-success' : 'bg-warning' %> rounded-pill"
+                  >
                     <%= order.paymentStatus === 'paid' ? 'PAID' : 'PENDING' %>
                   </span>
                   <% if (order.paymentMethod === 'online' && order.paymentStatus
@@ -150,7 +148,8 @@
                   <button
                     class="btn btn-secondary btn-sm mt-2"
                     id="retry-payment"
-                    data-order-id="<%= order._id %>">
+                    data-order-id="<%= order._id %>"
+                  >
                     Retry Payment
                   </button>
                   <% } %>
@@ -162,13 +161,15 @@
                 <div class="card-body">
                   <h6 class="card-title">Billing Address</h6>
                   <address>
-                    <strong><%= order.deliveryAddress.address.name %></strong
-                    ><br />
+                    <strong><%= order.deliveryAddress.address.name %></strong><br />
                     <%= order.deliveryAddress.address.houseName %><br />
-                    <%= order.deliveryAddress.address.street %>, <%=
+                    <%= order.deliveryAddress.address.street %>,
+                    <%=
                     order.deliveryAddress.address.city %><br />
-                    <%= order.deliveryAddress.address.district %>, <%=
-                    order.deliveryAddress.address.state %> <%=
+                    <%= order.deliveryAddress.address.district %>,
+                    <%=
+                    order.deliveryAddress.address.state %>
+                    <%=
                     order.deliveryAddress.address.pinCode %>
                   </address>
                 </div>
@@ -183,10 +184,13 @@
               <address>
                 <strong><%= order.deliveryAddress.address.name %></strong><br />
                 <%= order.deliveryAddress.address.houseName %><br />
-                <%= order.deliveryAddress.address.street %>, <%=
+                <%= order.deliveryAddress.address.street %>,
+                <%=
                 order.deliveryAddress.address.city %><br />
-                <%= order.deliveryAddress.address.district %>, <%=
-                order.deliveryAddress.address.state %> <%=
+                <%= order.deliveryAddress.address.district %>,
+                <%=
+                order.deliveryAddress.address.state %>
+                <%=
                 order.deliveryAddress.address.pinCode %>
               </address>
             </div>
@@ -210,29 +214,20 @@
   id="invoiceModal"
   tabindex="-1"
   aria-labelledby="invoiceModalLabel"
-  aria-hidden="true">
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="invoiceModalLabel">
-          Invoice #<%= order ? order._id : '' %>
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"></button>
+        <h5 class="modal-title" id="invoiceModalLabel">Invoice #<%= order ? order._id : '' %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <% if (order) { %>
         <div class="row">
           <div class="col-12">
             <div class="invoice-header text-center mb-4">
-              <img
-                src="/test.jpg"
-                alt="ShoeZone"
-                class="mb-2"
-                style="height: 50px" />
+              <img src="/test.jpg" alt="ShoeZone" class="mb-2" style="height: 50px" />
               <h4>Invoice</h4>
               <p class="mb-0">Order #<%= order._id %></p>
             </div>
@@ -242,10 +237,14 @@
                 <address>
                   <%= order.deliveryAddress.address.name %><br />
                   <%= order.deliveryAddress.address.houseName %><br />
-                  <%= order.deliveryAddress.address.street %>, <%=
+                  <%= order.deliveryAddress.address.street %>,
+                  <%=
                   order.deliveryAddress.address.city %><br />
-                  <%= order.deliveryAddress.address.district %>, <%=
-                  order.deliveryAddress.address.state %> - <%=
+                  <%= order.deliveryAddress.address.district %>,
+                  <%=
+                  order.deliveryAddress.address.state %>
+                  -
+                  <%=
                   order.deliveryAddress.address.pinCode %>
                 </address>
               </div>
@@ -254,10 +253,14 @@
                 <address>
                   <%= order.deliveryAddress.address.name %><br />
                   <%= order.deliveryAddress.address.houseName %><br />
-                  <%= order.deliveryAddress.address.street %>, <%=
+                  <%= order.deliveryAddress.address.street %>,
+                  <%=
                   order.deliveryAddress.address.city %><br />
-                  <%= order.deliveryAddress.address.district %>, <%=
-                  order.deliveryAddress.address.state %> - <%=
+                  <%= order.deliveryAddress.address.district %>,
+                  <%=
+                  order.deliveryAddress.address.state %>
+                  -
+                  <%=
                   order.deliveryAddress.address.pinCode %>
                 </address>
               </div>
@@ -265,12 +268,14 @@
             <div class="row mb-4">
               <div class="col-md-6">
                 <p>
-                  <strong>Payment Method:</strong> <%= order.paymentMethod %>
+                  <strong>Payment Method:</strong>
+                  <%= order.paymentMethod %>
                 </p>
               </div>
               <div class="col-md-6 text-md-end">
                 <p>
-                  <strong>Order Date:</strong> <%= new
+                  <strong>Order Date:</strong>
+                  <%= new
                   Date(order.createdAt).toDateString() %>
                 </p>
               </div>
@@ -293,12 +298,10 @@
                     <td><%= item.productId.name %></td>
                     <td class="text-center"><%= item.quantity %></td>
                     <td class="text-end">
-                      ₹<%= item.productId.currentPrice || item.productId.price
-                      %>
+                      ₹<%= item.productId.currentPrice || item.productId.price %>
                     </td>
                     <td class="text-end">
-                      ₹<%= (item.productId.currentPrice || item.productId.price)
-                      * item.quantity %>
+                      ₹<%= (item.productId.currentPrice || item.productId.price) * item.quantity %>
                     </td>
                   </tr>
                   <% }) %>
@@ -308,33 +311,25 @@
                     <td colspan="4" class="text-end">
                       <strong>Subtotal</strong>
                     </td>
-                    <td class="text-end">
-                      ₹<%= order.priceDetails.subTotal %>
-                    </td>
+                    <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
                   </tr>
                   <tr>
                     <td colspan="4" class="text-end">
                       <strong>Discount</strong>
                     </td>
-                    <td class="text-end text-danger">
-                      -₹<%= order.priceDetails.discountAmount %>
-                    </td>
+                    <td class="text-end text-danger">-₹<%= order.priceDetails.discountAmount %></td>
                   </tr>
                   <tr>
                     <td colspan="4" class="text-end">
                       <strong>Delivery Charge</strong>
                     </td>
-                    <td class="text-end">
-                      ₹<%= order.priceDetails.deliveryCharge %>
-                    </td>
+                    <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
                   </tr>
                   <tr>
                     <td colspan="4" class="text-end">
                       <strong>Sales Tax</strong>
                     </td>
-                    <td class="text-end">
-                      ₹<%= order.priceDetails.salesTax %>
-                    </td>
+                    <td class="text-end">₹<%= order.priceDetails.salesTax %></td>
                   </tr>
                   <tr class="fw-bold">
                     <td colspan="4" class="text-end"><strong>Total</strong></td>
@@ -348,18 +343,15 @@
         <% } %>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Close
-        </button>
-        <button type="button" class="btn btn-primary" onclick="window.print()">
-          Print
-        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">Print</button>
       </div>
     </div>
   </div>
 </div>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -432,8 +424,7 @@ include('../includes/userScripts.ejs') %>
       if (selectedCategory) selectedCategory.value = category;
       const dropdownText = document.querySelector(".dropdown-toggle-text");
       if (dropdownText)
-        dropdownText.textContent =
-          category.charAt(0).toUpperCase() + category.slice(1);
+        dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
     }
   });
 </script>

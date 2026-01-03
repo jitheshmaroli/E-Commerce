@@ -10,7 +10,8 @@
       <div class="avatar">
         <img
           src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar" />
+          alt="Profile Avatar"
+        />
       </div>
       <ul class="profile-links">
         <li><a href="/profile">User Profile</a></li>
@@ -31,7 +32,8 @@
             <img
               src="/uploads/<%= product.photos[0].filename %>"
               alt="<%= product.name %>"
-              class="card-img rounded" />
+              class="card-img rounded"
+            />
           </div>
           <div class="col-md-8">
             <div class="card-body">
@@ -44,10 +46,7 @@
           </div>
         </div>
       </div>
-      <form
-        action="/review/<%= orderId %>/<%= productId %>"
-        method="POST"
-        class="review-form">
+      <form action="/review/<%= orderId %>/<%= productId %>" method="POST" class="review-form">
         <div class="form-group mb-3">
           <label for="rating" class="form-label">Rating:</label>
           <div class="rating-stars">
@@ -86,11 +85,10 @@
             name="comment"
             rows="4"
             placeholder="Share your experience..."
-            required></textarea>
+            required
+          ></textarea>
         </div>
-        <button type="submit" class="btn btn-primary btn-review">
-          Submit Review
-        </button>
+        <button type="submit" class="btn btn-primary btn-review">Submit Review</button>
       </form>
     </div>
     <% } else { %>
@@ -103,7 +101,8 @@
   <% } %>
 </main>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script>
@@ -123,8 +122,7 @@ include('../includes/userScripts.ejs') %>
       if (selectedCategory) selectedCategory.value = category;
       const dropdownText = document.querySelector(".dropdown-toggle-text");
       if (dropdownText)
-        dropdownText.textContent =
-          category.charAt(0).toUpperCase() + category.slice(1);
+        dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
     }
   });
 </script>

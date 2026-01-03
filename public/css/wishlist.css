@@ -4,9 +4,10 @@
   align-items: center;
   margin-bottom: 1rem;
   padding: 1.5rem;
-  background-color: var(--grey-100);
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid #dee2e6;
 }
 .product-container {
   display: flex;
@@ -23,13 +24,18 @@
   max-width: 150px;
   object-fit: contain;
   border-radius: 4px;
+  border: 1px solid #dee2e6;
 }
 .product-details {
   flex-grow: 1;
 }
-.product-name {
+.product-details h2 {
+  color: #000000;
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
+}
+.product-details p {
+  color: #000000;
 }
 .button-container {
   width: 30%;
@@ -44,6 +50,13 @@
 .wishlist-form .product-btn {
   width: 100%;
   padding: 0.5rem;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+.wishlist-form .product-btn:hover {
+  background: #000000;
+  color: #ffffff;
 }
 .delete-btn {
   background-color: var(--grey-600);
@@ -51,6 +64,25 @@
 }
 .delete-btn:hover {
   background-color: var(--bg-dark);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+.empty-state h2 {
+  color: var(--grey-600);
+  margin-bottom: 1rem;
+}
+.empty-state .product-btn {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
 }
 
 /* Responsive */

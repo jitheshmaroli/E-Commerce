@@ -21,12 +21,7 @@ const addToCart = async (req, res) => {
       return res.json({ success: false, message: "please log in to continue" });
     }
 
-    if (
-      !productId ||
-      !quantity ||
-      typeof quantity !== "number" ||
-      quantity < 1
-    ) {
+    if (!productId || !quantity || typeof quantity !== "number" || quantity < 1) {
       return res.status(400).json({ error: "Invalid product details" });
     }
 
@@ -73,10 +68,7 @@ const addToCart = async (req, res) => {
     }
 
     await cart.save();
-    await Wishlist.findOneAndUpdate(
-      { userId: user._id },
-      { $pull: { items: { productId } } }
-    );
+    await Wishlist.findOneAndUpdate({ userId: user._id }, { $pull: { items: { productId } } });
 
     res.json({
       success: true,
@@ -102,9 +94,7 @@ const moveToCart = async (req, res) => {
       cart = new Cart({ userId, items: [] });
     }
 
-    const itemIndex = cart.items.findIndex((item) =>
-      item.productId.equals(productId)
-    );
+    const itemIndex = cart.items.findIndex((item) => item.productId.equals(productId));
 
     if (itemIndex !== -1) {
       cart.items[itemIndex].quantity += quantity;

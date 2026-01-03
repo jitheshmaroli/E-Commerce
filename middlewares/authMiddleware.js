@@ -1,4 +1,3 @@
-//admin authentication
 const isAdminAuthenticated = (req, res, next) => {
   if (req.session.isAdminAuthenticated) {
     next();
@@ -7,7 +6,6 @@ const isAdminAuthenticated = (req, res, next) => {
   }
 };
 
-//  user authentication
 const isUserAuthenticated = (req, res, next) => {
   if (
     req.session.isUserAuthenticated ||
@@ -20,7 +18,6 @@ const isUserAuthenticated = (req, res, next) => {
   }
 };
 
-//   redirect authenticated users/admin away from the login page
 const redirectToDashboard = (req, res, next) => {
   if (req.session.isAdminAuthenticated) {
     res.redirect("/admin");

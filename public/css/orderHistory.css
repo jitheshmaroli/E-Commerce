@@ -3,35 +3,40 @@
   justify-content: space-around;
   align-items: center;
   padding: 1rem;
-  background: var(--grey-100);
+  background: #f8f9fa; /* Light grey for order details */
   border-radius: 8px;
   margin-bottom: 1rem;
+  border: 1px solid #e9ecef; /* Subtle border */
 }
 .orderDetails p {
   margin: 0;
   font-size: 0.875rem;
+  color: #000000; /* Black text */
 }
 .orderDetails a {
-  color: var(--bg-dark);
+  color: #000000; /* Black links */
   font-weight: 500;
 }
 .card {
   transition: box-shadow 0.3s;
+  background: #ffffff; /* White for cards */
+  border: 1px solid #dee2e6; /* Light border */
 }
 .card:hover {
   box-shadow: var(--shadow-lg);
 }
 .d-flex.justify-content-around small {
   font-weight: 500;
+  color: #000000; /* Black small text */
 }
 .progress {
   height: 6px;
   border-radius: 3px;
-  background-color: var(--grey-200);
+  background-color: #e9ecef; /* Light grey progress bg */
 }
 .progress-bar {
   transition: width 0.6s;
-  background: linear-gradient(90deg, #ffc107, #28a745);
+  background: #000000; /* Black progress bar */
 }
 
 /* Responsive */

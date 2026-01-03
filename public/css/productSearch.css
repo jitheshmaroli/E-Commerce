@@ -4,6 +4,8 @@
   background-color: var(--grey-050);
   gap: 2rem;
   margin-top: 0;
+  border: 1px solid var(--grey-200); /* Subtle border around the entire section */
+  border-radius: 8px;
 }
 .aside {
   background-color: var(--grey-100);
@@ -11,6 +13,7 @@
   border-radius: 5px;
   flex-shrink: 0;
   width: 250px;
+  border: 1px solid var(--grey-300); /* Light border to define the sidebar */
 }
 .aside h4,
 .aside h5 {
@@ -26,6 +29,8 @@
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
   border-radius: 25px;
+  background: #ffffff; /* White background for buttons */
+  color: var(--text-dark); /* Black text for contrast */
 }
 #sortOptions .btn-outline-secondary:hover,
 #sortOptions .btn-outline-secondary:focus,
@@ -48,6 +53,9 @@
   }
   .dropdown-menu.w-100 {
     padding: 1rem;
+    background: #ffffff; /* White for dropdown menu */
+    border: 1px solid var(--grey-300); /* Border for definition */
+    border-radius: 8px;
   }
   .aside.d-none.d-md-block {
     display: none !important;
@@ -93,6 +101,10 @@
 .product-section .row {
   display: flex;
   flex-wrap: wrap;
+  background: #ffffff; /* White background for the grid row */
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--grey-300); /* Border to separate grid from rest */
 }
 .product-section .row > [class*="col-"] {
   display: flex;
@@ -101,6 +113,8 @@
   height: auto !important;
   margin-bottom: 1.5rem !important;
   flex: 1;
+  background: var(--grey-050); /* Light grey for cards to reduce brightness */
+  border: 1px solid var(--grey-200); /* Subtle border around each card */
 }
 .product-section .row .col-lg-4 .modern-product-card .product-image-container {
   height: 280px !important;
@@ -117,4 +131,30 @@
   .product-section .row .col-sm-12 .modern-product-card {
     max-width: 100% !important;
   }
+}
+
+/* Pagination */
+.pagination-controls {
+  background: #ffffff; /* White background for pagination */
+  padding: 1rem;
+  border: 1px solid var(--grey-300); /* Border for definition */
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+/* No Products Message (add this class in EJS: <h1 class="no-products">NO PRODUCTS AVAILABLE</h1>) */
+.no-products {
+  text-align: center;
+  padding: 150px;
+  color: var(--text-dark);
+  background: var(--grey-100); /* Light grey background */
+  border: 1px solid var(--grey-300);
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+/* Overrides for theme elements in this page */
+.product-section .modern-product-card {
+  background: var(--grey-050) !important; /* Ensure light grey background */
+  border: 1px solid var(--grey-200) !important; /* Border for each card */
 }

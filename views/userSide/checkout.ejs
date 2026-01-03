@@ -8,35 +8,33 @@
   <div class="checkout-wrapper">
     <div class="checkout-form">
       <div class="default-address">
-        <% if (addresses && addresses.address.length > 0) { %> <% const
-        defaultAddress = addresses.address.find(address => address.isDefault);
-        %> <% if (defaultAddress) { %>
+        <% if (addresses && addresses.address.length > 0) { %> <% const defaultAddress =
+        addresses.address.find(address => address.isDefault) %>
+        <% if (defaultAddress) { %>
         <div class="address-card" data-address-id="<%= defaultAddress._id %>">
           <span class="default-address-tag">Delivery Address</span>
           <h3><%= defaultAddress.name %></h3>
           <p>
-            <%= defaultAddress.houseName %>, <%= defaultAddress.street %>, <%=
-            defaultAddress.city %>, <%= defaultAddress.district %>, <%=
-            defaultAddress.state %>, <%= defaultAddress.pinCode %>
+            <%= defaultAddress.houseName %>, <%= defaultAddress.street %>, <%= defaultAddress.city
+            %>, <%= defaultAddress.district %>, <%= defaultAddress.state %>, <%=
+            defaultAddress.pinCode %>
           </p>
           <div class="address-card-buttons">
-            <button
-              type="button"
-              class="btn product-btn edit-address-btn btn-sm">
-              Edit
-            </button>
+            <button type="button" class="btn product-btn edit-address-btn btn-sm">Edit</button>
             <button
               type="button"
               class="btn product-btn change-address-btn btn-sm"
               data-bs-toggle="collapse"
-              data-bs-target="#addressListCollapse">
+              data-bs-target="#addressListCollapse"
+            >
               Change
             </button>
           </div>
         </div>
         <% } else { %>
         <p>No default address found.</p>
-        <% } %> <% } else { %>
+        <% } %>
+        <% } else { %>
         <p>No addresses found.</p>
         <% } %>
       </div>
@@ -44,45 +42,45 @@
       <div class="collapse" id="addressListCollapse">
         <div class="address-list">
           <% if (addresses && addresses.address.length > 0) { %> <%
-          addresses.address.forEach((address) => { %> <% if (!address.isDefault)
+          addresses.address.forEach((address) => { %>
+          <% if (!address.isDefault)
           { %>
           <div class="address-card" data-address-id="<%= address._id %>">
             <h3><%= address.name %></h3>
             <p>
-              <%= address.houseName %>, <%= address.street %>, <%= address.city
-              %>, <%= address.district %>, <%= address.state %>, <%=
-              address.pinCode %>
+              <%= address.houseName %>, <%= address.street %>, <%= address.city %>, <%=
+              address.district %>, <%= address.state %>, <%= address.pinCode %>
             </p>
             <div class="address-card-buttons">
-              <button
-                type="button"
-                class="btn product-btn edit-address-btn btn-sm">
-                Edit
-              </button>
+              <button type="button" class="btn product-btn edit-address-btn btn-sm">Edit</button>
               <button
                 type="button"
                 class="btn product-btn deliver-to-here-btn btn-sm"
-                data-address-id="<%= address._id %>">
+                data-address-id="<%= address._id %>"
+              >
                 Deliver Here
               </button>
             </div>
           </div>
-          <% } %> <% }) %> <% } else { %>
+          <% } %>
+          <% }) %>
+          <% } else { %>
           <p>No other addresses found.</p>
           <% } %>
         </div>
       </div>
-      <br>
+      <br />
       <div class="add-address-card">
         <button
           type="button"
           class="btn product-btn btn-add-address"
           data-bs-toggle="modal"
-          data-bs-target="#addAddressModal">
+          data-bs-target="#addAddressModal"
+        >
           Add New Address
         </button>
       </div>
-      <br>
+      <br />
       <div class="payment-options">
         <h3>Payment Options</h3>
         <div class="payment-option">
@@ -91,19 +89,13 @@
         </div>
         <div class="payment-option">
           <% if (user.wallet === 0) { %>
-          <input
-            type="radio"
-            disabled
-            id="wallet-payment"
-            name="payment_method" />
+          <input type="radio" disabled id="wallet-payment" name="payment_method" />
           <label for="wallet-payment"
             >Wallet Payment (Balance: ₹<%= user.wallet.toFixed(2) %>)</label
           >
           <% } else { %>
           <input type="radio" id="wallet-payment" name="payment_method" />
-          <label for="wallet-payment"
-            >Wallet Payment (₹<%= user.wallet.toFixed(2) %>)</label
-          >
+          <label for="wallet-payment">Wallet Payment (₹<%= user.wallet.toFixed(2) %>)</label>
           <% } %>
           <span id="wallet-payment-error" class="text-danger"></span>
         </div>
@@ -120,29 +112,28 @@
         <h3>Order Summary</h3>
         <div class="products">
           <% checkoutItems.forEach(checkoutItem => { %>
-          <div
-            class="product-details"
-            data-product-id="<%= checkoutItem.product._id %>">
+          <div class="product-details" data-product-id="<%= checkoutItem.product._id %>">
             <img
               src="/uploads/<%= checkoutItem.product.photos[0].filename %>"
               width="100"
               height="100"
-              alt="Product Image" />
+              alt="Product Image"
+            />
             <div class="price-quantity">
               <h4><%= checkoutItem.product.name %></h4>
               <% if (checkoutItem.product.bestOffer) { %>
               <p
                 data-product-price="<%= checkoutItem.product.currentPrice %>"
-                data-original-price="<%= checkoutItem.product.price %>">
+                data-original-price="<%= checkoutItem.product.price %>"
+              >
                 Price:
-                <span class="original-price"
-                  >₹<%= checkoutItem.product.price.toFixed(2) %></span
-                >
+                <span class="original-price">₹<%= checkoutItem.product.price.toFixed(2) %></span>
                 ₹<%= checkoutItem.product.currentPrice.toFixed(2) %>
                 <i
                   class="fas fa-info-circle offer-icon"
                   data-bs-toggle="modal"
-                  data-bs-target="#offerModal<%= checkoutItem.product._id %>"></i>
+                  data-bs-target="#offerModal<%= checkoutItem.product._id %>"
+                ></i>
               </p>
               <% } else { %>
               <p data-product-price="<%= checkoutItem.product.price %>">
@@ -156,24 +147,19 @@
                   class="quantity-input"
                   value="<%= checkoutItem.quantity || 1 %>"
                   min="1"
-                  data-stock="<%= checkoutItem.product.stock %>" />
+                  data-stock="<%= checkoutItem.product.stock %>"
+                />
                 <button class="quantity-btn" aria-label="Increase">+</button>
               </div>
             </div>
           </div>
           <% if (checkoutItem.product.bestOffer) { %>
-          <div
-            class="modal fade"
-            id="offerModal<%= checkoutItem.product._id %>"
-            tabindex="-1">
+          <div class="modal fade" id="offerModal<%= checkoutItem.product._id %>" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">Offer Details</h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                   <%= checkoutItem.product.bestOffer.name %>: <%=
@@ -184,25 +170,19 @@
               </div>
             </div>
           </div>
-          <% } %> <% }) %>
+          <% } %>
+          <% }) %>
           <hr />
           <p id="product-total-price"></p>
           <div class="coupon-section">
             <h4>Apply Coupon</h4>
             <div class="coupon-form">
-              <input
-                type="text"
-                id="couponCodeInput"
-                placeholder="Enter coupon code" />
-              <button id="applyCouponBtn" class="btn product-btn btn-sm">
-                Apply
-              </button>
+              <input type="text" id="couponCodeInput" placeholder="Enter coupon code" />
+              <button id="applyCouponBtn" class="btn product-btn btn-sm">Apply</button>
             </div>
             <div id="appliedCouponContainer" style="display: none">
               <span id="appliedCouponCode"></span>
-              <button id="removeCouponBtn" class="btn product-btn btn-sm">
-                Remove
-              </button>
+              <button id="removeCouponBtn" class="btn product-btn btn-sm">Remove</button>
             </div>
             <span id="couponMessage"></span>
           </div>
@@ -218,9 +198,7 @@
           </div>
         </div>
         <form action="/place-order" method="POST">
-          <button type="submit" class="btn product-btn btn-place-order">
-            Place Order
-          </button>
+          <button type="submit" class="btn product-btn btn-place-order">Place Order</button>
         </form>
         <% } else { %>
         <div class="empty-state">
@@ -236,108 +214,58 @@
       id="addAddressModal"
       tabindex="-1"
       aria-labelledby="addAddressModalLabel"
-      aria-hidden="true">
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addAddressModalLabel">
-              Add New Address
-            </h5>
+            <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
             <button
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"></button>
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <form id="addAddressForm">
               <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="name"
-                  name="name"
-                  required />
+                <input type="text" class="form-control" id="name" name="name" required />
               </div>
               <div class="mb-3">
-                <label for="houseName" class="form-label"
-                  >House Name/Number</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="houseName"
-                  name="houseName"
-                  required />
+                <label for="houseName" class="form-label">House Name/Number</label>
+                <input type="text" class="form-control" id="houseName" name="houseName" required />
               </div>
               <div class="mb-3">
                 <label for="street" class="form-label">Street</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="street"
-                  name="street"
-                  required />
+                <input type="text" class="form-control" id="street" name="street" required />
               </div>
               <div class="mb-3">
                 <label for="city" class="form-label">City</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="city"
-                  name="city"
-                  required />
+                <input type="text" class="form-control" id="city" name="city" required />
               </div>
               <div class="mb-3">
                 <label for="district" class="form-label">District</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="district"
-                  name="district"
-                  required />
+                <input type="text" class="form-control" id="district" name="district" required />
               </div>
               <div class="mb-3">
                 <label for="state" class="form-label">State</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="state"
-                  name="state"
-                  required />
+                <input type="text" class="form-control" id="state" name="state" required />
               </div>
               <div class="mb-3">
                 <label for="pinCode" class="form-label">PIN Code</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="pinCode"
-                  name="pinCode"
-                  required />
+                <input type="number" class="form-control" id="pinCode" name="pinCode" required />
               </div>
               <div class="mb-3 form-check">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="isDefault"
-                  name="isDefault" />
-                <label class="form-check-label" for="isDefault"
-                  >Set as Default Address</label
-                >
+                <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" />
+                <label class="form-check-label" for="isDefault">Set as Default Address</label>
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal">
-              Close
-            </button>
-            <button type="button" class="btn btn-primary" id="saveNewAddress">
-              Save Address
-            </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="saveNewAddress">Save Address</button>
           </div>
         </div>
       </div>
@@ -348,7 +276,8 @@
       id="editAddressModal"
       tabindex="-1"
       aria-labelledby="editAddressModalLabel"
-      aria-hidden="true">
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -357,99 +286,49 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"></button>
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <form id="editAddressForm">
               <input type="hidden" id="addressId" name="addressId" />
               <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="name"
-                  name="name"
-                  required />
+                <input type="text" class="form-control" id="name" name="name" required />
               </div>
               <div class="mb-3">
-                <label for="houseName" class="form-label"
-                  >House Name/Number</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="houseName"
-                  name="houseName"
-                  required />
+                <label for="houseName" class="form-label">House Name/Number</label>
+                <input type="text" class="form-control" id="houseName" name="houseName" required />
               </div>
               <div class="mb-3">
                 <label for="street" class="form-label">Street</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="street"
-                  name="street"
-                  required />
+                <input type="text" class="form-control" id="street" name="street" required />
               </div>
               <div class="mb-3">
                 <label for="city" class="form-label">City</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="city"
-                  name="city"
-                  required />
+                <input type="text" class="form-control" id="city" name="city" required />
               </div>
               <div class="mb-3">
                 <label for="district" class="form-label">District</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="district"
-                  name="district"
-                  required />
+                <input type="text" class="form-control" id="district" name="district" required />
               </div>
               <div class="mb-3">
                 <label for="state" class="form-label">State</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="state"
-                  name="state"
-                  required />
+                <input type="text" class="form-control" id="state" name="state" required />
               </div>
               <div class="mb-3">
                 <label for="pinCode" class="form-label">PIN Code</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="pinCode"
-                  name="pinCode"
-                  required />
+                <input type="number" class="form-control" id="pinCode" name="pinCode" required />
               </div>
               <div class="mb-3 form-check">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="isDefault"
-                  name="isDefault" />
-                <label class="form-check-label" for="isDefault"
-                  >Set as Default Address</label
-                >
+                <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" />
+                <label class="form-check-label" for="isDefault">Set as Default Address</label>
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal">
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="saveEditedAddress">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="saveEditedAddress">
               Save Changes
             </button>
           </div>
@@ -459,7 +338,8 @@
   </div>
 </div>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -470,25 +350,16 @@ include('../includes/userScripts.ejs') %>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const productCards = Array.from(
-      document.querySelectorAll(".product-details")
-    );
+    const productCards = Array.from(document.querySelectorAll(".product-details"));
     const walletPaymentRadio = document.getElementById("wallet-payment");
-    const walletBalanceSpan = document.querySelector(
-      'label[for="wallet-payment"]'
-    );
-    const walletBalance = parseFloat(
-      walletBalanceSpan.textContent.match(/₹([\d.]+)/)[1]
-    );
-    const walletPaymentErrorSpan = document.getElementById(
-      "wallet-payment-error"
-    );
+    const walletBalanceSpan = document.querySelector('label[for="wallet-payment"]');
+    const walletBalance = parseFloat(walletBalanceSpan.textContent.match(/₹([\d.]+)/)[1]);
+    const walletPaymentErrorSpan = document.getElementById("wallet-payment-error");
 
     let couponDiscount = 0;
     const orderTotalPriceElement = document.getElementById("order-total-price");
     const totalQuantityElement = document.getElementById("total-quantity");
-    const couponDiscountPriceElement =
-      document.getElementById("coupon-discount");
+    const couponDiscountPriceElement = document.getElementById("coupon-discount");
     const couponInput = document.getElementById("couponCodeInput");
     const applyCouponBtn = document.getElementById("applyCouponBtn");
     const couponMessage = document.getElementById("couponMessage");
@@ -505,10 +376,8 @@ include('../includes/userScripts.ejs') %>
 
         if (quantityInput && productPriceDiv) {
           const quantity = parseInt(quantityInput.value) || 0;
-          const currentPrice =
-            parseFloat(productPriceDiv.dataset.productPrice) || 0;
-          const originalPrice =
-            parseFloat(productPriceDiv.dataset.originalPrice) || currentPrice;
+          const currentPrice = parseFloat(productPriceDiv.dataset.productPrice) || 0;
+          const originalPrice = parseFloat(productPriceDiv.dataset.originalPrice) || currentPrice;
 
           console.log("org price:", originalPrice, "cur price:", currentPrice);
 
@@ -533,30 +402,17 @@ include('../includes/userScripts.ejs') %>
       }
 
       const codInput = document.getElementById("cod");
-      document.getElementById(
-        "base-price"
-      ).textContent = `Base Price: ₹${basePrice.toFixed(2)}`;
-      document.getElementById(
-        "sub-total"
-      ).textContent = `Sub Total: ₹${subTotal.toFixed(2)}`;
-      document.getElementById(
-        "sales-tax"
-      ).textContent = `Sales Tax: ₹${salesTax.toFixed(2)}`;
-      document.getElementById(
-        "delivery-charge"
-      ).textContent = `Delivery Charge: ₹${deliveryCharge.toFixed(2)}`;
-      orderTotalPriceElement.textContent = `Total Cost: ₹${grandTotal.toFixed(
-        2
-      )}`;
+      document.getElementById("base-price").textContent = `Base Price: ₹${basePrice.toFixed(2)}`;
+      document.getElementById("sub-total").textContent = `Sub Total: ₹${subTotal.toFixed(2)}`;
+      document.getElementById("sales-tax").textContent = `Sales Tax: ₹${salesTax.toFixed(2)}`;
+      document.getElementById("delivery-charge").textContent =
+        `Delivery Charge: ₹${deliveryCharge.toFixed(2)}`;
+      orderTotalPriceElement.textContent = `Total Cost: ₹${grandTotal.toFixed(2)}`;
       totalQuantityElement.textContent = `Total Items: ${totalQuantity}`;
       if (discountAmount > 0) {
-        couponDiscountPriceElement.textContent = `Coupon Discount: -₹${discountAmount.toFixed(
-          2
-        )}`;
+        couponDiscountPriceElement.textContent = `Coupon Discount: -₹${discountAmount.toFixed(2)}`;
       } else {
-        couponDiscountPriceElement.textContent = `Coupon Discount: ₹${discountAmount.toFixed(
-          2
-        )}`;
+        couponDiscountPriceElement.textContent = `Coupon Discount: ₹${discountAmount.toFixed(2)}`;
       }
 
       if (grandTotal > 1000) {
@@ -583,13 +439,9 @@ include('../includes/userScripts.ejs') %>
       const productPriceDiv = card.querySelector("#product-price");
       const quantityInput = card.querySelector(".quantity-input");
       const quantityBtnsInCard = card.querySelectorAll(".quantity-btn");
-      const quantityBtnsInCardInput = card.querySelector(
-        ".quantity-control input"
-      );
+      const quantityBtnsInCardInput = card.querySelector(".quantity-control input");
       const productId = card.getAttribute("data-product-id");
-      const storedQuantity = JSON.parse(
-        localStorage.getItem(`cartQuantity_${productId}`)
-      );
+      const storedQuantity = JSON.parse(localStorage.getItem(`cartQuantity_${productId}`));
 
       console.log(storedQuantity);
       if (storedQuantity) {
@@ -621,28 +473,17 @@ include('../includes/userScripts.ejs') %>
 
       quantityBtnsInCard.forEach((btn) => {
         btn.addEventListener("click", function (e) {
-          const input = e.target
-            .closest(".quantity-control")
-            .querySelector("input");
+          const input = e.target.closest(".quantity-control").querySelector("input");
           let currentQty = parseInt(input.value);
           console.log(currentQty, "this is currnt");
           const stockQty = parseInt(input.getAttribute("data-stock"));
           const inputContent = e.target.textContent;
           if (inputContent === "+") {
-            console.log(
-              storedQuantity,
-              "this is stored",
-              currentQty,
-              maxQtyPerUser,
-              stockQty
-            );
+            console.log(storedQuantity, "this is stored", currentQty, maxQtyPerUser, stockQty);
             if (currentQty < maxQtyPerUser) {
               if (currentQty < stockQty) {
                 input.value = currentQty + 1;
-                localStorage.setItem(
-                  `cartQuantity_${productId}`,
-                  JSON.stringify(input.value)
-                );
+                localStorage.setItem(`cartQuantity_${productId}`, JSON.stringify(input.value));
               } else {
                 Swal.fire({
                   icon: "warning",
@@ -664,10 +505,7 @@ include('../includes/userScripts.ejs') %>
             if (currentQty > 1) {
               input.value = currentQty - 1;
               console.log(currentQty, "currentqty");
-              localStorage.setItem(
-                `cartQuantity_${productId}`,
-                JSON.stringify(input.value)
-              );
+              localStorage.setItem(`cartQuantity_${productId}`, JSON.stringify(input.value));
             } else {
               Swal.fire({
                 icon: "warning",
@@ -712,18 +550,13 @@ include('../includes/userScripts.ejs') %>
           });
         }
         e.target.value = newQty;
-        localStorage.setItem(
-          `cartQuantity_${productId}`,
-          JSON.stringify(newQty)
-        );
+        localStorage.setItem(`cartQuantity_${productId}`, JSON.stringify(newQty));
         calculateTotals();
       });
     });
 
     let couponCode;
-    const appliedCouponContainer = document.getElementById(
-      "appliedCouponContainer"
-    );
+    const appliedCouponContainer = document.getElementById("appliedCouponContainer");
     const appliedCouponCodeSpan = document.getElementById("appliedCouponCode");
     const removeCouponBtn = document.getElementById("removeCouponBtn");
 
@@ -797,12 +630,9 @@ include('../includes/userScripts.ejs') %>
     placeOrderBtn.addEventListener("click", async (e) => {
       e.preventDefault();
 
-      const productCards = Array.from(
-        document.querySelectorAll(".product-details")
-      );
+      const productCards = Array.from(document.querySelectorAll(".product-details"));
       const orderItems = [];
-      const totalCostString =
-        document.getElementById("order-total-price").textContent;
+      const totalCostString = document.getElementById("order-total-price").textContent;
       const priceRegex = /\d+(?:\.\d+)?/;
       const priceMatch = totalCostString.match(priceRegex);
       const totalCost = priceMatch ? parseFloat(priceMatch[0]) : 0;
@@ -828,9 +658,7 @@ include('../includes/userScripts.ejs') %>
         });
         return;
       }
-      const addressCard = document.querySelector(
-        ".address-card[data-address-id]"
-      );
+      const addressCard = document.querySelector(".address-card[data-address-id]");
       let addressDetails;
 
       if (addressCard) {
@@ -882,13 +710,7 @@ include('../includes/userScripts.ejs') %>
             order_id: data.razorpayOrder.id, // Razorpay Order ID
             handler: async function (response) {
               if (response.razorpay_payment_id) {
-                console.log(
-                  response,
-                  "order",
-                  data.razorpayOrder,
-                  "orderId:",
-                  data.orderId
-                );
+                console.log(response, "order", data.razorpayOrder, "orderId:", data.orderId);
                 response.orderId = data.orderId;
                 // Payment Successful, send verification request and redirect on success
                 fetch("/checkout/verify", {
@@ -970,8 +792,7 @@ include('../includes/userScripts.ejs') %>
       const district = address[3];
       const state = address[4];
       const pinCode = address[5];
-      const isDefault =
-        addressCard.querySelector(".default-address-tag") !== null;
+      const isDefault = addressCard.querySelector(".default-address-tag") !== null;
 
       const modal = document.getElementById("editAddressModal");
       const nameInput = modal.querySelector("#name");
@@ -1066,36 +887,32 @@ include('../includes/userScripts.ejs') %>
   });
 </script>
 <script>
-  document
-    .querySelector("#saveNewAddress")
-    .addEventListener("click", function () {
-      const formData = new FormData(document.querySelector("#addAddressForm"));
-      const addressData = Object.fromEntries(formData);
-      addressData.isDefault = document.querySelector("#isDefault").checked;
+  document.querySelector("#saveNewAddress").addEventListener("click", function () {
+    const formData = new FormData(document.querySelector("#addAddressForm"));
+    const addressData = Object.fromEntries(formData);
+    addressData.isDefault = document.querySelector("#isDefault").checked;
 
-      fetch("/address/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(addressData),
+    fetch("/address/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addressData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Address added successfully");
+          location.reload();
+        } else {
+          alert("Error adding address");
+        }
       })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            alert("Address added successfully");
-            location.reload();
-          } else {
-            alert("Error adding address");
-          }
-        })
-        .catch((error) => {
-          console.error("Error adding address:", error);
-        });
+      .catch((error) => {
+        console.error("Error adding address:", error);
+      });
 
-      const modalInstance = bootstrap.Modal.getInstance(
-        document.querySelector("#addAddressModal")
-      );
-      modalInstance.hide();
-    });
+    const modalInstance = bootstrap.Modal.getInstance(document.querySelector("#addAddressModal"));
+    modalInstance.hide();
+  });
 </script>

@@ -262,7 +262,7 @@
   }
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
 const sortOptions = document.querySelectorAll('#sortOptions a, #sortOptionsMobile a');
 const minPrice = document.getElementById('minPrice');
 const maxPrice = document.getElementById('maxPrice');
@@ -339,9 +339,7 @@ if (applyFiltersMobileButton) applyFiltersMobileButton.addEventListener('click',
 <script>
   function getCurrentFilters() {
     const urlParams = new URLSearchParams(window.location.search);
-    urlParams.delete('page'); // Remove existing page parameter
+    urlParams.delete('page');
     return '&' + urlParams.toString();
   }
 </script>
-</body>
-</html>

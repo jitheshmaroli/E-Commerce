@@ -3,12 +3,17 @@
     <div class="container-fluid">
       <!-- Logo -->
       <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="/test.jpg" alt="ShoeZone Logo" width="40" height="40" class="me-2 rounded">
+        <img src="/test.jpg" alt="ShoeZone Logo" width="40" height="40" class="me-2 rounded" />
         <span class="brand-name fw-bold">ShoeZone</span>
       </a>
 
       <!-- Mobile Toggle -->
-      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button
+        class="navbar-toggler d-lg-none"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -18,8 +23,15 @@
         <div class="navbar-nav mx-auto">
           <form action="/products" method="GET" class="d-flex search-form mx-lg-4">
             <div class="input-group w-100">
-              <input type="text" name="query" class="form-control border-0 ps-3" placeholder="Search shoes..." aria-label="Search">
-              <select name="category" class="form-select border-0 px-2" style="max-width: 120px;">
+              <input
+                type="text"
+                name="query"
+                class="form-control border-0 ps-3"
+                placeholder="Search shoes..."
+                aria-label="Search"
+                value="<%= typeof query !== 'undefined' ? query.query : '' %>"
+              />
+              <select name="category" class="form-select border-0 px-2" style="max-width: 120px">
                 <option value="">All Categories</option>
                 <option value="MEN">Men</option>
                 <option value="WOMEN">Women</option>
@@ -35,24 +47,40 @@
         <!-- User Actions -->
         <div class="navbar-nav ms-auto d-flex align-items-center">
           <% if (user) { %>
-            <div class="dropdown">
-              <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                <% if (user.photo && user.photo.length > 0) { %>
-                  <img src="/uploads/<%= user.photo[0].filename %>" alt="Profile Photo" class="rounded-circle me-1" style="width: 30px; height: 30px; object-fit: cover;">
-                <% } else { %>
-                  <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-1" style="width: 30px; height: 30px; font-size: 12px; font-weight: bold;"><%= user.name ? user.name.charAt(0).toUpperCase() : 'P' %></span>
-                <% } %>
-                <%= user.name || 'Profile' %>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                <li><a class="dropdown-item" href="/orders">Orders</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-              </ul>
-            </div>
+          <div class="dropdown">
+            <a
+              class="nav-link dropdown-toggle text-white d-flex align-items-center"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              <% if (user.photo && user.photo.length > 0) { %>
+              <img
+                src="/uploads/<%= user.photo[0].filename %>"
+                alt="Profile Photo"
+                class="rounded-circle me-1"
+                style="width: 30px; height: 30px; object-fit: cover"
+              />
+              <% } else { %>
+              <span
+                class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-1"
+                style="width: 30px; height: 30px; font-size: 12px; font-weight: bold"
+                ><%= user.name ? user.name.charAt(0).toUpperCase() : 'P'
+                %></span
+              >
+              <% } %>
+              <%= user.name || 'Profile' %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </div>
           <% } else { %>
-            <a class="nav-link text-white" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+          <a class="nav-link text-white" href="/login"
+            ><i class="fas fa-sign-in-alt me-1"></i>Login</a
+          >
           <% } %>
           <a class="nav-link text-white ms-2" href="/cart"><i class="fas fa-shopping-cart"></i></a>
           <a class="nav-link text-white ms-2" href="/wishlist"><i class="fas fa-heart"></i></a>
@@ -62,22 +90,22 @@
   </nav>
 </header>
 <script>
-  (function() {
-    const hasHero = document.querySelector('.hero-banner');
-    const nav = document.querySelector('.navbar');
+  (function () {
+    const hasHero = document.querySelector(".hero-banner");
+    const nav = document.querySelector(".navbar");
     if (!nav) return;
     if (!hasHero) {
-      nav.classList.remove('navbar-transparent');
+      nav.classList.remove("navbar-transparent");
       return;
     }
     const onScroll = () => {
       if (window.scrollY > 10) {
-        nav.classList.remove('navbar-transparent');
+        nav.classList.remove("navbar-transparent");
       } else {
-        nav.classList.add('navbar-transparent');
+        nav.classList.add("navbar-transparent");
       }
     };
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
   })();
 </script>

@@ -10,7 +10,8 @@
       <div class="avatar">
         <img
           src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar" />
+          alt="Profile Avatar"
+        />
       </div>
       <ul class="profile-links">
         <li><a href="/profile">User Profile</a></li>
@@ -46,10 +47,9 @@
             <tr>
               <td><%= transaction.createdAt.toLocaleDateString() %></td>
               <td><%= transaction.description %></td>
-              <td
-                class="<%= transaction.type === 'credit' ? 'text-success' : 'text-danger' %>">
-                <%= transaction.type === 'credit' ? '+' : '-' %>₹<%=
-                transaction.amount.toFixed(2) %>
+              <td class="<%= transaction.type === 'credit' ? 'text-success' : 'text-danger' %>">
+                <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2)
+                %>
               </td>
               <td>
                 <%= transaction.type.charAt(0).toUpperCase() +
@@ -65,7 +65,8 @@
   <% } %>
 </main>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script>
@@ -74,7 +75,6 @@ include('../includes/userScripts.ejs') %>
     if (selectedCategory) selectedCategory.value = category;
     const dropdownText = document.querySelector(".dropdown-toggle-text");
     if (dropdownText)
-      dropdownText.textContent =
-        category.charAt(0).toUpperCase() + category.slice(1);
+      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

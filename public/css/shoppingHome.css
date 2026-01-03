@@ -2,6 +2,8 @@
 .hero-section {
   padding-top: 6rem !important;
   padding-bottom: 6rem !important;
+  background-color: #f8f9fa; /* Light grey for hero to reduce brightness */
+  border-bottom: 1px solid #e9ecef; /* Subtle bottom border to separate from content */
 }
 
 /* Ensure image maximum height is set for desktop to prevent it from getting too large */
@@ -10,6 +12,8 @@
   width: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  border: 1px solid #dee2e6; /* Subtle border around hero image */
+  border-radius: 8px;
 }
 
 .hero-main-img:hover {
@@ -21,20 +25,36 @@
   font-size: clamp(2.5rem, 6vw, 4rem); /* Responsive font size */
   line-height: 1.1;
   font-weight: 900 !important;
+  color: #000000; /* Black for main headline */
 }
 
 .hero-section .lead {
   font-size: clamp(1rem, 2vw, 1.25rem);
+  color: #000000; /* Black for lead text */
 }
+
+.hero-section .text-primary {
+  color: #000000 !important; /* Override to black for monotone */
+}
+
 /* Rails */
 .section-rail {
-  background: var(--grey-050);
-  border-top: 1px solid var(--grey-200);
-  border-bottom: 1px solid var(--grey-200);
+  background: #f8f9fa; /* Light grey for rail sections */
+  border-top: 1px solid #e9ecef; /* Light top border */
+  border-bottom: 1px solid #e9ecef; /* Light bottom border */
   margin-top: 0;
 }
 .section-rail .container {
   padding: 2rem 0;
+  background: #ffffff; /* White inner container for contrast */
+  border-radius: 8px;
+  border: 1px solid #dee2e6; /* Border around the rail container */
+}
+.section-header h2 {
+  color: #000000; /* Black for section headings */
+}
+.section-header a {
+  color: #000000; /* Black for view all links */
 }
 .products-slider-container {
   position: relative;
@@ -46,6 +66,10 @@
     black calc(100% - 24px),
     transparent 100%
   );
+  background: #f8f9fa; /* Light grey for slider area */
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
 }
 .products-row {
   display: flex;
@@ -81,6 +105,8 @@
   border-radius: 50px;
   font-size: 0.75rem;
   font-weight: bold;
+  background: #000000; /* Black badge */
+  color: #ffffff; /* White text */
 }
 .product-wishlist {
   top: 0.5rem;
@@ -95,11 +121,17 @@
   width: 40px;
   height: 40px;
   transition: all 0.3s ease;
+  background: #ffffff; /* White buttons */
+  border: 1px solid #dee2e6; /* Light border */
+  color: #000000; /* Black icons */
 }
 .rail-prev-btn:hover,
 .rail-next-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  background: #000000; /* Black on hover */
+  color: #ffffff; /* White icons */
+  border-color: #000000;
 }
 
 /* CTA Section */
@@ -107,18 +139,54 @@
   padding: 3rem;
   text-align: center;
   margin-top: 0;
+  background: #ffffff; /* White for CTA card */
+  border: 1px solid #dee2e6; /* Border for definition */
+  border-radius: 8px;
+}
+.start-shopping h2 {
+  color: #000000; /* Black heading */
+}
+.start-shopping p {
+  color: var(--grey-600); /* Grey for muted text */
 }
 
 /* Rail Height Consistency */
 .section-rail .products-row .product-slide .modern-product-card {
   width: 100% !important;
   height: 100% !important;
+  background: #f8f9fa !important; /* Light grey for product cards in rail */
+  border: 1px solid #e9ecef !important; /* Subtle border */
 }
 
 /* Compact pricing for rails */
 .product-slide .offer-price,
 .product-slide .regular-price {
   font-size: 1.25rem !important;
+  color: #000000 !important; /* Black prices */
+}
+
+.product-slide .original-price {
+  color: var(--grey-600) !important; /* Grey for struck-through */
+}
+
+.product-slide .product-name {
+  color: #000000; /* Black names */
+}
+
+/* Override theme colors for monotone */
+.text-primary,
+.text-warning,
+.btn-primary,
+.btn-warning {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+.btn-primary:hover,
+.btn-warning:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
 @media (max-width: 991.98px) {
