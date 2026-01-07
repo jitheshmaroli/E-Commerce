@@ -7,9 +7,9 @@
   "editor.stickyScroll.enabled": false,
   "diffEditor.ignoreTrimWhitespace": false,
 
-  // "files.autoSave": "onFocusChange",
+  "files.autoSave": "onFocusChange",
 
-  // "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
 
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
@@ -38,9 +38,9 @@
 
   "eslint.validate": ["javascript"],
   "eslint.debug": true,
-  "eslint.format.enable": true,
+  "eslint.format.enable": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "never"
   },
 
   "prettier.bracketSameLine": true,

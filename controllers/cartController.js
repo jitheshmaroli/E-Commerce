@@ -15,10 +15,10 @@ const addToCart = async (req, res) => {
     const quantity = req.body.quantity || 1;
     const discountCode = req.body.discountCode;
     const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
+      email: req.session.userId || req.session.passport?.user?.userId,
     });
     if (!user) {
-      return res.json({ success: false, message: "please log in to continue" });
+      return res.status(401).json({ success: false, message: "please log in to continue" });
     }
 
     if (!productId || !quantity || typeof quantity !== "number" || quantity < 1) {

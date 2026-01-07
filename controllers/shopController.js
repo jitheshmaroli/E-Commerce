@@ -183,7 +183,7 @@ const productSearchView = async (req, res) => {
     let user;
     if (req.session.userId) {
       user = await User.findOne({
-        email: req.session.userId || req.session.passport.user.userId,
+        email: req.session.userId || req.session.passport?.user?.userId,
       });
       if (user) {
         const wishlist = await Wishlist.findOne({ userId: user._id }).populate("products");

@@ -87,16 +87,17 @@ const newProduct = async (req, res) => {
 
 const updateProductView = async (req, res) => {
   try {
-    const productData = [await Product.findById(req.params.productId).populate("category")];
+    const productData = await Product.findById(req.params.productId).populate("category");
     const categoryList = await Category.find({ isBlocked: false });
+
     if (!productData) {
-      return res.status(404).json({ message: "Product not found" });
-    } else {
-      res.render("admin/updateProduct", { productData, categoryList });
+      return res.status(404).send("Product not found");
     }
+
+    res.render("admin/updateProduct", { productData, categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(500).send("Internal server error");
   }
 };
 

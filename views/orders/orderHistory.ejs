@@ -1,7 +1,12 @@
 <%- include('../includes/userHead.ejs') %>
 <link rel="stylesheet" href="/css/orderHistory.css" />
-
 <%- include('../includes/userHeader.ejs') %>
+
+<% const getProgress = (items) => { if (items.every(i => i.status === 'Delivered')) return 100; if
+(items.some(i => i.status === 'Shipped')) return 60; if (items.some(i => i.status === 'Pending'))
+return 30; return 0; }; const getOverallStatus = (items) => { if (items.every(i => i.status ===
+'Delivered')) return 'Delivered'; if (items.some(i => i.status === 'Shipped')) return 'Shipped';
+return 'Pending'; }; %>
 
 <main class="main">
   <% if (user) { %>
@@ -9,19 +14,20 @@
     <div class="profile-section">
       <div class="avatar">
         <img
-          src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
+          src="<%= user.photo && user.photo.length ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
           alt="Profile Avatar"
         />
       </div>
       <ul class="profile-links">
         <li><a href="/profile">User Profile</a></li>
         <li><a href="/address">Address</a></li>
-        <li><a href="/order-history">Order History</a></li>
+        <li><a href="/order-history" class="active">Order History</a></li>
         <li><a href="/change-password">Change Password</a></li>
         <li><a href="/wallet">Wallet</a></li>
       </ul>
     </div>
   </aside>
+
   <section class="content">
     <div class="container py-5">
       <% if (orders.length > 0) { %>
@@ -30,62 +36,79 @@
         <div class="col-12 mb-4">
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="row align-items-center">
+              <!-- ORDER HEADER -->
+              <div class="row align-items-center mb-3">
                 <div class="col-md-3">
-                  <p class="mb-1">
+                  <p>
                     <strong>Date:</strong>
-                    <%= new
-                    Date(order.createdAt).toDateString() %>
+                    <%= new Date(order.createdAt).toDateString() %>
                   </p>
-                  <p class="mb-1"><strong>ID:</strong> #<%= order.uniqueOrderId %></p>
-                  <p class="mb-0"><strong>Total:</strong> ₹<%= order.totalCost %></p>
+                  <p><strong>ID:</strong> #<%= order.uniqueOrderId %></p>
+                  <p><strong>Total:</strong> ₹<%= order.totalCost %></p>
                 </div>
+
+                <!-- PRODUCTS -->
                 <div class="col-md-6">
                   <div class="row">
-                    <% order.items.slice(0, 3).forEach(item => { %>
-                    <div class="col-4 mb-2">
-                      <div class="card h-100 border-0">
+                    <% order.items.slice(0,3).forEach(item => { %>
+                    <div class="col-4">
+                      <div class="card border-0">
                         <img
                           src="/uploads/<%= item.productId.photos[0].filename %>"
                           class="card-img-top"
-                          alt="<%= item.productId.name %>"
                           style="height: 100px; object-fit: cover"
                         />
                         <div class="card-body p-2">
-                          <p class="card-text small mb-1"><%= item.productId.name %></p>
-                          <p class="card-text small mb-0">Qty: <%= item.quantity %></p>
-                          <p class="card-text small mb-0">₹<%= item.productId.price %></p>
+                          <p class="small mb-1"><%= item.productId.name %></p>
+                          <p class="small mb-0">Qty: <%= item.quantity %></p>
+                          <p class="small mb-0">₹<%= item.productId.price %></p>
+
                           <span
-                            class="badge bg-<%= item.status === 'Delivered' ? 'success' : item.status === 'Pending' ? 'warning' : 'danger' %> rounded-pill"
-                            ><%= item.status %></span
+                            class="badge bg-<%= item.status === 'Delivered' ? 'success' : item.status === 'Shipped' ? 'info' : item.status === 'Pending' ? 'warning' : 'danger' %>"
                           >
+                            <%= item.status %>
+                          </span>
+
+                          <!-- RETURN BUTTON -->
+                          <% if (item.status === 'Delivered' && item.returnStatus === 'None') { %>
+                          <a
+                            href="/return-product/<%= order._id %>/<%= item.productId._id %>"
+                            class="btn btn-outline-dark btn-sm mt-2 w-100"
+                          >
+                            Return
+                          </a>
+                          <% } %>
+
+                          <% if (item.returnStatus === 'Requested') { %>
+                          <span class="badge bg-warning mt-2 w-100">Return Requested</span>
+                          <% } %>
+
+                          <% if (item.returnStatus === 'Approved') { %>
+                          <span class="badge bg-success mt-2 w-100">Returned</span>
+                          <% } %>
                         </div>
                       </div>
                     </div>
                     <% }) %>
+
                     <% if (order.items.length > 3) { %>
-                    <div class="col-12">
-                      <p class="text-muted small">
-                        ... and <%= order.items.length - 3 %> more items
-                      </p>
-                    </div>
+                    <p class="small text-muted mt-2">+ <%= order.items.length - 3 %> more items</p>
                     <% } %>
                   </div>
                 </div>
-                <div class="col-md-3 text-md-end">
+
+                <!-- ACTIONS -->
+                <div class="col-md-3 text-end">
                   <a
                     href="/order-details/<%= order._id %>"
-                    class="btn btn-primary btn-sm mb-2 w-100"
-                    >View Details</a
+                    class="btn btn-primary btn-sm w-100 mb-2"
                   >
-                  <% if (order.items.some(item => item.status === 'Pending')) { %>
-                  <form
-                    action="/cancel-order/<%= order._id %>"
-                    method="POST"
-                    style="display: inline"
-                  >
+                    View Details
+                  </a>
+
+                  <% if (order.items.some(i => i.status === 'Pending')) { %>
+                  <form action="/cancel-order/<%= order._id %>" method="POST">
                     <button
-                      type="submit"
                       class="btn btn-danger btn-sm w-100"
                       onclick="return confirm('Cancel entire order?');"
                     >
@@ -95,39 +118,43 @@
                   <% } %>
                 </div>
               </div>
-              <hr />
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="progress mb-2" style="height: 6px">
-                    style="width: <%= order.items[0]?.status === 'Delivered' ? '100%' :
-                    order.items[0]?.status === 'Shipped' ? '50%' : '25%' %>"
-                  </div>
-                  <div class="d-flex justify-content-between small text-muted">
-                    <span>Pending</span>
-                    <span>Shipped</span>
-                    <span>Delivered</span>
-                  </div>
-                </div>
+
+              <!-- PROGRESS BAR -->
+              <div class="progress mb-2">
+                <div class="progress-bar" data-progress="<%= getProgress(order.items) %>"></div>
               </div>
+
+              <div class="d-flex justify-content-between small text-muted">
+                <span>Pending</span>
+                <span>Shipped</span>
+                <span>Delivered</span>
+              </div>
+
+              <p class="small text-end mt-1">
+                <strong>Status:</strong>
+                <%= getOverallStatus(order.items) %>
+              </p>
             </div>
           </div>
         </div>
         <% }) %>
       </div>
-      <nav class="pagination" aria-label="Order History Pagination">
+
+      <!-- PAGINATION -->
+      <nav>
         <ul class="pagination justify-content-end">
-          <% for (let i = 1; i <= totalPages; i++) { %>
+          <% for(let i=1;i<=totalPages;i++){ %>
           <li class="page-item <%= i === currentPage ? 'active' : '' %>">
             <a class="page-link" href="/order-history?page=<%= i %>"><%= i %></a>
           </li>
           <% } %>
         </ul>
       </nav>
+
       <% } else { %>
-      <div class="empty-state text-center py-5">
-        <h2 class="page-title">No Orders Found</h2>
-        <p>Your order history is empty. Start shopping!</p>
-        <a href="/products" class="btn product-btn">Shop Now</a>
+      <div class="text-center py-5">
+        <h3>No Orders Found</h3>
+        <a href="/products" class="btn btn-dark mt-3">Shop Now</a>
       </div>
       <% } %>
     </div>
@@ -136,15 +163,10 @@
 </main>
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
-
+<%- include('../includes/userScripts.ejs') %>
 <script>
-  function setCategory(category) {
-    const selectedCategory = document.getElementById("selectedCategory");
-    if (selectedCategory) selectedCategory.value = category;
-    const dropdownText = document.querySelector(".dropdown-toggle-text");
-    if (dropdownText)
-      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-  }
+  document.querySelectorAll(".progress-bar").forEach((bar) => {
+    const value = bar.dataset.progress;
+    bar.style.width = value + "%";
+  });
 </script>

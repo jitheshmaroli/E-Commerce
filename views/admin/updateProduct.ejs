@@ -145,10 +145,16 @@
                       <select class="form-control" id="category" name="category" required>
                         <% if (categoryList && categoryList.length > 0) { %> <%
                         categoryList.forEach(category => { %>
-                        <option value="<%= category.categoryName %>">
-                          <% if (productData.category && productData.category.categoryName ===
-                          category.categoryName) { %> selected="selected" <% } %> ><%= category.categoryName %>
-                        </option>
+                        <option
+  value="<%= category.categoryName %>"
+  <%= productData.category &&
+      productData.category.categoryName === category.categoryName
+        ? "selected"
+        : "" %>
+>
+  <%= category.categoryName %>
+</option>
+
                         <% }) %>
                         <% } %>
                       </select>
@@ -204,7 +210,9 @@
                         class="form-control"
                         id="tags"
                         name="tags"
-                        value="<%= productData.tags ? productData.tags.join(', ') : '' %>"
+                        value="<%= Array.isArray(productData.tags)
+  ? productData.tags.join(', ')
+  : productData.tags %>"
                         placeholder="e.g. running, sports"
                       />
                       <span id="tags-error" class="text-danger"></span>

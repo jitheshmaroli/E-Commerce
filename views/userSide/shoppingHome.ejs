@@ -55,6 +55,7 @@
             <div
               class="product-card glass-card h-100 shadow-sm border-0 rounded-3 overflow-hidden modern-product-card <%= product.stock === 0 ? 'opacity-50' : '' %>"
               data-product="<%= product._id %>"
+              data-stock="<%= product.stock %>"
             >
               <div
                 class="product-image-container position-relative overflow-hidden"
@@ -306,11 +307,8 @@
         .querySelector(".product-name")
         .textContent.trim();
       const card = btn.closest(".product-card");
-      const overlay = card.querySelector(".out-of-stock-overlay");
-      if (
-        card.classList.contains("opacity-50") ||
-        (overlay && overlay.classList.contains("d-flex"))
-      ) {
+      const stock = Number(card.dataset.stock);
+      if (stock <= 0) {
         Swal.fire("Out of Stock!", "This product is unavailable.", "warning");
         return;
       }
@@ -320,13 +318,14 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId, quantity: 1 }),
         });
+
+        if (res.status === 401) {
+          window.location.href = `/login?redirect=/product-details/${productId}`;
+          return;
+        }
         const data = await res.json();
         if (!res.ok) {
-          if (data.error === "Not enough stock available") {
-            Swal.fire("Stock Alert!", `Only ${data.availableStock} left!`, "warning");
-          } else if (!data.success) {
-            window.location.href = "/login?message=Please login to add to cart";
-          }
+          Swal.fire("Error", data.message || "Something went wrong", "error");
           return;
         }
         Swal.fire("Added!", `${productName} added to cart!`, "success");
