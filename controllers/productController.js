@@ -6,7 +6,6 @@ const fs = require("fs").promises;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // eslint-disable-next-line no-undef
     cb(null, path.join(__dirname, "../public/uploads"));
   },
   filename: function (req, file, cb) {
@@ -29,8 +28,7 @@ const addProductView = async (req, res) => {
 
 const newProduct = async (req, res) => {
   try {
-    const { name, description, category, brandName, stock, price, tags } =
-      req.body;
+    const { name, description, category, brandName, stock, price, tags } = req.body;
 
     if (!name || !category || !brandName || !stock || !price) {
       const categoryList = await Category.find();
@@ -87,25 +85,21 @@ const newProduct = async (req, res) => {
   }
 };
 
-//update product view
-
 const updateProductView = async (req, res) => {
   try {
-    const productData = [
-      await Product.findById(req.params.productId).populate("category"),
-    ];
+    const productData = await Product.findById(req.params.productId).populate("category");
     const categoryList = await Category.find({ isBlocked: false });
+
     if (!productData) {
-      return res.status(404).json({ message: "Product not found" });
-    } else {
-      res.render("admin/updateProduct", { productData, categoryList });
+      return res.status(404).send("Product not found");
     }
+
+    res.render("admin/updateProduct", { productData, categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(500).send("Internal server error");
   }
 };
-//update product data
 
 const updateProduct = async (req, res) => {
   const productId = req.params.productId;
@@ -165,9 +159,7 @@ const removeImage = async (req, res) => {
         return res.status(500).json({ error: "Failed to remove image" });
       }
 
-      res
-        .status(200)
-        .json({ success: true, message: "Image removed successfully" });
+      res.status(200).json({ success: true, message: "Image removed successfully" });
     });
   } catch (error) {
     console.error("Error removing image:", error);
@@ -180,11 +172,7 @@ const updatePhotos = async (req, res) => {
     const { productId } = req.params;
     const { photos } = req.body;
 
-    const product = await Product.findByIdAndUpdate(
-      productId,
-      { photos },
-      { new: true }
-    );
+    const product = await Product.findByIdAndUpdate(productId, { photos }, { new: true });
 
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
@@ -199,9 +187,7 @@ const updatePhotos = async (req, res) => {
 
 const allProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isDeleted: false }).populate(
-      "category"
-    );
+    const products = await Product.find({ isDeleted: false }).populate("category");
     res.render("admin/allProducts", { products });
   } catch (error) {
     console.log(error);
@@ -220,9 +206,7 @@ const deleteProduct = async (req, res) => {
     res.redirect("/admin/allProducts");
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .render("userSide/error", { message: "Internal server error" });
+    res.status(500).render("userSide/error", { message: "Internal server error" });
   }
 };
 

@@ -2,20 +2,37 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 1.5rem;
-  background: var(--bg-light);
+  background: #ffffff; /* White for edit form */
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid #dee2e6; /* Subtle border */
 }
 .profile-edit h2 {
   margin-bottom: 1.5rem;
   text-align: center;
+  color: #000000; /* Black heading */
+}
+.profile-edit label {
+  color: #000000; /* Black labels */
+  font-weight: 500;
+}
+.profile-edit input,
+.profile-edit select {
+  background: #ffffff; /* White inputs */
+  color: #000000; /* Black text */
+  border: 1px solid #dee2e6; /* Light border */
+  border-radius: 4px;
+}
+.profile-edit input:focus,
+.profile-edit select:focus {
+  border-color: #000000; /* Black on focus */
 }
 
 /* Form Flex Fix: Ensure form wraps sidebar/content in flex layout */
 #profileForm {
   display: flex !important;
   min-height: 100vh;
-  background-color: var(--grey-050);
+  background-color: #f8f9fa; /* Light grey for main */
   margin-top: 0;
   width: 100%;
 }
@@ -26,20 +43,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #ffffff; /* White overlay text */
   font-size: 14px;
+  background: rgba(0, 0, 0, 0.7); /* Dark overlay */
 }
 
 .upload-text {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.7); /* Dark for upload text */
   padding: 0.5rem 1rem;
   border-radius: 4px;
   margin-bottom: 0.5rem;
+  color: #ffffff; /* White text */
 }
 
 .cancel-btn {
-  background: rgba(255, 0, 0, 0.8);
-  color: white;
+  background: #dc3545; /* Red for cancel, but grey alternative: #6c757d */
+  color: #ffffff; /* White text */
   border: none;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
@@ -48,12 +67,13 @@
 }
 
 .cancel-btn:hover {
-  background: rgba(200, 0, 0, 0.8);
+  background: #c82333; /* Darker red/grey */
 }
 
 /* Responsive */
 @media (max-width: 576px) {
   .profile-edit {
     padding: 1rem;
+    margin: 1rem;
   }
 }

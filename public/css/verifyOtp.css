@@ -1,6 +1,7 @@
 body {
   font-family: "Open Sans", sans-serif;
-  color: #101010; /* Text color */
+  color: #000000;
+  background-color: #f8f9fa;
 }
 
 .otp-container {
@@ -10,18 +11,19 @@ body {
   margin: 50px auto;
   width: 400px;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #dee2e6;
   border-radius: 5px;
-  border-color: #ddd; /* Neutral border color */
-  background-color: #ffffff; /* Light background */
+  background-color: #ffffff;
 }
 
 h1 {
   margin-bottom: 10px;
+  color: #000000;
 }
 
 p {
   margin-bottom: 10px;
+  color: #000000;
 }
 
 #otp-input,
@@ -29,46 +31,68 @@ p {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #dee2e6;
   border-radius: 3px;
+  background: #ffffff;
+  color: #000000;
 }
 
 #otp-input,
 #staticEmail {
-  height: 40px; /* Increased height */
-  border: 1px solid #ccc;
+  height: 40px;
+  border: 1px solid #dee2e6;
   border-radius: 4px;
+}
+
+#otp-input:focus,
+#staticEmail:focus {
+  border-color: #000000;
 }
 
 #submit-btn {
   cursor: pointer;
-  background-color: #333;
-  color: #fff;
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  font-weight: bold;
 }
 
 #submit-btn {
-  border: none; /* Remove default button border */
-  border-radius: 5px; /* Rounded corners */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+  border: none;
+  border-radius: 5px;
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease-in-out;
 }
 
 #submit-btn:hover {
-  background-color: #444;
+  background-color: #000000;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #timer-container {
-  color: #999;
+  color: var(--grey-600);
   font-size: 0.8em;
   margin-bottom: 10px;
 }
 
-#otp-input:focus {
-  border-color: #000000; /* Primary color on focus */
+#resend-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 5px;
 }
 
-#submit-btn:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+#resend-btn:hover:not(:disabled) {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+#resend-btn:disabled {
+  background-color: #f8f9fa;
+  color: var(--grey-600);
+  border-color: #dee2e6;
+  cursor: not-allowed;
 }
 
 .container {
@@ -77,29 +101,45 @@ p {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #eef4f7;
+  background-color: #f8f9fa;
 }
+
 .otp-form {
   width: 300px;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid #dee2e6;
   border-radius: 8px;
   background-color: #ffffff;
 }
+
 .otp-form label {
   margin-bottom: 5px;
+  color: #000000;
 }
+
 .otp-form input {
   margin-bottom: 15px;
 }
+
 .otp-form button {
   margin-top: 10px;
+  width: 100%;
+}
+
+/* Alert for messages */
+.alert {
+  background: #f8d7da; /* Light red for danger, but could grey if strict */
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 /* Header */
 .header {
-  background-color: #333;
-  color: #fff;
+  background-color: #000000; /* Black header */
+  color: #ffffff;
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -119,16 +159,28 @@ p {
 .brand-name {
   font-size: 24px;
   font-weight: bold;
+  color: #ffffff;
 }
 
 .footer {
   margin-top: 10px;
-  background-color: #f2f2f2;
+  background-color: #f8f9fa; /* Light grey footer */
   text-align: center;
+  border-top: 1px solid #e9ecef;
+  padding: 10px 0;
 }
 
 .copyright {
-  color: #333;
+  color: #000000; /* Black copyright */
   font-size: 14px;
   padding-top: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .otp-container,
+  .otp-form {
+    width: 90%;
+    margin: 1rem;
+  }
 }

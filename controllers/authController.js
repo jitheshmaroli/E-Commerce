@@ -4,8 +4,6 @@ const otpController = require("../controllers/otpController");
 const Otp = require("../models/otp");
 const bcrypt = require("bcrypt");
 
-//login signup view
-
 const loginViewUser = async (req, res) => {
   try {
     let message = req.query.error || req.query.message;
@@ -32,38 +30,29 @@ const signupView = async (req, res) => {
   }
 };
 
-//  Signup
 const userSignup = async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Validate user input
   if (!name || !email || !password) {
-    return res
-      .status(400)
-      .send("Please provide all required information (name, email, password).");
+    return res.status(400).send("Please provide all required information (name, email, password).");
   }
 
-  // Check for existing email
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.render("auth/loginregister", {
-        message:
-          "Email already exists. Please choose a different email address.",
+      return res.render("auth/login", {
+        message: "Email already exists. Please choose a different email address.",
       });
     }
   } catch (error) {
     console.error("Error checking for existing user:", error);
-    return res
-      .status(500)
-      .send("Internal server error. Please try again later.");
+    return res.status(500).send("Internal server error. Please try again later.");
   }
 
   const passwordError = passwordController.validatePassword(password);
   if (passwordError) {
     console.log(passwordError);
   } else {
-    // Generate OTP
     const otp = otpController.generateOTP();
 
     await Otp.deleteMany({ email });
@@ -82,9 +71,7 @@ const userSignup = async (req, res) => {
       return res.redirect("/verify-otp");
     } catch (error) {
       console.error("Error saving OTP:", error);
-      return res
-        .status(500)
-        .send("Internal server error. Please try again later.");
+      return res.status(500).send("Internal server error. Please try again later.");
     }
   }
 };
@@ -99,7 +86,7 @@ const verifyLogin = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.render("auth/loginregister", {
+      return res.render("auth/login", {
         message: "Invalid credentials",
       });
     }

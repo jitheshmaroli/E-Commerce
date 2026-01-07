@@ -164,9 +164,7 @@ const salesReport = async (req, res) => {
           };
           break;
         case "weekly":
-          let weekStart = new Date(
-            date.setDate(date.getDate() - date.getDay())
-          );
+          let weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
           filter.createdAt = {
             $gte: new Date(weekStart.setHours(0, 0, 0, 0)),
             $lt: new Date(),
@@ -207,9 +205,7 @@ const downloadReport = async (req, res) => {
           };
           break;
         case "weekly":
-          let weekStart = new Date(
-            date.setDate(date.getDate() - date.getDay())
-          );
+          let weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
           filter.createdAt = {
             $gte: new Date(weekStart.setHours(0, 0, 0, 0)),
             $lt: new Date(),
@@ -229,10 +225,7 @@ const downloadReport = async (req, res) => {
 
     if (format === "pdf") {
       const doc = new PDFDocument();
-      res.setHeader(
-        "Content-disposition",
-        "attachment; filename=sales_report.pdf"
-      );
+      res.setHeader("Content-disposition", "attachment; filename=sales_report.pdf");
       res.setHeader("Content-type", "application/pdf");
       doc.pipe(res);
 
@@ -260,8 +253,7 @@ const downloadReport = async (req, res) => {
 
       doc.table(table, {
         prepareHeader: () => doc.font("Helvetica-Bold"),
-        // eslint-disable-next-line no-unused-vars
-        prepareRow: (row, i) => doc.font("Helvetica").fontSize(10),
+        prepareRow: () => doc.font("Helvetica").fontSize(10),
       });
 
       doc.end();
@@ -299,8 +291,7 @@ const downloadReport = async (req, res) => {
       });
 
       // Add borders
-      // eslint-disable-next-line no-unused-vars
-      worksheet.eachRow((row, rowNumber) => {
+      worksheet.eachRow((row) => {
         row.eachCell((cell) => {
           cell.border = {
             top: { style: "thin" },
@@ -311,10 +302,7 @@ const downloadReport = async (req, res) => {
         });
       });
 
-      res.setHeader(
-        "Content-disposition",
-        "attachment; filename=sales_report.xlsx"
-      );
+      res.setHeader("Content-disposition", "attachment; filename=sales_report.xlsx");
       res.setHeader(
         "Content-type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

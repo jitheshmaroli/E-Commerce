@@ -4,8 +4,6 @@ const otpController = require("../controllers/otpController");
 const Otp = require("../models/otp");
 const Category = require("../models/category");
 
-//forgot password view
-
 const forgotPasswordView = async (req, res) => {
   try {
     res.render("auth/forgotPassword", { message: "" });
@@ -106,9 +104,7 @@ const changePassword = async (req, res) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
 
   if (newPassword !== confirmPassword) {
-    return res
-      .status(400)
-      .json({ message: "New password and confirm password do not match" });
+    return res.status(400).json({ message: "New password and confirm password do not match" });
   }
 
   try {

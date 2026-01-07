@@ -18,9 +18,7 @@ const shoppingHomeView = async (req, res) => {
         email: req.session.userId || req.session.passport.user.userId,
       });
       if (user) {
-        const wishlist = await Wishlist.findOne({ userId: user._id }).populate(
-          "products"
-        );
+        const wishlist = await Wishlist.findOne({ userId: user._id }).populate("products");
         wishlistProducts = wishlist ? wishlist.products : [];
       }
     }
@@ -51,21 +49,14 @@ const shoppingHomeView = async (req, res) => {
       products.map(async (product) => {
         const bestOffer = await offerController.getBestOffer(product);
         if (bestOffer) {
-          product.currentPrice = offerController.calculateDiscountedPrice(
-            product.price,
-            bestOffer
-          );
+          product.currentPrice = offerController.calculateDiscountedPrice(product.price, bestOffer);
           product.offer = bestOffer;
         } else {
           product.currentPrice = product.price;
         }
         const reviews = product.reviews;
-        const totalRating = reviews.reduce(
-          (sum, review) => sum + review.rating,
-          0
-        );
-        const averageRating =
-          reviews.length > 0 ? totalRating / reviews.length : 0;
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
         return {
           ...product.toObject(),
           averageRating: averageRating.toFixed(1),
@@ -129,9 +120,7 @@ const checkoutView = async (req, res) => {
         cart = new Cart({ userId: user._id, items: [] });
       }
 
-      const cartItem = cart.items.find((item) =>
-        item.productId.equals(productId)
-      );
+      const cartItem = cart.items.find((item) => item.productId.equals(productId));
       if (cartItem) {
         if (parseInt(quantity) > product.stock) {
           return res.status(400).json({
@@ -194,12 +183,10 @@ const productSearchView = async (req, res) => {
     let user;
     if (req.session.userId) {
       user = await User.findOne({
-        email: req.session.userId || req.session.passport.user.userId,
+        email: req.session.userId || req.session.passport?.user?.userId,
       });
       if (user) {
-        const wishlist = await Wishlist.findOne({ userId: user._id }).populate(
-          "products"
-        );
+        const wishlist = await Wishlist.findOne({ userId: user._id }).populate("products");
         wishlistProducts = wishlist ? wishlist.products : [];
       }
     }
@@ -276,21 +263,14 @@ const productSearchView = async (req, res) => {
       products.map(async (product) => {
         const bestOffer = await offerController.getBestOffer(product);
         if (bestOffer) {
-          product.currentPrice = offerController.calculateDiscountedPrice(
-            product.price,
-            bestOffer
-          );
+          product.currentPrice = offerController.calculateDiscountedPrice(product.price, bestOffer);
           product.offer = bestOffer;
         } else {
           product.currentPrice = product.price;
         }
         const reviews = product.reviews;
-        const totalRating = reviews.reduce(
-          (sum, review) => sum + review.rating,
-          0
-        );
-        const averageRating =
-          reviews.length > 0 ? totalRating / reviews.length : 0;
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
         return {
           ...product.toObject(),
           averageRating: averageRating.toFixed(1),
@@ -346,9 +326,7 @@ const productDetailsView = async (req, res) => {
     }
 
     if (user) {
-      const wishlist = await Wishlist.findOne({ userId: user._id }).populate(
-        "products"
-      );
+      const wishlist = await Wishlist.findOne({ userId: user._id }).populate("products");
       wishlistProducts = wishlist ? wishlist.products : [];
     }
 
@@ -365,16 +343,13 @@ const productDetailsView = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!product) {
-      return res
-        .status(404)
-        .render("userSide/productNotFound", { message: "Product not found" });
+      return res.status(404).render("userSide/productNotFound", { message: "Product not found" });
     }
 
     const reviews = product.reviews;
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
 
-    // Get the best offer for the product
     const bestOffer = await offerController.getBestOffer(product);
 
     const currentPrice = bestOffer
@@ -397,9 +372,7 @@ const productDetailsView = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res
-      .status(500)
-      .render("userSide/error", { message: "Internal server error" });
+    res.status(500).render("userSide/error", { message: "Internal server error" });
   }
 };
 

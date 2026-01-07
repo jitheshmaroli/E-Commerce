@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="/css/loginregister.css" />
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
   </head>
   <body>
     <header class="header">
@@ -31,7 +32,8 @@
               placeholder="Name"
               autocomplete="name"
               required
-              maxlength="50" />
+              maxlength="50"
+            />
             <span id="name-error" class="error-message"></span>
 
             <input
@@ -41,7 +43,8 @@
               placeholder="Email"
               required
               autocomplete="email"
-              maxlength="50" />
+              maxlength="50"
+            />
             <span id="email-error" class="error-message"></span>
 
             <input
@@ -51,7 +54,8 @@
               placeholder="Password"
               autocomplete="on"
               required
-              maxlength="20" />
+              maxlength="20"
+            />
             <span id="password-error" class="error-message"></span>
 
             <input
@@ -62,14 +66,11 @@
               value=""
               placeholder="Confirm Password"
               required
-              maxlength="20" />
+              maxlength="20"
+            />
             <span id="confirm-error" class="error-message"></span>
 
-            <button
-              type="submit"
-              id="submit-btn"
-              class="submit-btn mb-2 mt-2"
-              disabled>
+            <button type="submit" id="submit-btn" class="submit-btn mb-2 mt-2" disabled>
               Create Account
             </button>
             <a
@@ -80,8 +81,7 @@
             >
           </form>
           <div class="signup-link">
-            <a href="/login">click Here</a
-            ><span> to login if you are already registered</span>
+            <a href="/login">click Here</a><span> to login if you are already registered</span>
           </div>
         </div>
       </div>
@@ -99,10 +99,7 @@
       }
       (function () {
         window.onpageshow = function (event) {
-          if (
-            event.persisted ||
-            (window.performance && window.performance.navigation.type === 2)
-          ) {
+          if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
             window.location.reload();
           }
         };

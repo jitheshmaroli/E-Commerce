@@ -1,24 +1,43 @@
 .wallet-card {
-  background: var(--bg-light);
+  background: #ffffff; /* White for wallet card */
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
   padding: 1.5rem;
   text-align: center;
+  border: 1px solid #dee2e6; /* Subtle border */
 }
 .wallet-card .card-title {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
+  color: #000000; /* Black title */
 }
 .wallet-card .text-primary {
   font-size: 2rem;
   font-weight: bold;
+  color: #000000 !important; /* Black balance */
 }
 .transaction-list {
   max-height: 400px;
   overflow-y: auto;
+  background: #f8f9fa; /* Light grey for list */
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
 }
 .transaction-list .table {
   margin-bottom: 0;
+}
+.transaction-list th {
+  color: #000000; /* Black headers */
+  border-bottom: 1px solid #dee2e6; /* Light border */
+}
+.transaction-list td {
+  color: #000000; /* Black text */
+}
+.transaction-list .text-success {
+  color: #000000 !important; /* Black for positive, or keep green if needed */
+}
+.transaction-list .text-danger {
+  color: #dc3545 !important; /* Red for negative */
 }
 
 /* Responsive */

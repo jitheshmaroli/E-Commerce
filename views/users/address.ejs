@@ -10,7 +10,8 @@
       <div class="avatar">
         <img
           src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar" />
+          alt="Profile Avatar"
+        />
       </div>
       <ul class="profile-links">
         <li><a href="/profile">User Profile</a></li>
@@ -32,31 +33,26 @@
       <div
         class="address-card"
         data-address-id="<%= address._id %>"
-        data-is-default="<%= address.isDefault ? 'true' : 'false' %>">
+        data-is-default="<%= address.isDefault ? 'true' : 'false' %>"
+      >
         <h3><%= address.name %></h3>
         <p>
-          <%= address.houseName %>, <%= address.street %>, <%= address.district
-          %>, <%= address.state %>, <%= address.country %>
+          <%= address.houseName %>, <%= address.street %>, <%= address.district %>, <%=
+          address.state %>, <%= address.country %>
         </p>
         <p>PIN: <%= address.pinCode %></p>
         <% if (address.isDefault) { %>
         <span class="default-address-tag">Default Address</span>
         <% } else { %>
-        <button
-          class="btn product-btn btn-sm"
-          onclick="setDefaultAddress('<%= address._id %>')">
+        <button class="btn product-btn btn-sm" onclick="setDefaultAddress('<%= address._id %>')">
           Set as Default
         </button>
         <% } %>
-        <a
-          href="/address/edit/<%= address._id %>"
-          class="btn product-btn btn-sm"
-          >Edit</a
-        >
+        <a href="/address/edit/<%= address._id %>" class="btn product-btn btn-sm">Edit</a>
         <a
           href="/address/delete/<%= address._id %>"
           class="btn product-btn btn-sm delete-btn"
-          onclick="return confirm('Are you sure?')"
+          onclick="return confirm('Are you sure?');"
           >Delete</a
         >
       </div>
@@ -72,7 +68,8 @@
   <% } %>
 </main>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>
 
 <script>
@@ -98,7 +95,6 @@ include('../includes/userScripts.ejs') %>
     if (selectedCategory) selectedCategory.value = category;
     const dropdownText = document.querySelector(".dropdown-toggle-text");
     if (dropdownText)
-      dropdownText.textContent =
-        category.charAt(0).toUpperCase() + category.slice(1);
+      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

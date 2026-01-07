@@ -2,28 +2,20 @@ const Otp = require("../models/otp");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
 
-// nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    // eslint-disable-next-line no-undef
     user: process.env.EMAIL_ADDRESS,
-    // eslint-disable-next-line no-undef
     pass: process.env.EMAIL_PASSWORD,
   },
 });
-
-// Generating OTP
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000);
 }
 
-// Send OTP via email
-
 const sendOTP = function sendOTP(email, otp) {
   const mailOptions = {
-    // eslint-disable-next-line no-undef
     from: process.env.EMAIL_ADDRESS,
     to: email,
     subject: "Your OTP for verification",
@@ -39,8 +31,6 @@ const sendOTP = function sendOTP(email, otp) {
   });
 };
 
-//verify otp view
-
 const verifyOtpView = async (req, res) => {
   try {
     const userData = req.session.userData;
@@ -51,7 +41,6 @@ const verifyOtpView = async (req, res) => {
   }
 };
 
-// Function to verify OTP
 const verifyOtp = async (email, enteredOtp) => {
   try {
     const otpEntry = await Otp.findOne({ email });
@@ -74,8 +63,6 @@ const verifyOtp = async (email, enteredOtp) => {
     throw error;
   }
 };
-
-// function forgot password
 
 const resetPasswordSendOtp = async (req, res) => {
   const { email } = req.body.email;
@@ -137,9 +124,7 @@ const forgotPasswordResendOtp = async (req, res) => {
       await otpEntry.deleteOne();
       return res
         .status(400)
-        .send(
-          "OTP has expired. Please initiate a new forgot password request."
-        );
+        .send("OTP has expired. Please initiate a new forgot password request.");
     }
 
     const shouldResend = true;
@@ -236,7 +221,6 @@ const verifyOtpSignup = async (req, res) => {
     res.status(500).send("Internal server error");
   }
 };
-//resend otp
 
 const resendSignupOtp = async (req, res) => {
   const { email } = req.body;
@@ -249,10 +233,8 @@ const resendSignupOtp = async (req, res) => {
 
     const currentTime = Date.now();
     if (currentTime > otpEntry.expiry) {
-      await otpEntry.deleteOne(); // Remove expired OTP
-      return res
-        .status(400)
-        .send("OTP has expired. Please initiate a new signup request.");
+      await otpEntry.deleteOne();
+      return res.status(400).send("OTP has expired. Please initiate a new signup request.");
     }
     const shouldResend = true;
     if (shouldResend) {

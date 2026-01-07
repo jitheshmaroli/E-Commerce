@@ -1,8 +1,7 @@
-/* eslint-disable no-undef */
 const User = require("../models/user");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs"); // Added for deleting old files
+const fs = require("fs");
 const Category = require("../models/category");
 const Wallet = require("../models/wallet");
 
@@ -19,7 +18,6 @@ const upload = multer({
   storage: storage,
 });
 
-// Changed to match form input name: "profile-pic"
 const profilePhotoUpload = upload.array("profile-pic", 1);
 
 const userProfileView = async (req, res) => {
@@ -45,23 +43,20 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { name, gender } = req.body; // Skip email (readonly)
+    const { name, gender } = req.body;
     let isDataChanged = false;
     const updateObj = {};
 
-    // Handle name change
     if (name && name.trim() && name !== user.name) {
       updateObj.name = name.trim();
       isDataChanged = true;
     }
 
-    // Handle gender change
     if (gender && gender !== user.gender) {
       updateObj.gender = gender;
       isDataChanged = true;
     }
 
-    // Handle photo upload
     let uploadedPhoto = null;
     if (req.files && req.files.length > 0) {
       const newFile = req.files[0];
@@ -75,13 +70,8 @@ const updateProfile = async (req, res) => {
       updateObj.photo = uploadedPhoto;
       isDataChanged = true;
 
-      // Delete old photo if exists
       if (user.photo && user.photo.length > 0) {
-        const oldFilePath = path.join(
-          __dirname,
-          "../public/uploads",
-          user.photo[0].filename
-        );
+        const oldFilePath = path.join(__dirname, "../public/uploads", user.photo[0].filename);
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
         }
@@ -124,7 +114,6 @@ async function updateWallet(userId, amount, orderId, type) {
       throw new Error("User not found");
     }
 
-    // Create new wallet transaction
     const walletTransaction = new Wallet({
       userId: user._id,
       amount: amount,
@@ -132,7 +121,6 @@ async function updateWallet(userId, amount, orderId, type) {
       orderId: orderId,
     });
 
-    // Update wallet balance
     if (type === "credit") {
       user.wallet += amount;
       walletTransaction.description = "Order refund";
@@ -141,13 +129,10 @@ async function updateWallet(userId, amount, orderId, type) {
       walletTransaction.description = "Order payment";
     }
 
-    // Save the wallet transaction
     await walletTransaction.save();
 
-    // Add transaction reference to user's walletTransactions
     user.walletTransactions.push(walletTransaction._id);
 
-    // Save the updated user
     await user.save();
   } catch (error) {
     console.error("Error processing refund:", error);

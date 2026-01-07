@@ -10,8 +10,8 @@ const crypto = require("crypto");
 
 const generateUniqueOrderId = () => {
   const prefix = "ORD";
-  const timestamp = Date.now(); // Current timestamp in milliseconds
-  const randomSuffix = crypto.randomBytes(3).toString("hex"); // Random 3-byte hex string
+  const timestamp = Date.now();
+  const randomSuffix = crypto.randomBytes(3).toString("hex");
   return `${prefix}-${timestamp}-${randomSuffix}`;
 };
 
@@ -21,20 +21,12 @@ const placeOrder = async (req, res) => {
       email: req.session.userId || req.session.passport.user.userId,
     });
     const userId = user._id;
-    const {
-      orderItems,
-      totalCost,
-      paymentMode,
-      couponCode,
-      priceDetails,
-      addressDetails,
-    } = req.body;
+    const { orderItems, totalCost, paymentMode, couponCode, priceDetails, addressDetails } =
+      req.body;
 
     const validatedOrderItems = await validateOrderItems(orderItems);
     if (validatedOrderItems.length === 0) {
-      return res
-        .status(400)
-        .json({ success: false, error: "One or more items are out of stock." });
+      return res.status(400).json({ success: false, error: "One or more items are out of stock." });
     }
 
     const uniqueOrderId = generateUniqueOrderId();
@@ -69,9 +61,8 @@ const placeOrder = async (req, res) => {
       };
       console.log(totalCost, options, order);
       const razorpay = new Razorpay({
-        // eslint-disable-next-line no-undef
         key_id: process.env.KEY_ID,
-        // eslint-disable-next-line no-undef
+
         key_secret: process.env.KEY_SECRET,
       });
 
@@ -95,18 +86,11 @@ const placeOrder = async (req, res) => {
       await Order.create(order);
 
       if (!user.wallet >= totalCost) {
-        return res
-          .status(400)
-          .json({ wallet: false, error: "insufficient balance" });
+        return res.status(400).json({ wallet: false, error: "insufficient balance" });
       }
       //user.wallet -= totalCost;
       const type = "debit";
-      await userController.updateWallet(
-        order.userId,
-        totalCost,
-        order._id,
-        type
-      );
+      await userController.updateWallet(order.userId, totalCost, order._id, type);
       //await user.save();
 
       await cartController.updateProductStock(validatedOrderItems);
@@ -204,9 +188,7 @@ const cancelOrder = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    const itemIndex = order.items.findIndex(
-      (item) => item.productId._id.toString() === itemId
-    );
+    const itemIndex = order.items.findIndex((item) => item.productId._id.toString() === itemId);
 
     if (itemIndex === -1) {
       return res.status(404).send("Item not found in the order");
@@ -245,9 +227,7 @@ const cancelOrder = async (req, res) => {
 
     item.status = "Cancelled";
 
-    const allItemsCancelled = order.items.every(
-      (item) => item.status === "Cancelled"
-    );
+    const allItemsCancelled = order.items.every((item) => item.status === "Cancelled");
     if (allItemsCancelled) {
       order.totalCost = 0;
       order.priceDetails.subTotal = 0;
@@ -258,12 +238,7 @@ const cancelOrder = async (req, res) => {
     if (order.paymentMethod === "online" || order.paymentMethod === "wallet") {
       const refundAmount = itemPrice + itemSalesTax + deliveryCharge;
       const type = "credit";
-      await userController.updateWallet(
-        order.userId,
-        refundAmount,
-        order._id,
-        type
-      );
+      await userController.updateWallet(order.userId, refundAmount, order._id, type);
     }
     await order.save();
 
@@ -309,9 +284,7 @@ const returnProductPage = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    const item = order.items.find(
-      (item) => item.productId._id.toString() === itemId
-    );
+    const item = order.items.find((item) => item.productId._id.toString() === itemId);
 
     if (!item) {
       return res.status(404).send("Item not found in order");
@@ -334,17 +307,13 @@ const initiateReturn = async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    const item = order.items.find(
-      (item) => item.productId.toString() === itemId
-    );
+    const item = order.items.find((item) => item.productId.toString() === itemId);
     if (!item) {
       return res.status(404).json({ error: "Item not found in order" });
     }
 
     if (item.returnStatus !== "None") {
-      return res
-        .status(400)
-        .json({ error: "Return already initiated for this item" });
+      return res.status(400).json({ error: "Return already initiated for this item" });
     }
 
     item.returnStatus = "Requested";
@@ -355,9 +324,7 @@ const initiateReturn = async (req, res) => {
     res.redirect("/order-history");
   } catch (error) {
     console.error("Error initiating return:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while initiating the return" });
+    res.status(500).json({ error: "An error occurred while initiating the return" });
   }
 };
 
@@ -375,9 +342,7 @@ const approveReturn = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    const itemIndex = order.items.findIndex(
-      (item) => item.productId._id.toString() === itemId
-    );
+    const itemIndex = order.items.findIndex((item) => item.productId._id.toString() === itemId);
 
     if (itemIndex === -1) {
       return res.status(404).send("Item not found in the order");
@@ -386,9 +351,7 @@ const approveReturn = async (req, res) => {
     const item = order.items[itemIndex];
 
     if (item.returnStatus !== "Requested") {
-      return res
-        .status(400)
-        .send("Return has not been requested for this item");
+      return res.status(400).send("Return has not been requested for this item");
     }
 
     const product = await Product.findById(item.productId._id);
@@ -428,12 +391,7 @@ const approveReturn = async (req, res) => {
 
     // Process refund
     const type = "credit";
-    await userController.updateWallet(
-      order.userId,
-      refundAmount,
-      order._id,
-      type
-    );
+    await userController.updateWallet(order.userId, refundAmount, order._id, type);
 
     await order.save();
 

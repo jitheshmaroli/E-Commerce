@@ -11,7 +11,8 @@
         <img
           src="/uploads/<%= item.productId.photos[0].filename %>"
           alt="<%= item.productId.name %>"
-          class="product-image" />
+          class="product-image"
+        />
         <div class="product-details">
           <h3 class="product-name"><%= item.productId.name %></h3>
           <p class="product-quantity">Ordered Quantity: <%= item.quantity %></p>
@@ -20,7 +21,8 @@
       <form
         action="/return-product/<%= order._id %>/<%= item.productId._id %>"
         method="POST"
-        class="return-form">
+        class="return-form"
+      >
         <div class="form-group">
           <label for="returnReason" class="form-label">Return Reason</label>
           <textarea
@@ -29,15 +31,15 @@
             class="form-control"
             rows="4"
             required
-            placeholder="Describe the reason for return..."></textarea>
+            placeholder="Describe the reason for return..."
+          ></textarea>
         </div>
-        <button type="submit" class="btn btn-primary submit-btn">
-          Submit Return Request
-        </button>
+        <button type="submit" class="btn btn-primary submit-btn">Submit Return Request</button>
       </form>
     </div>
   </div>
 </div>
 
-<%- include('../includes/userFooter.ejs') %> <%-
+<%- include('../includes/userFooter.ejs') %>
+<%-
 include('../includes/userScripts.ejs') %>

@@ -3,16 +3,29 @@
   gap: 2rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
+  background: #f8f9fa; /* Light grey background for the wrapper to reduce brightness */
+  padding: 1.5rem;
+  border: 1px solid #e9ecef; /* Subtle border around the entire checkout area */
+  border-radius: 8px;
 }
 .checkout-form {
   width: 60%;
-  background-color: var(--bg-light);
+  background-color: #ffffff; /* Pure white for form to keep it clean */
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid #dee2e6; /* Light border to define the form section */
 }
 .payment-options {
   margin-bottom: 1.5rem;
+  background: #f8f9fa; /* Light grey for payment section */
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+.payment-options h3 {
+  color: #000000; /* Black for heading contrast */
+  margin-bottom: 1rem;
 }
 .payment-option {
   display: flex;
@@ -20,17 +33,28 @@
   margin-bottom: 0.5rem;
   gap: 0.5rem;
 }
+.payment-option label {
+  color: #000000; /* Black text for labels */
+}
+.payment-option input[type="radio"] {
+  accent-color: #000000; /* Black for radio buttons in monochrome */
+}
+.payment-option .text-danger {
+  color: #dc3545 !important; /* Keep red for errors, but could grey if strict monochrome */
+}
 
 .order-summary {
   width: 35%;
-  background-color: var(--bg-light);
+  background-color: #ffffff; /* White for summary to focus on numbers */
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid #dee2e6; /* Border to separate summary */
 }
 .order-details h3 {
   text-align: center;
   margin-bottom: 1rem;
+  color: #000000; /* Black for heading */
 }
 .products {
   margin-bottom: 1rem;
@@ -39,13 +63,99 @@
   display: flex;
   gap: 1rem;
   margin: 1rem 0;
+  background: #f8f9fa; /* Light grey background for each product row */
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
 }
 .price-quantity {
   flex-grow: 1;
 }
+.price-quantity h4 {
+  color: #000000; /* Black for product names */
+  margin-bottom: 0.5rem;
+}
+.price-quantity p {
+  color: #000000; /* Black for prices */
+  margin-bottom: 0.5rem;
+}
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.quantity-btn {
+  width: 2rem;
+  height: 2rem;
+  background-color: #cccccc; /* Grey buttons */
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #000000; /* Black text/icons */
+}
+.quantity-btn:hover:not(:disabled) {
+  background-color: #6c757d; /* Darker grey on hover */
+  color: #ffffff; /* White on hover */
+  font-weight: bold;
+}
+.quantity-control input {
+  width: 4rem;
+  height: 2rem;
+  text-align: center;
+  border: 1px solid var(--grey-300);
+  border-radius: 4px;
+  background: #ffffff; /* White input */
+  color: #000000; /* Black text */
+}
+.coupon-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa; /* Light grey for coupon area */
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+}
+.coupon-section h4 {
+  color: #000000; /* Black heading */
+  margin-bottom: 0.5rem;
+}
+.coupon-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.coupon-form input {
+  flex: 1;
+  background: #ffffff; /* White input */
+  color: #000000; /* Black text */
+  border: 1px solid #dee2e6;
+}
+#appliedCouponContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+#appliedCouponContainer span {
+  color: #000000; /* Black for applied code */
+}
+#couponMessage {
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  color: #000000; /* Black for messages, override colors in JS if needed */
+}
+.total-amount {
+  background: #f8f9fa; /* Light grey for totals */
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
 .total-amount p {
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: #000000; /* Black for all total texts */
 }
 .btn-place-order {
   width: 100%;
@@ -55,9 +165,109 @@
   border: none;
   border-radius: 4px;
   font-size: 1rem;
+  font-weight: bold;
 }
 .btn-place-order:hover {
   background-color: var(--bg-dark);
+}
+
+/* Address Cards */
+.default-address {
+  margin-bottom: 1rem;
+}
+.address-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid var(--grey-200);
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  background: #f8f9fa; /* Light grey for address cards */
+}
+.default-address-tag {
+  background-color: var(--grey-600);
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  align-self: flex-start;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+.address-card h3 {
+  color: #000000; /* Black for names */
+  margin-bottom: 0.5rem;
+}
+.address-card p {
+  color: #000000; /* Black for address text */
+  margin-bottom: 1rem;
+}
+.address-card-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+.address-card-buttons .product-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  background: #ffffff; /* White for edit buttons */
+  color: #000000; /* Black text */
+  border: 1px solid #000000;
+}
+.address-card-buttons .product-btn:hover {
+  background: #000000; /* Black on hover */
+  color: #ffffff; /* White text */
+}
+.add-address-card {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.add-address-card .product-btn {
+  background: #ffffff; /* White for add button */
+  color: #000000; /* Black text */
+  border: 1px solid #000000;
+  width: 100%;
+}
+.add-address-card .product-btn:hover {
+  background: #000000; /* Black on hover */
+  color: #ffffff;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa; /* Light grey for empty state */
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+.empty-state h1 {
+  color: var(--grey-600); /* Grey for empty message */
+  margin-bottom: 1rem;
+}
+.empty-state .product-btn {
+  background: #000000; /* Black for back button */
+  color: #ffffff;
+}
+
+/* Modals */
+.modal-content {
+  background: #ffffff; /* White for modals */
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+.modal-header h5 {
+  color: #000000; /* Black for modal titles */
+}
+.modal-body .form-label {
+  color: #000000; /* Black labels */
+}
+.modal-body .form-control {
+  background: #ffffff; /* White inputs */
+  color: #000000; /* Black text */
+  border: 1px solid #dee2e6;
+}
+.modal-body .form-check-label {
+  color: #000000; /* Black for checkboxes */
 }
 
 /* Responsive */
@@ -73,5 +283,11 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+  .address-card {
+    flex-direction: column;
+  }
+  .address-card-buttons {
+    justify-content: center;
   }
 }

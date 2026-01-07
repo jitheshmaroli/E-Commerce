@@ -1,55 +1,79 @@
 <%- include('../includes/userHead.ejs') %>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="/css/userProfile.css">
+<link rel="stylesheet" href="/css/userProfile.css" />
 
 <%- include('../includes/userHeader.ejs') %>
 
 <main class="main">
   <% if (user) { %>
-    <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
-      <aside class="sidebar">
-        <div class="profile-section">
-          <div class="avatar">
-            <img id="profileImg" src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>" alt="Profile Avatar">
-            <input type="file" accept="image/*" id="profile-pic-input" name="profile-pic">
-            <label for="profile-pic-input" class="avatar-overlay">
-              <span class="upload-text">Upload Photo</span>
-              <button type="button" id="cancel-upload" class="cancel-btn" style="display: none;">Cancel</button>
-            </label>
-          </div>
-          <ul class="profile-links">
-            <li><a href="/profile">User Profile</a></li>
-            <li><a href="/address">Address</a></li>
-            <li><a href="/order-history">Order History</a></li>
-            <li><a href="/change-password">Change Password</a></li>
-            <li><a href="/wallet">Wallet</a></li>
-          </ul>
+  <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
+    <aside class="sidebar">
+      <div class="profile-section">
+        <div class="avatar">
+          <img
+            id="profileImg"
+            src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
+            alt="Profile Avatar"
+          />
+          <input type="file" accept="image/*" id="profile-pic-input" name="profile-pic" />
+          <label for="profile-pic-input" class="avatar-overlay">
+            <span class="upload-text">Upload Photo</span>
+            <button type="button" id="cancel-upload" class="cancel-btn" style="display: none">
+              Cancel
+            </button>
+          </label>
         </div>
-      </aside>
-      <section class="content">
-        <div class="profile-edit">
-          <h2 class="page-title">Edit Profile</h2>
-          <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="<%= user.name %>" maxlength="50">
-          </div>
-          <div class="form-group">
-            <label for="gender">Gender:</label>
-            <select id="gender" name="gender">
-              <option value="">Select Gender</option>
-              <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
-              <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
-              <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" value="<%= user.email %>" readonly>
-          </div>
-          <button type="submit" id="saveBtn" class="btn product-btn" disabled>Save</button>
+        <ul class="profile-links">
+          <li><a href="/profile" class="active">User Profile</a></li>
+          <li><a href="/address">Address</a></li>
+          <li><a href="/order-history">Order History</a></li>
+          <li><a href="/change-password">Change Password</a></li>
+          <li><a href="/wallet">Wallet</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="profile-edit">
+        <h2 class="page-title">Edit Profile</h2>
+
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value="<%= user.name %>"
+            maxlength="50"
+            required
+          />
         </div>
-      </section>
-    </form>
+
+        <div class="form-group">
+          <label for="gender">Gender:</label>
+          <select id="gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="male">
+              <% if (user.gender === 'male') { %> selected="selected" <% } %> >Male
+            </option>
+            <option value="female">
+              <% if (user.gender === 'female') { %> selected="selected" <% } %> >Female
+            </option>
+            <option value="other">
+              <% if (user.gender === 'other') { %> selected="selected" <% } %> >Other
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address:</label>
+          <input type="email" id="email" value="<%= user.email %>" readonly />
+        </div>
+
+        <button type="submit" id="saveBtn" class="btn product-btn" disabled>Save</button>
+      </div>
+    </section>
+  </form>
   <% } %>
 </main>
 
@@ -57,59 +81,56 @@
 <%- include('../includes/userScripts.ejs') %>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('profileForm');
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("profileForm");
     if (!form) return;
 
-    const profileImg = document.getElementById('profileImg');
-    const fileInput = document.getElementById('profile-pic-input');
-    const cancelBtn = document.getElementById('cancel-upload');
-    const saveBtn = document.getElementById('saveBtn');
-    const nameInput = document.getElementById('name');
-    const genderSelect = document.getElementById('gender');
-    const overlay = document.querySelector('.avatar-overlay');
+    const profileImg = document.getElementById("profileImg");
+    const fileInput = document.getElementById("profile-pic-input");
+    const cancelBtn = document.getElementById("cancel-upload");
+    const saveBtn = document.getElementById("saveBtn");
+    const nameInput = document.getElementById("name");
+    const genderSelect = document.getElementById("gender");
+    const overlay = document.querySelector(".avatar-overlay");
 
-    // Store initial values for change detection
+    // Store initial values
     const initialName = nameInput.value.trim();
     const initialGender = genderSelect.value;
     const originalImgSrc = profileImg.src;
-    let previewSrc = null; // Track if preview is active
-    let fileChanged = false; // Track if file was selected (changed)
+    let previewSrc = null;
+    let fileChanged = false;
 
-    // Show success alert if updated via query param
+    // Show success message if updated
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('updated') === 'true') {
+    if (urlParams.get("updated") === "true") {
       Swal.fire({
-        title: 'Success!',
-        text: 'Profile updated successfully.',
-        icon: 'success',
-        confirmButtonText: 'OK'
+        title: "Success!",
+        text: "Profile updated successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
       }).then(() => {
-        // Clear query param by reloading without it
         window.history.replaceState({}, document.title, window.location.pathname);
       });
     }
 
-    // Function to check if any changes and toggle button
     function checkChanges() {
       const currentName = nameInput.value.trim();
       const currentGender = genderSelect.value;
-      const hasChanges = currentName !== initialName || currentGender !== initialGender || fileChanged;
+      const hasChanges =
+        currentName !== initialName || currentGender !== initialGender || fileChanged;
       saveBtn.disabled = !hasChanges;
     }
 
-    // File preview and cancel
-    fileInput.addEventListener('change', function(event) {
+    fileInput.addEventListener("change", function (event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           previewSrc = e.target.result;
           profileImg.src = previewSrc;
-          overlay.style.opacity = '1';
-          cancelBtn.style.display = 'block';
-          const uploadText = document.querySelector('.upload-text');
-          if (uploadText) uploadText.style.display = 'none';
+          overlay.style.opacity = "1";
+          cancelBtn.style.display = "block";
+          document.querySelector(".upload-text").style.display = "none";
           fileChanged = true;
           checkChanges();
         };
@@ -117,92 +138,42 @@
       }
     });
 
-    // Cancel upload
-    cancelBtn.addEventListener('click', function() {
-      fileInput.value = '';
+    cancelBtn.addEventListener("click", function () {
+      fileInput.value = "";
       profileImg.src = originalImgSrc;
       previewSrc = null;
       fileChanged = false;
-      cancelBtn.style.display = 'none';
-      const uploadText = document.querySelector('.upload-text');
-      if (uploadText) uploadText.style.display = 'block';
-      overlay.style.opacity = '0';
+      cancelBtn.style.display = "none";
+      document.querySelector(".upload-text").style.display = "block";
+      overlay.style.opacity = "0";
       checkChanges();
     });
 
-    // Listen for name changes
-    nameInput.addEventListener('input', checkChanges);
+    nameInput.addEventListener("input", checkChanges);
+    genderSelect.addEventListener("change", checkChanges);
+    checkChanges(); // Initial state
 
-    // Listen for gender changes
-    genderSelect.addEventListener('change', checkChanges);
-
-    // Initial check (should disable button)
-    checkChanges();
-
-    // Validation helpers
-    const validateName = (name) => /^[a-zA-Z\s]+$/.test(name.trim()) && name.trim().length > 0;
-    const validateFile = (file) => {
-      if (!file) return true; // No file is ok
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSize) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Profile picture must be under 5MB.',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-        return false;
-      }
-      if (!/\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Please select a valid image file (JPG, JPEG, PNG, GIF).',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-        return false;
-      }
-      return true;
-    };
-
-    form.addEventListener('submit', function(event) {
+    // Validation on submit
+    form.addEventListener("submit", function (event) {
       event.preventDefault();
 
       const currentName = nameInput.value.trim();
-      const currentGender = genderSelect.value;
-      const currentFile = fileInput.files[0];
-
-      // Validate name
-      if (!validateName(currentName)) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Name cannot be empty, contain only spaces, numbers, or special characters.',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
+      if (!/^[a-zA-Z\s]+$/.test(currentName) || currentName.length === 0) {
+        Swal.fire("Error!", "Name must contain only letters and spaces.", "error");
         return;
       }
 
-      // Validate gender (optional, but warn if unchanged and empty)
-      if (!currentGender && initialGender === '') {
-        Swal.fire({
-          title: 'Confirm',
-          text: 'Gender is optional. Proceed without selecting?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, Proceed',
-          cancelButtonText: 'Cancel'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            form.submit();
-          }
-        });
-        return;
-      }
-
-      // Validate file
-      if (!validateFile(currentFile)) {
-        return;
+      const file = fileInput.files[0];
+      if (file) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          Swal.fire("Error!", "Image must be under 5MB.", "error");
+          return;
+        }
+        if (!/\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
+          Swal.fire("Error!", "Only JPG, PNG, GIF allowed.", "error");
+          return;
+        }
       }
 
       form.submit();

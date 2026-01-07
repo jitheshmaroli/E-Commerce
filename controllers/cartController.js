@@ -15,18 +15,13 @@ const addToCart = async (req, res) => {
     const quantity = req.body.quantity || 1;
     const discountCode = req.body.discountCode;
     const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
+      email: req.session.userId || req.session.passport?.user?.userId,
     });
     if (!user) {
-      return res.json({ success: false, message: "please log in to continue" });
+      return res.status(401).json({ success: false, message: "please log in to continue" });
     }
 
-    if (
-      !productId ||
-      !quantity ||
-      typeof quantity !== "number" ||
-      quantity < 1
-    ) {
+    if (!productId || !quantity || typeof quantity !== "number" || quantity < 1) {
       return res.status(400).json({ error: "Invalid product details" });
     }
 
@@ -73,10 +68,7 @@ const addToCart = async (req, res) => {
     }
 
     await cart.save();
-    await Wishlist.findOneAndUpdate(
-      { userId: user._id },
-      { $pull: { items: { productId } } }
-    );
+    await Wishlist.findOneAndUpdate({ userId: user._id }, { $pull: { items: { productId } } });
 
     res.json({
       success: true,
@@ -102,9 +94,7 @@ const moveToCart = async (req, res) => {
       cart = new Cart({ userId, items: [] });
     }
 
-    const itemIndex = cart.items.findIndex((item) =>
-      item.productId.equals(productId)
-    );
+    const itemIndex = cart.items.findIndex((item) => item.productId.equals(productId));
 
     if (itemIndex !== -1) {
       cart.items[itemIndex].quantity += quantity;

@@ -17,15 +17,11 @@ const toggleWishList = async (req, res) => {
       wishlist = new Wishlist({ userId: userId, products: [] });
     }
 
-    const productIndex = wishlist.products.findIndex(
-      (item) => item.toString() === productId
-    );
+    const productIndex = wishlist.products.findIndex((item) => item.toString() === productId);
 
     if (productIndex > -1) {
-      // Product is in wishlist, remove it
       wishlist.products.splice(productIndex, 1);
     } else {
-      // Product is not in wishlist, add it
       console.log(productId + "wislist");
       wishlist.products.push(productId);
     }
@@ -45,10 +41,7 @@ const moveToWishList = async (req, res) => {
   });
   const userId = user._id;
 
-  if (
-    !mongoose.Types.ObjectId.isValid(userId) ||
-    !mongoose.Types.ObjectId.isValid(productId)
-  ) {
+  if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
     return res.status(400).json({ error: "Invalid userId or productId" });
   }
 
@@ -57,25 +50,19 @@ const moveToWishList = async (req, res) => {
     if (!wishlist) {
       wishlist = new Wishlist({ userId, items: [] });
     }
-    const isProductInWishlist = wishlist.products.some((product) =>
-      product.equals(productId)
-    );
+    const isProductInWishlist = wishlist.products.some((product) => product.equals(productId));
 
     if (isProductInWishlist) {
-      return res
-        .status(200)
-        .json({ success: true, message: "Product is already in the wishlist" });
+      return res.status(200).json({ success: true, message: "Product is already in the wishlist" });
     }
 
     wishlist.products.push(productId);
     await wishlist.save();
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Product moved to wishlist successfully.",
-      });
+    res.status(200).json({
+      success: true,
+      message: "Product moved to wishlist successfully.",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -88,9 +75,7 @@ const wishListView = async (req, res) => {
       email: req.session.userId || req.session.passport.user.userId,
     });
 
-    const wishlist = await Wishlist.findOne({ userId: user._id }).populate(
-      "products"
-    );
+    const wishlist = await Wishlist.findOne({ userId: user._id }).populate("products");
     const categoryList = await Category.find({ isBlocked: false });
 
     const wishlistProducts = wishlist ? wishlist.products : [];
@@ -119,11 +104,8 @@ const removeFromWishList = async (req, res) => {
       return res.status(404).json({ error: "Wishlist not found" });
     }
 
-    wishlist.products = wishlist.products.filter(
-      (product) => !product.equals(productId)
-    );
+    wishlist.products = wishlist.products.filter((product) => !product.equals(productId));
 
-    // Save the updated wishlist document
     await wishlist.save();
 
     res.redirect("/wishlist");

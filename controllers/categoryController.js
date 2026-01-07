@@ -25,9 +25,7 @@ const addCategory = async (req, res) => {
   try {
     const { categoryName, description } = req.body;
     if (!categoryName || !description) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Incomplete details" });
+      return res.status(400).json({ success: false, message: "Incomplete details" });
     }
 
     const existingCategory = await Category.findOne({
@@ -108,9 +106,7 @@ const toggleCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Category not found" });
+      return res.status(404).json({ success: false, message: "Category not found" });
     }
 
     category.isBlocked = !category.isBlocked;
