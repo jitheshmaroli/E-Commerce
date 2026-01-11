@@ -29,10 +29,16 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    req.session.isUserAuthenticated = true;
+    req.session.userId = req.user.email;
+
+    req.session.save((err) => {
+      if (err) console.error("Session save error:", err);
+      res.redirect("/");
+    });
+  }
 );
 
 // login, logout, signup routes
@@ -45,7 +51,7 @@ router.get("/logout", authController.logoutViewUser);
 //otp
 router.get("/verify-otp", authentication.otpAuthentication, otpController.verifyOtpView);
 router.post("/verify-otp", otpController.verifyOtpSignup);
-router.post("/resend-otp", otpController.resendSignupOtp);
+router.post("/resend-otp", otpController.resendOtp);
 
 //home
 router.get("/", shopController.shoppingHomeView);

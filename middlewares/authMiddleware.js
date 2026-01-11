@@ -7,15 +7,11 @@ const isAdminAuthenticated = (req, res, next) => {
 };
 
 const isUserAuthenticated = (req, res, next) => {
-  if (
-    req.session.isUserAuthenticated ||
-    (req.session.passport && req.session.passport.user.isUserAuthenticated)
-  ) {
-    next();
-  } else {
-    req.session.returnTo = req.originalUrl;
-    res.redirect("/login?message=please login to continue");
+  if (req.session.isUserAuthenticated || req.isAuthenticated()) {
+    return next();
   }
+  req.session.returnTo = req.originalUrl;
+  res.redirect("/login");
 };
 
 const redirectToDashboard = (req, res, next) => {

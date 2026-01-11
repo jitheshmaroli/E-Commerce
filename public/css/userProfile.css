@@ -12,6 +12,12 @@
   text-align: center;
   color: #000000; /* Black heading */
 }
+
+.profile-edit p {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #000000; /* Black heading */
+}
 .profile-edit label {
   color: #000000; /* Black labels */
   font-weight: 500;

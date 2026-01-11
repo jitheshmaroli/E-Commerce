@@ -1,146 +1,78 @@
 const User = require("../models/user");
-const passwordController = require("../controllers/passwordController");
-const otpController = require("../controllers/otpController");
-const Otp = require("../models/otp");
 const bcrypt = require("bcrypt");
+const otpController = require("./otpController");
 
-const loginViewUser = async (req, res) => {
-  try {
-    let message = req.query.error || req.query.message;
-    if (!message) {
-      message = "";
-    }
-    res.render("auth/login", { message });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
+const loginViewUser = (req, res) => {
+  const message = req.query.message || req.query.error || "";
+  res.render("auth/login", { message });
 };
 
-const signupView = async (req, res) => {
-  try {
-    let message = req.query.error;
-    if (!message || message == "timemout") {
-      message = "";
-    }
-    res.render("auth/signup", { message });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
+const signupView = (req, res) => {
+  res.render("auth/signup", { message: "" });
 };
 
 const userSignup = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).send("Please provide all required information (name, email, password).");
+    return res.render("auth/signup", { message: "All fields are required" });
   }
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.render("auth/login", {
-        message: "Email already exists. Please choose a different email address.",
-      });
+      return res.render("auth/login", { message: "Email already registered. Please login." });
     }
-  } catch (error) {
-    console.error("Error checking for existing user:", error);
-    return res.status(500).send("Internal server error. Please try again later.");
-  }
 
-  const passwordError = passwordController.validatePassword(password);
-  if (passwordError) {
-    console.log(passwordError);
-  } else {
+    const hashedPassword = await bcrypt.hash(password, 12);
     const otp = otpController.generateOTP();
 
-    await Otp.deleteMany({ email });
-    const otpEntry = new Otp({
-      email,
-      otp,
-      expiry: Date.now() + 5 * 60 * 1000,
-    });
+    await otpController.sendOTP(email, otp);
+    await require("../models/otp").deleteMany({ email });
+    await new (require("../models/otp"))({ email, otp, expiry: Date.now() + 5 * 60 * 1000 }).save();
 
-    try {
-      await otpEntry.save();
-      otpController.sendOTP(email, otp);
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      req.session.userData = { name, email, hashedPassword };
-      return res.redirect("/verify-otp");
-    } catch (error) {
-      console.error("Error saving OTP:", error);
-      return res.status(500).send("Internal server error. Please try again later.");
-    }
+    req.session.userData = { name, email, hashedPassword };
+    res.redirect("/verify-otp");
+  } catch (err) {
+    console.error(err);
+    res.render("auth/signup", { message: "Server error. Try again." });
   }
 };
 
 const verifyLogin = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.render("auth/login", { message: "Incomplete fields" });
-  }
-
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.render("auth/login", {
-        message: "Invalid credentials",
-      });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.render("auth/login", { message: "Invalid credentials" });
     }
-
     if (user.isBlocked) {
-      return res.render("auth/login", {
-        message: " user is blocked from the site",
-      });
+      return res.render("auth/login", { message: "Your account is blocked" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    req.session.isUserAuthenticated = true;
+    req.session.userId = user.email;
 
-    if (passwordMatch) {
-      if (user.isAdmin) {
-        req.session.isAdminAuthenticated = true;
-        req.session.adminId = email;
-        res.render("admin/dashboard");
-      } else {
-        req.session.isUserAuthenticated = true;
-        req.session.userId = user.email;
-        const redirectTo = req.session.returnTo || "/";
-        delete req.session.returnTo;
-        console.log(req.session);
-        res.redirect(redirectTo);
-      }
-    } else {
-      res.render("auth/login", { message: "Invalid credentials" });
-    }
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
+    const redirectTo = req.session.returnTo || "/";
+    delete req.session.returnTo;
+    res.redirect(redirectTo);
+  } catch (err) {
+    console.error(err);
+    res.render("auth/login", { message: "Server error" });
   }
 };
 
-const logoutViewUser = async (req, res) => {
-  try {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-        res.status(500).send("Internal Server Error");
-      } else {
-        res.render("auth/login", { message: "logged out successfully" });
-      }
-    });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal Server Error");
-  }
+const logoutViewUser = (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
 };
 
 module.exports = {
   loginViewUser,
-  verifyLogin,
   signupView,
   userSignup,
+  verifyLogin,
   logoutViewUser,
 };

@@ -61,27 +61,26 @@ const adminRoutes = require("./routes/adminRoutes.js");
 app.use("/admin", adminRoutes);
 app.use("/", userRoutes);
 // Catch 404 and forward to error handler
-app.use((req, res, next) => {
-  const err = new Error("Not Found");
-  err.status = 404;
-  next(err);
-});
+// app.use((req, res, next) => {
+//   const err = new Error("Not Found");
+//   err.status = 404;
+//   next(err);
+// });
 
 // Error handler
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+// app.use((err, req, res, next) => {
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  const statusCode = err.status || 500;
-  res.status(statusCode);
+//   const statusCode = err.status || 500;
+//   res.status(statusCode);
 
-  if (statusCode === 404) {
-    res.render("errors/404");
-  } else {
-    res.render("errors/500");
-  }
-});
+//   if (statusCode === 404) {
+//     res.render("errors/404");
+//   } else {
+//     res.render("errors/500");
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`server is running at ${port}`);
