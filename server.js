@@ -10,8 +10,8 @@ const session = require("express-session");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const { connectDB } = require("./config/database.js");
-const passport = require("passport");
 
+const passport = require("passport");
 // dotenv configuration
 dotenv.config();
 
@@ -22,9 +22,16 @@ const sessionStore = MongoStore.create({
 });
 
 // db connection
-connectDB();
+connectDB()
+  .then(() => {
+    require("./utils/cronJobs");
+  })
+  .catch((err) => {
+    console.error("Failed to connect to database:", err);
+    process.exit(1);
+  });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // Middleware setup
 app.use(nocache());
@@ -60,27 +67,6 @@ const adminRoutes = require("./routes/adminRoutes.js");
 
 app.use("/admin", adminRoutes);
 app.use("/", userRoutes);
-// Catch 404 and forward to error handler
-// app.use((req, res, next) => {
-//   const err = new Error("Not Found");
-//   err.status = 404;
-//   next(err);
-// });
-
-// Error handler
-// app.use((err, req, res, next) => {
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get("env") === "development" ? err : {};
-
-//   const statusCode = err.status || 500;
-//   res.status(statusCode);
-
-//   if (statusCode === 404) {
-//     res.render("errors/404");
-//   } else {
-//     res.render("errors/500");
-//   }
-// });
 
 app.listen(port, () => {
   console.log(`server is running at ${port}`);

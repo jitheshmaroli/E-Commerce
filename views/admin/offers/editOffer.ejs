@@ -66,132 +66,137 @@
 
     <!-- Main Content -->
     <main class="content flex-grow-1 p-4">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-transparent p-0 mb-4">
-          <li class="breadcrumb-item"><a href="/admin/offers" class="text-dark">Offers</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Edit Offer</li>
-        </ol>
-      </nav>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb bg-transparent p-0 mb-4">
+        <li class="breadcrumb-item"><a href="/admin/offers" class="text-dark">Offers</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Offer</li>
+      </ol>
+    </nav>
 
-      <div class="card shadow-lg border-0" style="max-width: 800px; margin: 0 auto;">
-        <div class="card-header bg-dark text-white text-center py-3">
-          <h4 class="mb-0">Edit Offer: <%= offer.name %></h4>
-        </div>
-        <div class="card-body p-4">
-          <form id="offerForm" method="POST" action="/admin/offers/edit/<%= offer._id %>">
-            <div id="globalError" class="text-danger mb-3 fw-bold"></div>
-
-            <!-- Offer Name -->
-            <div class="mb-4">
-              <label for="name" class="form-label fw-bold">Offer Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="name" name="name" value="<%= offer.name %>" maxlength="50" required />
-              <small id="nameError" class="text-danger"></small>
-            </div>
-
-            <!-- Discount Type & Value -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <label for="discountType" class="form-label fw-bold">Discount Type <span class="text-danger">*</span></label>
-                <select class="form-control" id="discountType" name="discountType" required>
-                  <option value="percentage" <%= offer.discountType === 'percentage' ? 'selected' : '' %>>Percentage (%)</option>
-                  <option value="amount" <%= offer.discountType === 'amount' ? 'selected' : '' %>>Fixed Amount (₹)</option>
-                </select>
-                <small id="discountTypeError" class="text-danger"></small>
-              </div>
-              <div class="col-md-6">
-                <label for="discountValue" class="form-label fw-bold">Discount Value <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="discountValue" name="discountValue" value="<%= offer.discountValue %>"  inputmode="numeric" required />
-                <small id="discountValueError" class="text-danger"></small>
-              </div>
-            </div>
-
-            <!-- Description -->
-            <div class="mb-4">
-              <label for="description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
-              <textarea class="form-control" id="description" name="description" rows="4" maxlength="200" required><%= offer.description %></textarea>
-              <small id="descriptionError" class="text-danger"></small>
-            </div>
-
-            <!-- Dates -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <label for="startDate" class="form-label fw-bold">Start Date <span class="text-danger">*</span></label>
-                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= offer.startDate.toISOString().split('T')[0] %>" required />
-                <small id="startDateError" class="text-danger"></small>
-              </div>
-              <div class="col-md-6">
-                <label for="endDate" class="form-label fw-bold">End Date <span class="text-danger">*</span></label>
-                <input type="date" class="form-control" id="endDate" name="endDate" value="<%= offer.endDate.toISOString().split('T')[0] %>" required />
-                <small id="endDateError" class="text-danger"></small>
-              </div>
-            </div>
-
-            <!-- Offer Type -->
-            <div class="mb-4">
-              <label for="offerType" class="form-label fw-bold">Apply To <span class="text-danger">*</span></label>
-              <select class="form-control" id="offerType" name="offerType" required>
-                <option value="product"   <%= offer.offerType === 'product'   ? 'selected' : '' %>>Specific Product</option>
-                <option value="category"  <%= offer.offerType === 'category'  ? 'selected' : '' %>>Specific Category</option>
-                <option value="all"       <%= offer.offerType === 'all'       ? 'selected' : '' %>>All Products</option>
-                <option value="referral"  <%= offer.offerType === 'referral'  ? 'selected' : '' %>>Referral Bonus</option>
-              </select>
-              <small id="offerTypeError" class="text-danger"></small>
-            </div>
-
-            <!-- Product Group -->
-            <div class="mb-4" id="productGroup">
-              <label for="product" class="form-label fw-bold">Product</label>
-              <select class="form-control" id="product" name="product">
-                <option value="">None</option>
-                <option value="all" <%= (offer.product === 'all' || offer.applyToAllProducts) ? 'selected' : '' %>>All Products</option>
-                <% products.forEach(p => { %>
-                  <option value="<%= p._id %>" <%= (offer.product && offer.product.toString() === p._id.toString()) ? 'selected' : '' %>>
-                    <%= p.name %>
-                  </option>
-                <% }) %>
-              </select>
-              <small id="productError" class="text-danger"></small>
-            </div>
-
-            <!-- Category Group -->
-            <div class="mb-4" id="categoryGroup">
-              <label for="category" class="form-label fw-bold">Category</label>
-              <select class="form-control" id="category" name="category">
-                <option value="">None</option>
-                <option value="all" <%= (offer.category === 'all' || offer.applyToAllCategories) ? 'selected' : '' %>>All Categories</option>
-                <% categories.forEach(c => { %>
-                  <option value="<%= c._id %>" <%= (offer.category && offer.category.toString() === c._id.toString()) ? 'selected' : '' %>>
-                    <%= c.categoryName %>
-                  </option>
-                <% }) %>
-              </select>
-              <small id="categoryError" class="text-danger"></small>
-            </div>
-
-            <!-- Active Checkbox -->
-            <div class="form-check mb-4">
-              <input type="checkbox" class="form-check-input" id="isActive" name="isActive" <%= offer.isActive ? 'checked' : '' %> />
-              <label class="form-check-label" for="isActive">Offer is Active</label>
-            </div>
-
-            <!-- Buttons -->
-            <div class="d-flex gap-3 mt-4">
-              <button type="submit" class="btn product-btn flex-grow-1 py-2 fw-bold">Update Offer</button>
-              <button type="button" class="btn btn-outline-dark flex-grow-1 py-2" onclick="clearFields()">Clear</button>
-              <a href="/admin/offers" class="btn btn-outline-secondary flex-grow-1 py-2 text-center">Cancel</a>
-            </div>
-          </form>
-        </div>
+    <div class="card shadow-lg border-0" style="max-width: 800px; margin: 0 auto;">
+      <div class="card-header bg-dark text-white text-center py-3">
+        <h4 class="mb-0">Edit Offer: <%= offer.name %></h4>
       </div>
-    </main>
-  </div>
+      <div class="card-body p-4">
+        <form id="offerForm" method="POST" action="/admin/offers/edit/<%= offer._id %>">
+          <div id="globalError" class="text-danger mb-3 fw-bold"></div>
+
+          <!-- Offer Name -->
+          <div class="mb-4">
+            <label for="name" class="form-label fw-bold">Offer Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control text-uppercase" id="name" name="name" value="<%= offer.name %>" maxlength="50" required style="text-transform: uppercase;" />
+            <small id="nameError" class="text-danger"></small>
+          </div>
+
+          <!-- Discount Type & Value -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label for="discountType" class="form-label fw-bold">Discount Type <span class="text-danger">*</span></label>
+              <select class="form-control" id="discountType" name="discountType" required>
+                <option value="percentage" <%= offer.discountType === 'percentage' ? 'selected' : '' %>>Percentage (%)</option>
+                <option value="amount" <%= offer.discountType === 'amount' ? 'selected' : '' %>>Fixed Amount (₹)</option>
+              </select>
+              <small id="discountTypeError" class="text-danger"></small>
+            </div>
+            <div class="col-md-6">
+              <label for="discountValue" class="form-label fw-bold">Discount Value <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="discountValue" name="discountValue" value="<%= offer.discountValue %>" step="0.01" min="0.01" required />
+              <small id="discountValueError" class="text-danger"></small>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-4">
+            <label for="description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="description" name="description" rows="4" maxlength="200" required><%= offer.description %></textarea>
+            <small id="descriptionError" class="text-danger"></small>
+          </div>
+
+          <!-- Dates -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label for="startDate" class="form-label fw-bold">Start Date <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                class="form-control"
+                id="startDate"
+                name="startDate"
+                value="<%= offer.startDate.toISOString().split('T')[0] %>"
+                min="<%= new Date().toISOString().split('T')[0] %>"
+                required
+              />
+              <small id="startDateError" class="text-danger"></small>
+            </div>
+            <div class="col-md-6">
+              <label for="endDate" class="form-label fw-bold">End Date <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                class="form-control"
+                id="endDate"
+                name="endDate"
+                value="<%= offer.endDate.toISOString().split('T')[0] %>"
+                required
+              />
+              <small id="endDateError" class="text-danger"></small>
+            </div>
+          </div>
+
+          <!-- Offer Type -->
+          <div class="mb-4">
+            <label for="offerType" class="form-label fw-bold">Apply To <span class="text-danger">*</span></label>
+            <select class="form-control" id="offerType" name="offerType" required>
+              <option value="product"   <%= offer.offerType === 'product'   ? 'selected' : '' %>>Specific Product</option>
+              <option value="category"  <%= offer.offerType === 'category'  ? 'selected' : '' %>>Specific Category</option>
+              <option value="all"       <%= offer.offerType === 'all'       ? 'selected' : '' %>>All Products/Categories</option>
+            </select>
+            <small id="offerTypeError" class="text-danger"></small>
+          </div>
+
+          <!-- Product / Category -->
+          <div id="productGroup" class="mb-4 <%= offer.offerType === 'product' ? '' : 'd-none' %>">
+            <label for="product" class="form-label fw-bold">Product</label>
+            <select class="form-control" id="product" name="product">
+              <option value="">None</option>
+              <option value="all" <%= offer.applyToAllProducts ? 'selected' : '' %>>All Products</option>
+              <% products.forEach(p => { %>
+                <option value="<%= p._id %>" <%= offer.product?.toString() === p._id.toString() ? 'selected' : '' %>>
+                  <%= p.name %>
+                </option>
+              <% }) %>
+            </select>
+            <small id="productError" class="text-danger"></small>
+          </div>
+
+          <div id="categoryGroup" class="mb-4 <%= offer.offerType === 'category' ? '' : 'd-none' %>">
+            <label for="category" class="form-label fw-bold">Category</label>
+            <select class="form-control" id="category" name="category">
+              <option value="">None</option>
+              <option value="all" <%= offer.applyToAllCategories ? 'selected' : '' %>>All Categories</option>
+              <% categories.forEach(c => { %>
+                <option value="<%= c._id %>" <%= offer.category?.toString() === c._id.toString() ? 'selected' : '' %>>
+                  <%= c.categoryName %>
+                </option>
+              <% }) %>
+            </select>
+            <small id="categoryError" class="text-danger"></small>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn product-btn flex-grow-1 py-2 fw-bold">Update Offer</button>
+            <button type="button" class="btn btn-outline-dark flex-grow-1 py-2" onclick="clearFields()">Clear</button>
+            <a href="/admin/offers" class="btn btn-outline-secondary flex-grow-1 py-2 text-center">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    // Real-time Validation + Submit
     const inputs = {
       name: document.getElementById("name"),
       discountType: document.getElementById("discountType"),
@@ -201,7 +206,7 @@
       endDate: document.getElementById("endDate"),
       offerType: document.getElementById("offerType"),
       product: document.getElementById("product"),
-      category: document.getElementById("category")
+      category: document.getElementById("category"),
     };
 
     const errors = {
@@ -213,15 +218,18 @@
       endDate: document.getElementById("endDateError"),
       offerType: document.getElementById("offerTypeError"),
       product: document.getElementById("productError"),
-      category: document.getElementById("categoryError")
+      category: document.getElementById("categoryError"),
     };
 
-    // Real-time validation
     Object.values(inputs).forEach(input => {
       if (input) {
         input.addEventListener("input", () => validateField(input));
         input.addEventListener("blur", () => validateField(input));
       }
+    });
+
+    inputs.name?.addEventListener("input", () => {
+      inputs.name.value = inputs.name.value.toUpperCase();
     });
 
     function validateField(input) {
@@ -238,7 +246,7 @@
       }
       else if (id === "discountValue") {
         const num = parseFloat(value);
-        const type = inputs.discountType?.value;
+        const type = inputs.discountType.value;
         if (!value) errorMsg = "Discount value is required";
         else if (isNaN(num) || num <= 0) errorMsg = "Enter positive value";
         else if (type === "percentage" && (num < 1 || num > 100)) errorMsg = "Percentage: 1–100";
@@ -247,11 +255,24 @@
         if (!value) errorMsg = "Description is required";
         else if (value.length < 10 || value.length > 200) errorMsg = "Description: 10–200 characters";
       }
-      else if (id === "startDate" || id === "endDate") {
-        const start = new Date(inputs.startDate?.value || "");
-        const end = new Date(inputs.endDate?.value || "");
-        if (!value) errorMsg = "Date is required";
-        else if (id === "endDate" && end <= start && start) errorMsg = "End date must be after start";
+      else if (id === "startDate") {
+        if (!value) errorMsg = "Start date is required";
+        else {
+          const selected = new Date(value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (selected < today) errorMsg = "Start date cannot be in the past";
+        }
+      }
+      else if (id === "endDate") {
+        if (!value) errorMsg = "End date is required";
+        else {
+          const selected = new Date(value);
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(0, 0, 0, 0);
+          if (selected <= new Date()) errorMsg = "End date must be in the future";
+        }
       }
       else if (id === "offerType") {
         if (!value) errorMsg = "Select offer target";
@@ -265,9 +286,18 @@
 
       errors[id].textContent = errorMsg;
       input.classList.toggle("is-invalid", !!errorMsg);
+
+      // Cross-date validation
+      if (inputs.startDate?.value && inputs.endDate?.value) {
+        const start = new Date(inputs.startDate.value);
+        const end = new Date(inputs.endDate.value);
+        if (start >= end) {
+          errors.endDate.textContent = "End date must be after start date";
+          inputs.endDate.classList.add("is-invalid");
+        }
+      }
     }
 
-    // Full form validation
     function isFormValid() {
       let valid = true;
       Object.values(inputs).forEach(input => {
@@ -279,117 +309,80 @@
       return valid;
     }
 
-// Submit handler
-document.getElementById("offerForm")?.addEventListener("submit", async function(e) {
-  e.preventDefault();
+    document.getElementById("offerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
 
-  if (!isFormValid()) {
-    Swal.fire({
-      icon: "warning",
-      title: "Invalid Input",
-      text: "Please fix the highlighted errors",
-      timer: 2500,
-      showConfirmButton: false
+      if (!isFormValid()) {
+        Swal.fire({
+          icon: "warning",
+          title: "Invalid Input",
+          text: "Please fix the highlighted errors",
+          timer: 2500,
+          showConfirmButton: false
+        });
+        return;
+      }
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+
+      // Clean conditional fields
+      if (data.offerType !== "product") delete data.product;
+      if (data.offerType !== "category") delete data.category;
+
+      try {
+        const res = await fetch(this.action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          await Swal.fire("Success", "Offer updated successfully!", "success");
+          window.location.href = "/admin/offers";
+        } else {
+          Swal.fire("Error", result.message || "Failed to update offer.", "error");
+        }
+      } catch (err) {
+        Swal.fire("Error", "Network error occurred.", "error");
+      }
     });
-    return;
-  }
 
-  const formData = new FormData(this);
-  let data = Object.fromEntries(formData);
-
-
-  if (data.offerType !== "category" && data.offerType !== "all") {
-    delete data.category;
-  }
-
-  if (data.category === "" || data.category === "None") {
-    delete data.category;
-  }
-
-  if (data.offerType !== "product" && data.offerType !== "all") {
-    delete data.product;
-  }
-  if (data.product === "" || data.product === "None") {
-    delete data.product;
-  }
-
-
-  try {
-    const res = await fetch(this.action, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      await Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Offer updated successfully!",
-        timer: 2000,
-        showConfirmButton: false
-      });
-      window.location.href = "/admin/offers";
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: result.message || "Failed to update offer"
-      });
-    }
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "Network Error",
-      text: "Failed to connect. Please try again."
-    });
-  }
-});
-
-    // Clear form
     function clearFields() {
       document.querySelectorAll("input, textarea, select").forEach(el => {
-        if (el.type === "checkbox") el.checked = false;
-        else el.value = "";
+        el.value = "";
         el.classList.remove("is-invalid");
       });
       document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
     }
 
-    // Conditional visibility for product/category groups
-    function toggleOfferGroups() {
+    // Conditional visibility
+    function toggleGroups() {
       const val = document.getElementById("offerType")?.value;
-      if (!val) return;
-
-      document.getElementById("productGroup").style.display = 
-        (val === "product" || val === "all") ? "block" : "none";
-
-      document.getElementById("categoryGroup").style.display = 
-        (val === "category" || val === "all") ? "block" : "none";
+      document.getElementById("productGroup").style.display = (val === "product") ? "block" : "none";
+      document.getElementById("categoryGroup").style.display = (val === "category") ? "block" : "none";
     }
 
-    // Initialize on load + listen for changes
-    document.addEventListener("DOMContentLoaded", toggleOfferGroups);
-    document.getElementById("offerType")?.addEventListener("change", toggleOfferGroups);
+    document.addEventListener("DOMContentLoaded", toggleGroups);
+    document.getElementById("offerType")?.addEventListener("change", toggleGroups);
 
-    // Discount type change handler
+    // Discount type change
     document.getElementById("discountType")?.addEventListener("change", function() {
       const val = this.value;
       const input = document.getElementById("discountValue");
       if (val === "percentage") {
-        input.min = 1;
-        input.max = 100;
-        input.step = 1;
+        input.min = "1";
+        input.max = "100";
+        input.step = "1";
       } else {
         input.removeAttribute("max");
-        input.min = 0.01;
-        input.step = 0.01;
+        input.min = "0.01";
+        input.step = "0.01";
       }
     });
 
-    // Initialize everything
     document.getElementById("discountType")?.dispatchEvent(new Event("change"));
   </script>
 </body>

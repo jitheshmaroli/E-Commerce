@@ -125,11 +125,12 @@
                 >
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control text-uppercase"
                   id="name"
                   name="name"
                   maxlength="50"
                   required
+                  style="text-transform: uppercase"
                 />
                 <small id="nameError" class="text-danger"></small>
               </div>
@@ -157,7 +158,7 @@
                     id="discountValue"
                     name="discountValue"
                     step="0.01"
-                    inputmode="numeric"
+                    min="0.01"
                     required
                   />
                   <small id="discountValueError" class="text-danger"></small>
@@ -191,6 +192,7 @@
                     class="form-control"
                     id="startDate"
                     name="startDate"
+                    min="<%= new Date().toISOString().split('T')[0] %>"
                     required
                   />
                   <small id="startDateError" class="text-danger"></small>
@@ -213,6 +215,7 @@
                   <option value="">Select Target</option>
                   <option value="product">Specific Product</option>
                   <option value="category">Specific Category</option>
+                  <option value="all">All Products/Categories</option>
                 </select>
                 <small id="offerTypeError" class="text-danger"></small>
               </div>
@@ -271,7 +274,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-      // Real-time Validation + Submit
       const inputs = {
         name: document.getElementById("name"),
         discountType: document.getElementById("discountType"),
@@ -304,6 +306,11 @@
         }
       });
 
+      // Auto uppercase name
+      inputs.name?.addEventListener("input", () => {
+        inputs.name.value = inputs.name.value.toUpperCase();
+      });
+
       function validateField(input) {
         const value = input.value.trim();
         const id = input.id;
@@ -324,29 +331,53 @@
           if (!value) errorMsg = "Description is required";
           else if (value.length < 10 || value.length > 200)
             errorMsg = "Description: 10–200 characters";
-        } else if (id === "startDate" || id === "endDate") {
-          const start = new Date(inputs.startDate.value);
-          const end = new Date(inputs.endDate.value);
-          if (!value) errorMsg = "Date is required";
-          else if (id === "endDate" && end <= start) errorMsg = "End date must be after start";
+        } else if (id === "startDate") {
+          if (!value) errorMsg = "Start date is required";
+          else {
+            const selected = new Date(value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selected < today) errorMsg = "Start date cannot be in the past";
+          }
+        } else if (id === "endDate") {
+          if (!value) errorMsg = "End date is required";
+          else {
+            const selected = new Date(value);
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            if (selected <= new Date()) errorMsg = "End date must be in the future";
+          }
         } else if (id === "offerType") {
           if (!value) errorMsg = "Select offer target";
-        } else if (id === "product" && inputs.offerType.value === "product" && !value) {
+        } else if (id === "product" && inputs.offerType?.value === "product" && !value) {
           errorMsg = "Select a product";
-        } else if (id === "category" && inputs.offerType.value === "category" && !value) {
+        } else if (id === "category" && inputs.offerType?.value === "category" && !value) {
           errorMsg = "Select a category";
         }
 
         errors[id].textContent = errorMsg;
         input.classList.toggle("is-invalid", !!errorMsg);
+
+        // Cross-date validation
+        if (inputs.startDate?.value && inputs.endDate?.value) {
+          const start = new Date(inputs.startDate.value);
+          const end = new Date(inputs.endDate.value);
+          if (start >= end) {
+            errors.endDate.textContent = "End date must be after start date";
+            inputs.endDate.classList.add("is-invalid");
+          }
+        }
       }
 
-      // Full validation before submit
+      // Full form validation before submit
       function isFormValid() {
         let valid = true;
         Object.values(inputs).forEach((input) => {
-          if (input) validateField(input);
-          if (input?.classList.contains("is-invalid")) valid = false;
+          if (input) {
+            validateField(input);
+            if (input.classList.contains("is-invalid")) valid = false;
+          }
         });
         return valid;
       }
@@ -367,23 +398,11 @@
         }
 
         const formData = new FormData(this);
-        let data = Object.fromEntries(formData);
+        const data = Object.fromEntries(formData);
 
-        const offerType = data.offerType;
-
-        // Product field only relevant for "product" or "all"
-        if (offerType !== "product" && offerType !== "all") {
-          delete data.product;
-        } else if (data.product === "" || data.product === "None") {
-          delete data.product;
-        }
-
-        // Category field only relevant for "category" or "all"
-        if (offerType !== "category" && offerType !== "all") {
-          delete data.category;
-        } else if (data.category === "" || data.category === "None") {
-          delete data.category;
-        }
+        // Clean up conditional fields
+        if (data.offerType !== "product") delete data.product;
+        if (data.offerType !== "category") delete data.category;
 
         try {
           const res = await fetch(this.action, {
@@ -395,63 +414,45 @@
           const result = await res.json();
 
           if (result.success) {
-            await Swal.fire({
-              icon: "success",
-              title: "Success",
-              text:
-                "Offer " +
-                (this.action.includes("edit") ? "updated" : "created") +
-                " successfully!",
-              timer: 2000,
-              showConfirmButton: false,
-            });
+            await Swal.fire("Success", "Offer created successfully!", "success");
             window.location.href = "/admin/offers";
           } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: result.message || "Failed to save offer",
-            });
+            Swal.fire("Error", result.message || "Failed to create offer.", "error");
           }
         } catch (err) {
-          Swal.fire({
-            icon: "error",
-            title: "Network Error",
-            text: "Failed to connect. Please try again.",
-          });
+          Swal.fire("Error", "Network error occurred.", "error");
         }
       });
 
-      // Clear form
       function clearFields() {
         document.querySelectorAll("input, textarea, select").forEach((el) => {
-          if (el.type === "checkbox") el.checked = false;
-          else el.value = "";
+          el.value = "";
           el.classList.remove("is-invalid");
         });
         document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
       }
 
-      // Conditional fields visibility
+      // Conditional visibility
       document.getElementById("offerType")?.addEventListener("change", function () {
         const val = this.value;
         document.getElementById("productGroup").style.display =
-          val === "product" || val === "all" ? "block" : "none";
+          val === "product" ? "block" : "none";
         document.getElementById("categoryGroup").style.display =
-          val === "category" || val === "all" ? "block" : "none";
+          val === "category" ? "block" : "none";
       });
 
+      // Discount type change
       document.getElementById("discountType")?.addEventListener("change", function () {
         const val = this.value;
         const input = document.getElementById("discountValue");
         if (val === "percentage") {
-          input.min = 1;
-          input.max = 100;
-          input.step = 1;
+          input.min = "1";
+          input.max = "100";
+          input.step = "1";
         } else {
           input.removeAttribute("max");
-          input.min = 0.01;
-          input.step = 0.01;
+          input.min = "0.01";
+          input.step = "0.01";
         }
       });
     </script>

@@ -135,6 +135,11 @@ router.get(
   orderController.orderDetails
 );
 router.post("/cancel-order/:orderId/:itemId", orderController.cancelOrder);
+router.post(
+  "/cancel-item/:orderId/:itemId",
+  authentication.isUserAuthenticated,
+  orderController.cancelSingleItem
+);
 router.get(
   "/review/:orderId/:productId",
   authentication.isUserAuthenticated,
@@ -145,6 +150,7 @@ router.get("/invoice", authentication.isUserAuthenticated, cartController.invoic
 router.post("/retry-payment", paymentController.retryPayment);
 router.get("/return-product/:orderId/:itemId", orderController.returnProductPage);
 router.post("/return-product/:orderId/:itemId", orderController.initiateReturn);
+router.get("/payment-failed", authentication.isUserAuthenticated, paymentController.paymentFailed);
 
 //product search
 router.get("/products", shopController.productSearchView);

@@ -908,12 +908,12 @@
           const rzp = new Razorpay(options);
           rzp.open();
 
-          rzp.on("payment.failed", () => {
-            window.location.href = `/order-details/${data.orderId}?payment=failed`;
+          rzp.on("payment.failed", (response) => {
+            window.location.href = `/payment-failed?orderId=${data.orderId}&reason=${encodeURIComponent(response.error.description)}`;
           });
 
           rzp.on("payment.dismissed", () => {
-            window.location.href = `/order-details/${data.orderId}?payment=failed`;
+            window.location.href = `/payment-failed?orderId=${data.orderId}&reason=Payment%20dismissed%20by%20user`;
           });
         } else {
           Swal.fire({

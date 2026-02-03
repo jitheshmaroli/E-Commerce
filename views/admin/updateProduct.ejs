@@ -116,22 +116,22 @@
                   </div>
                   <div class="col-md-4">
                     <label for="stock" class="form-label fw-bold">Stock Quantity <span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" id="stock" name="stock" value="<%= productData.stock %>" min="0" required />
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" class="form-control" id="stock" name="stock" value="<%= productData.stock %>" min="0" required />
                     <small id="stockError" class="text-danger"></small>
                   </div>
                   <div class="col-md-4">
                     <label for="price" class="form-label fw-bold">Price (₹) <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" class="form-control" id="price" name="price" value="<%= productData.price %>" min="0" required />
+                    <input type="number" inputmode="decimal" step="0.01" pattern="[0-9]+([.,][0-9]{1,2})?" class="form-control" id="price" name="price" min="0" required value="<%= productData.price %>" />
                     <small id="priceError" class="text-danger"></small>
                   </div>
                 </div>
 
-                <div class="mb-4">
+                <!-- <div class="mb-4">
                   <label for="tags" class="form-label fw-bold">Tags (comma separated)</label>
                   <input type="text" class="form-control" id="tags" name="tags" 
                          value="<%= Array.isArray(productData.tags) ? productData.tags.join(', ') : productData.tags %>" />
                   <small id="tagsError" class="text-danger"></small>
-                </div>
+                </div> -->
               </div>
 
               <!-- Right Column: Image Management -->
@@ -175,81 +175,231 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    const form = document.getElementById('productForm');
-    const photoInput = document.getElementById('photos');
-    const preview = document.querySelector('.image-preview-container');
+// DOM Elements
+const form        = document.getElementById("productForm");
+const photoInput  = document.getElementById("photos");
+const previewArea = document.querySelector(".image-preview-container");
 
-    // Remove existing image
-    preview.addEventListener('click', e => {
-      if (e.target.classList.contains('remove-image-btn')) {
-        const wrapper = e.target.closest('.image-wrapper');
-        wrapper.querySelector('input[name="existingPhotos[]"]').remove();
-        wrapper.remove();
-      }
+// Error elements
+const nameError     = document.getElementById("nameError");
+const descError     = document.getElementById("descriptionError");
+const categoryError = document.getElementById("categoryError");
+const brandError    = document.getElementById("brandNameError");
+const stockError    = document.getElementById("stockError");
+const priceError    = document.getElementById("priceError");
+const photosError   = document.getElementById("photosError");
+
+// Validation Helpers
+function showError(el, msg) {
+  if (!el) return;
+  el.textContent = msg;
+  const field = el.previousElementSibling;
+  if (field) field.classList.add("is-invalid");
+}
+
+function clearError(el) {
+  if (!el) return;
+  el.textContent = "";
+  const field = el.previousElementSibling;
+  if (field) field.classList.remove("is-invalid");
+}
+
+function validateName(v) {
+  v = v.trim();
+  if (!v) return "Product name is required.";
+  if (v.length < 3) return "Name must be at least 3 characters.";
+  if (v.length > 50) return "Name cannot exceed 50 characters.";
+  return "";
+}
+
+function validateDescription(v) {
+  v = v.trim();
+  if (!v) return "Description is required.";
+  if (v.length < 20) return "Description should be at least 20 characters.";
+  if (v.length > 500) return "Description cannot exceed 500 characters.";
+  return "";
+}
+
+function validateCategory(v) { return v ? "" : "Please select a category."; }
+
+function validateStock(v) {
+  if (!v || isNaN(v)) return "Stock quantity is required.";
+  const n = Number(v);
+  if (!Number.isInteger(n)) return "Stock must be a whole number.";
+  if (n < 0) return "Stock cannot be negative.";
+  if (n > 99999) return "Stock seems too large (max 99999).";
+  return "";
+}
+
+function validatePrice(v) {
+  if (!v || isNaN(v)) return "Price is required.";
+  const n = Number(v);
+  if (n <= 0) return "Price must be greater than 0.";
+  if (n < 10) return "Price should be at least ₹10.";
+  if (n > 1000000) return "Price seems unusually high.";
+  return "";
+}
+
+function getImageCount() {
+  return previewArea.querySelectorAll(".image-wrapper").length;
+}
+
+function validateImages() {
+  const count = getImageCount();
+  if (count < 4) return `At least 4 images required (currently ${count}).`;
+  if (count > 4) return `Only 4 images allowed (currently ${count}).`;
+  return "";
+}
+
+// Real-time field validation
+function attach(field, validator, errEl) {
+  if (!field) return;
+  ["input", "blur"].forEach(ev => {
+    field.addEventListener(ev, () => {
+      const msg = validator(field.value);
+      msg ? showError(errEl, msg) : clearError(errEl);
     });
+  });
+}
 
-    // Preview new images
-    photoInput.addEventListener('change', e => {
-      const files = Array.from(e.target.files);
-      const errorEl = document.getElementById('photosError');
+attach(document.getElementById("name"),        validateName,        nameError);
+attach(document.getElementById("description"), validateDescription, descError);
+attach(document.getElementById("category"),    validateCategory,    categoryError);
+attach(document.getElementById("brandName"),   () => "",            brandError);
+attach(document.getElementById("stock"),       validateStock,       stockError);
+attach(document.getElementById("price"),       validatePrice,       priceError);
 
-      if (files.length > 0) {
-        files.forEach(file => {
-          const reader = new FileReader();
-          reader.onload = ev => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'image-wrapper m-2 text-center';
-            const img = document.createElement('img');
-            img.src = ev.target.result;
-            img.className = 'img-thumbnail';
-            img.width = 120;
-            img.height = 120;
-            wrapper.appendChild(img);
-            wrapper.innerHTML += '<br><small class="text-success">New</small>';
-            preview.appendChild(wrapper);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-    });
+// Clear error when user types (helps after failed submit)
+form.querySelectorAll("input, textarea, select").forEach(el => {
+  el.addEventListener("input", () => {
+    const err = document.getElementById(`${el.id}Error`);
+    if (err) clearError(err);
+  });
+});
 
-    // Real-time field validation
-    form.querySelectorAll('input, textarea, select').forEach(field => {
-      field.addEventListener('input', () => {
-        const errorEl = document.getElementById(`${field.id}Error`);
-        if (errorEl) errorEl.textContent = '';
-      });
-    });
+// Image handling – remove + preview + validation
+// Single delegated click handler for remove buttons (existing + new)
+previewArea.addEventListener("click", e => {
+  if (!e.target.classList.contains("remove-image-btn")) return;
 
-    // Submit with SweetAlert
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
+  const wrapper = e.target.closest(".image-wrapper");
+  if (!wrapper) return;
 
-      try {
-        const formData = new FormData(form);
-        const res = await fetch(form.action, {
-          method: 'POST',
-          body: formData
-        });
+  wrapper.querySelector('input[name="existingPhotos[]"]')?.remove();
+  wrapper.remove();
 
-        const result = await res.json();
+  const err = validateImages();
+  showError(photosError, err);
+});
 
-        if (result.success || res.ok) {
-          await Swal.fire('Success', 'Product updated successfully!', 'success');
-          window.location.href = '/admin/allproducts';
-        } else {
-          Swal.fire('Error', result.message || 'Failed to update product.', 'error');
-        }
-      } catch (err) {
-        Swal.fire('Error', 'Network error occurred.', 'error');
-      }
-    });
+// Add new images + create remove button for them too
+photoInput.addEventListener("change", () => {
+  photosError.textContent = "";
+  let hasInvalid = false;
 
-    function clearFields() {
-      form.reset();
-      preview.innerHTML = '';
-      document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+  Array.from(photoInput.files).forEach(file => {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      hasInvalid = true;
+      return;
     }
-  </script>
+    if (file.size > 5 * 1024 * 1024) {
+      hasInvalid = true;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "image-wrapper m-2 text-center";
+      wrapper.innerHTML = `
+        <img src="${ev.target.result}" class="img-thumbnail" width="120" height="120" alt="New image">
+        <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
+        <br><small class="text-success">New</small>
+      `;
+      previewArea.appendChild(wrapper);
+
+      // Re-validate after adding
+      const err = validateImages();
+      showError(photosError, err);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if (hasInvalid) {
+    photosError.textContent = "Some files skipped (invalid format or >5MB).";
+  }
+
+  photoInput.value = "";
+});
+
+// Form Submit
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
+  document.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
+  // validations
+  const nameErr     = validateName(document.getElementById("name").value);
+  const descErr     = validateDescription(document.getElementById("description").value);
+  const catErr      = validateCategory(document.getElementById("category").value);
+  const stockErr    = validateStock(document.getElementById("stock").value);
+  const priceErr    = validatePrice(document.getElementById("price").value);
+  const imagesErr   = validateImages();
+
+  if (nameErr)     showError(nameError,     nameErr);
+  if (descErr)     showError(descError,     descErr);
+  if (catErr)      showError(categoryError, catErr);
+  if (stockErr)    showError(stockError,    stockErr);
+  if (priceErr)    showError(priceError,    priceErr);
+  if (imagesErr)   showError(photosError,   imagesErr);
+
+  if (nameErr || descErr || catErr || stockErr || priceErr || imagesErr) {
+    Swal.fire({
+      icon: "error",
+      title: "Validation Error",
+      text: "Please correct the fields marked in red.",
+      confirmButtonColor: "#dc3545"
+    });
+    return;
+  }
+
+  try {
+    const formData = new FormData(form);
+    const res = await fetch(form.action, {
+      method: "POST",
+      body: formData
+    });
+
+    let result;
+    try {
+      result = await res.json();
+    } catch (jsonErr) {
+      if (res.ok || res.redirected) {
+        await Swal.fire("Success", "Product updated successfully!", "success");
+        window.location.href = "/admin/allproducts";
+        return;
+      }
+      throw jsonErr;
+    }
+
+    if (result?.success || res.ok) {
+      await Swal.fire("Success", "Product updated successfully!", "success");
+      window.location.href = "/admin/allproducts";
+    } else {
+      Swal.fire("Error", result?.message || "Failed to update product.", "error");
+    }
+  } catch (err) {
+    console.error("Submit error:", err);
+    Swal.fire("Error", "Network error or server is unreachable.", "error");
+  }
+});
+
+function clearFields() {
+  form.reset();
+  document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
+  document.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+}
+</script>
 </body>
 </html>

@@ -194,6 +194,16 @@
         description: document.getElementById("descriptionError"),
       };
 
+      inputs.categoryName.addEventListener("input", function () {
+        this.value = this.value.toUpperCase();
+
+        validateField(this);
+      });
+
+      inputs.categoryName.addEventListener("blur", function () {
+        this.value = this.value.toUpperCase();
+        validateField(this);
+      });
       Object.values(inputs).forEach((input) => {
         if (input) {
           input.addEventListener("input", () => validateField(input));

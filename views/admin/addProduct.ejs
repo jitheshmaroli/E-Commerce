@@ -179,6 +179,8 @@
                       >
                       <input
                         type="number"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
                         class="form-control"
                         id="stock"
                         name="stock"
@@ -193,7 +195,9 @@
                       >
                       <input
                         type="number"
+                        inputmode="decimal"
                         step="0.01"
+                        pattern="[0-9]+([.,][0-9]{1,2})?"
                         class="form-control"
                         id="price"
                         name="price"
@@ -204,7 +208,7 @@
                     </div>
                   </div>
 
-                  <div class="mb-4">
+                  <!-- <div class="mb-4">
                     <label for="tags" class="form-label fw-bold">Tags (comma separated)</label>
                     <input
                       type="text"
@@ -214,7 +218,7 @@
                       placeholder="e.g. running, sports, lightweight"
                     />
                     <small id="tagsError" class="text-danger"></small>
-                  </div>
+                  </div> -->
                 </div>
 
                 <!-- Right Column: Image Upload -->
@@ -245,7 +249,7 @@
 
               <!-- Buttons -->
               <div class="d-flex gap-3 mt-5">
-                <button type="submit" class="btn btn-dark flex-grow-1 py-3 fw-bold">
+                <button type="submit" class="btn product-btn flex-grow-1 py-3 fw-bold">
                   ADD PRODUCT
                 </button>
                 <button
@@ -272,68 +276,177 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+      //  DOM Elements
       const form = document.getElementById("productForm");
       const photoInput = document.getElementById("photos");
       const preview = document.getElementById("preview");
 
-      // Real-time image preview & validation
-      photoInput.addEventListener("change", function () {
-        preview.innerHTML = "";
-        const files = Array.from(this.files);
-        const errorEl = document.getElementById("photosError");
+      // Error elements
+      const nameError = document.getElementById("nameError");
+      const descError = document.getElementById("descriptionError");
+      const categoryError = document.getElementById("categoryError");
+      const brandError = document.getElementById("brandNameError");
+      const stockError = document.getElementById("stockError");
+      const priceError = document.getElementById("priceError");
+      const photosError = document.getElementById("photosError");
 
+      //  Validation Helper Functions
+      function showError(el, message) {
+        if (!el) return;
+        el.textContent = message;
+        el.previousElementSibling?.classList.add("is-invalid"); // Bootstrap red border
+      }
+
+      function clearError(el) {
+        if (!el) return;
+        el.textContent = "";
+        el.previousElementSibling?.classList.remove("is-invalid");
+      }
+
+      function validateName(value) {
+        value = value.trim();
+        if (!value) return "Product name is required.";
+        if (value.length < 3) return "Name must be at least 3 characters.";
+        if (value.length > 50) return "Name cannot exceed 50 characters.";
+        if (/^\s+$/.test(value)) return "Name cannot be only spaces.";
+        return "";
+      }
+
+      function validateDescription(value) {
+        value = value.trim();
+        if (!value) return "Description is required.";
+        if (value.length < 20) return "Description should be at least 20 characters.";
+        if (value.length > 500) return "Description cannot exceed 500 characters.";
+        return "";
+      }
+
+      function validateCategory(value) {
+        return value ? "" : "Please select a category.";
+      }
+
+      function validateStock(value) {
+        if (value === "" || isNaN(value)) return "Stock quantity is required.";
+        const num = Number(value);
+        if (!Number.isInteger(num)) return "Stock must be a whole number.";
+        if (num < 0) return "Stock cannot be negative.";
+        if (num > 99999) return "Stock seems too large (max 99999).";
+        return "";
+      }
+
+      function validatePrice(value) {
+        if (value === "" || isNaN(value)) return "Price is required.";
+        const num = Number(value);
+        if (num <= 0) return "Price must be greater than 0.";
+        if (num < 10) return "Price should be at least ₹10.";
+        if (num > 1000000) return "Price seems unusually high.";
+        return "";
+      }
+
+      function validatePhotos(files) {
         if (files.length !== 4) {
-          errorEl.textContent = "Exactly 4 images are required.";
-          this.value = "";
-          return;
+          return "Exactly 4 images are required.";
         }
-
-        let valid = true;
-        files.forEach((file) => {
+        for (const file of files) {
           if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-            valid = false;
+            return "Only JPEG, PNG, and WebP images are allowed.";
           }
-        });
-
-        if (!valid) {
-          errorEl.textContent = "Only JPEG, PNG, and WebP images allowed.";
-          this.value = "";
-          return;
+          if (file.size > 5 * 1024 * 1024) {
+            return "Each image must be smaller than 5MB.";
+          }
         }
+        return "";
+      }
 
-        errorEl.textContent = "";
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.className = "img-thumbnail m-2";
-            img.style.width = "120px";
-            img.style.height = "120px";
-            img.style.objectFit = "cover";
-            preview.appendChild(img);
-          };
-          reader.readAsDataURL(file);
+      //  Real-time Validation (input + blur)
+      function attachValidation(field, validator, errorEl) {
+        ["input", "blur"].forEach((event) => {
+          field.addEventListener(event, () => {
+            const errMsg = validator(field.value);
+            if (errMsg) {
+              showError(errorEl, errMsg);
+            } else {
+              clearError(errorEl);
+            }
+          });
+        });
+      }
+
+      attachValidation(document.getElementById("name"), validateName, nameError);
+      attachValidation(document.getElementById("description"), validateDescription, descError);
+      attachValidation(document.getElementById("category"), validateCategory, categoryError);
+      attachValidation(document.getElementById("brandName"), () => "", brandError); // optional → always clear
+      attachValidation(document.getElementById("stock"), validateStock, stockError);
+      attachValidation(document.getElementById("price"), validatePrice, priceError);
+
+      // Photos
+      photoInput.addEventListener("change", function () {
+        const files = Array.from(this.files);
+        const errMsg = validatePhotos(files);
+
+        if (errMsg) {
+          photosError.textContent = errMsg;
+          this.value = "";
+          preview.innerHTML = "";
+        } else {
+          photosError.textContent = "";
+          preview.innerHTML = "";
+
+          files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const img = document.createElement("img");
+              img.src = e.target.result;
+              img.className = "img-thumbnail m-2";
+              img.style.width = "120px";
+              img.style.height = "120px";
+              img.style.objectFit = "cover";
+              preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+      });
+
+      // Clear errors when user starts typing again
+      form.querySelectorAll("input, textarea, select").forEach((el) => {
+        el.addEventListener("input", () => {
+          const errEl = document.getElementById(`${el.id}Error`);
+          if (errEl) clearError(errEl);
         });
       });
 
-      // Real-time field validation
-      form.querySelectorAll("input, textarea, select").forEach((field) => {
-        field.addEventListener("input", () => {
-          const errorEl = document.getElementById(`${field.id}Error`);
-          if (errorEl) errorEl.textContent = "";
-        });
-      });
-
-      // Form submit with SweetAlert
-      form.addEventListener("submit", async (e) => {
+      //  Form Submit Validation
+      form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        if (photoInput.files.length !== 4) {
-          Swal.fire("Error", "Exactly 4 images are required.", "error");
+        // Run all validations
+        const nameErr = validateName(document.getElementById("name").value);
+        const descErr = validateDescription(document.getElementById("description").value);
+        const catErr = validateCategory(document.getElementById("category").value);
+        const stockErr = validateStock(document.getElementById("stock").value);
+        const priceErr = validatePrice(document.getElementById("price").value);
+        const photosErr = validatePhotos(Array.from(photoInput.files));
+
+        // Show errors
+        showError(nameError, nameErr);
+        showError(descError, descErr);
+        showError(categoryError, catErr);
+        showError(stockError, stockErr);
+        showError(priceError, priceErr);
+        showError(photosError, photosErr);
+
+        // Stop if any error
+        if (nameErr || descErr || catErr || stockErr || priceErr || photosErr) {
+          Swal.fire({
+            icon: "error",
+            title: "Validation Error",
+            text: "Please correct the errors highlighted in the form.",
+            confirmButtonColor: "#dc3545",
+          });
           return;
         }
 
+        // submit
         try {
           const formData = new FormData(form);
           const res = await fetch(form.action, {
@@ -343,21 +456,23 @@
 
           const result = await res.json();
 
-          if (result.success || res.ok) {
+          if (res.ok || result.success) {
             await Swal.fire("Success", "Product added successfully!", "success");
             window.location.href = "/admin/allproducts";
           } else {
             Swal.fire("Error", result.message || "Failed to add product.", "error");
           }
         } catch (err) {
-          Swal.fire("Error", "Network error occurred.", "error");
+          Swal.fire("Error", "Something went wrong. Please try again.", "error");
         }
       });
 
+      // Clear form
       function clearFields() {
         form.reset();
         preview.innerHTML = "";
         document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
+        document.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
       }
     </script>
   </body>

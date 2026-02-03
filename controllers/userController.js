@@ -149,10 +149,53 @@ async function updateWallet(userId, amount, orderId, type) {
   }
 }
 
+async function updateUserWallet(userId, amount, orderId, type) {
+  try {
+    amount = Number(amount);
+
+    if (!amount || amount <= 0) {
+      console.log("Invalid wallet amount:", amount);
+      return { success: false, error: "Invalid amount" };
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (type === "credit") {
+      user.wallet += amount;
+    } else if (type === "debit") {
+      if (user.wallet < amount) {
+        throw new Error("Insufficient wallet balance");
+      }
+      user.wallet -= amount;
+    }
+
+    const walletTransaction = new Wallet({
+      userId: user._id,
+      amount: amount,
+      type: type,
+      orderId: orderId,
+      description: type === "credit" ? "Order refund" : "Order payment",
+      createdAt: new Date(),
+    });
+
+    await walletTransaction.save();
+
+    user.walletTransactions.push(walletTransaction._id);
+    await user.save();
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error processing refund:", error);
+    return { success: false, error: error.message };
+  }
+}
 module.exports = {
   userProfileView,
   updateProfile,
   profilePhotoUpload,
   walletView,
   updateWallet,
+  updateUserWallet,
 };

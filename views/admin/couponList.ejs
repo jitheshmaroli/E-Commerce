@@ -123,7 +123,8 @@
                   <tr>
                     <th>CODE</th>
                     <th>DISCOUNT (%)</th>
-                    <th>EXPIRY DATE</th>
+                    <th>VALID FROM</th>
+                    <th>VALID UNTIL</th>
                     <th>STATUS</th>
                     <th>ACTIONS</th>
                   </tr>
@@ -134,14 +135,17 @@
                     <td class="fw-bold"><%= coupon.code %></td>
                     <td><%= coupon.discount %>%</td>
                     <td>
+                      <%= new Date(coupon.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+                    </td>
+                    <td>
                       <%= new Date(coupon.expiryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %>
                     </td>
                     <td>
-                      <% if (new Date(coupon.expiryDate) > new Date()) { %>
-                      <span class="badge bg-success">ACTIVE</span>
-                      <% } else { %>
-                      <span class="badge bg-danger">EXPIRED</span>
-                      <% } %>
+                      <% const now = new Date(); let status = "Upcoming"; let badge = "bg-warning";
+                      if (now >= coupon.startDate && now <= coupon.expiryDate) { status = "ACTIVE";
+                      badge = "bg-success"; } else if (now > coupon.expiryDate) { status =
+                      "EXPIRED"; badge = "bg-danger"; } %>
+                      <span class="badge <%= badge %>"><%= status %></span>
                     </td>
                     <td>
                       <button
@@ -149,6 +153,7 @@
                         data-id="<%= coupon._id %>"
                         data-code="<%= coupon.code %>"
                         data-discount="<%= coupon.discount %>"
+                        data-start="<%= new Date(coupon.startDate).toISOString().split('T')[0] %>"
                         data-expiry="<%= new Date(coupon.expiryDate).toISOString().split('T')[0] %>"
                         title="Edit"
                       >
@@ -201,18 +206,21 @@
           <div class="modal-body">
             <form id="editCouponForm">
               <input type="hidden" id="couponId" name="couponId" />
+
               <div class="mb-3">
                 <label for="couponCode" class="form-label fw-bold">Coupon Code</label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control text-uppercase"
                   id="couponCode"
                   name="code"
                   maxlength="5"
                   required
+                  style="text-transform: uppercase"
                 />
                 <small id="codeError" class="text-danger"></small>
               </div>
+
               <div class="mb-3">
                 <label for="discount" class="form-label fw-bold">Discount (%)</label>
                 <input
@@ -226,8 +234,15 @@
                 />
                 <small id="discountError" class="text-danger"></small>
               </div>
+
               <div class="mb-3">
-                <label for="expiryDate" class="form-label fw-bold">Expiry Date</label>
+                <label for="startDate" class="form-label fw-bold">Valid From</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" required />
+                <small id="startDateError" class="text-danger"></small>
+              </div>
+
+              <div class="mb-3">
+                <label for="expiryDate" class="form-label fw-bold">Valid Until</label>
                 <input
                   type="date"
                   class="form-control"
@@ -237,6 +252,7 @@
                 />
                 <small id="expiryDateError" class="text-danger"></small>
               </div>
+
               <button type="submit" class="btn btn-dark w-100 py-2 mt-3">Save Changes</button>
             </form>
           </div>
@@ -268,16 +284,11 @@
       // Edit Coupon - Populate Modal
       document.querySelectorAll(".edit-coupon").forEach((btn) => {
         btn.addEventListener("click", function () {
-          const row = this.closest("tr");
-          const id = this.dataset.id;
-          const code = this.dataset.code;
-          const discount = this.dataset.discount;
-          const expiry = this.dataset.expiry;
-
-          document.getElementById("couponId").value = id;
-          document.getElementById("couponCode").value = code;
-          document.getElementById("discount").value = discount;
-          document.getElementById("expiryDate").value = expiry;
+          document.getElementById("couponId").value = this.dataset.id;
+          document.getElementById("couponCode").value = this.dataset.code;
+          document.getElementById("discount").value = this.dataset.discount;
+          document.getElementById("startDate").value = this.dataset.start;
+          document.getElementById("expiryDate").value = this.dataset.expiry;
 
           // Reset validation
           document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
@@ -290,10 +301,11 @@
         });
       });
 
-      // Real-time validation in modal
+      // Real-time validation in edit modal
       const editFields = {
         couponCode: document.getElementById("couponCode"),
         discount: document.getElementById("discount"),
+        startDate: document.getElementById("startDate"),
         expiryDate: document.getElementById("expiryDate"),
       };
 
@@ -304,34 +316,61 @@
         }
       });
 
+      // Auto uppercase for code in edit modal
+      editFields.couponCode.addEventListener("input", () => {
+        editFields.couponCode.value = editFields.couponCode.value.toUpperCase();
+      });
+
       function validateEditField(e) {
         const input = e.target;
         const value = input.value.trim();
-        let errorMsg = "";
+        let msg = "";
 
         if (input.id === "couponCode") {
-          if (!value) errorMsg = "Coupon code is required";
-          else if (value.length < 3 || value.length > 5) errorMsg = "Code must be 3–5 characters";
-          else if (!/[A-Z]/.test(value)) errorMsg = "Code should contain uppercase letters";
+          if (!value) msg = "Coupon code is required";
+          else if (value.length < 3 || value.length > 5) msg = "Code must be 3–5 characters";
+          else if (!/[A-Z]/.test(value)) msg = "Code must contain uppercase letters";
         } else if (input.id === "discount") {
           const num = parseFloat(value);
-          if (!value) errorMsg = "Discount is required";
-          else if (isNaN(num) || num < 1 || num > 100) errorMsg = "Discount must be 1–100";
+          if (!value) msg = "Discount is required";
+          else if (isNaN(num) || num < 1 || num > 100) msg = "Discount must be 1–100";
+        } else if (input.id === "startDate") {
+          if (!value) msg = "Start date is required";
+          else {
+            const selected = new Date(value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selected < today) msg = "Start date cannot be in the past";
+          }
         } else if (input.id === "expiryDate") {
-          if (!value) errorMsg = "Expiry date is required";
+          if (!value) msg = "Expiry date is required";
           else {
             const selected = new Date(value);
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setHours(0, 0, 0, 0);
-            if (selected < tomorrow) errorMsg = "Expiry must be future date";
+            if (selected <= new Date()) msg = "Expiry must be in the future";
           }
         }
 
         const errorEl = document.getElementById(`${input.id}Error`);
         if (errorEl) {
-          errorEl.textContent = errorMsg;
-          input.classList.toggle("is-invalid", !!errorMsg);
+          errorEl.textContent = msg;
+          input.classList.toggle("is-invalid", !!msg);
+        }
+
+        // Cross validation: start < expiry
+        if (editFields.startDate.value && editFields.expiryDate.value) {
+          const s = new Date(editFields.startDate.value);
+          const e = new Date(editFields.expiryDate.value);
+          const errEl = document.getElementById("expiryDateError");
+          if (s >= e) {
+            errEl.textContent = "Expiry must be after start date";
+            editFields.expiryDate.classList.add("is-invalid");
+          } else if (errEl.textContent === "Expiry must be after start date") {
+            errEl.textContent = "";
+            editFields.expiryDate.classList.remove("is-invalid");
+          }
         }
       }
 
@@ -341,10 +380,8 @@
 
         let valid = true;
         Object.values(editFields).forEach((input) => {
-          if (input) {
-            validateEditField({ target: input });
-            if (input.classList.contains("is-invalid")) valid = false;
-          }
+          validateEditField({ target: input });
+          if (input.classList.contains("is-invalid")) valid = false;
         });
 
         if (!valid) {
@@ -381,22 +418,14 @@
             });
             location.reload();
           } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: result.message || "Failed to update coupon",
-            });
+            Swal.fire("Error", result.message || "Failed to update coupon", "error");
           }
         } catch (err) {
-          Swal.fire({
-            icon: "error",
-            title: "Network Error",
-            text: "Failed to connect. Please try again.",
-          });
+          Swal.fire("Error", "Network error occurred.", "error");
         }
       });
 
-      // Delete Coupon
+      // Delete Coupon (unchanged)
       document.querySelectorAll(".delete-coupon").forEach((btn) => {
         btn.addEventListener("click", function () {
           const couponId = this.closest("tr").dataset.couponId;

@@ -22,7 +22,7 @@ const addCouponView = async (req, res) => {
 
 const addCoupon = async (req, res) => {
   try {
-    const { code, discount, expiryDate } = req.body;
+    const { code, discount, startDate, expiryDate } = req.body;
 
     if (!code || code.trim().length < 3 || !/[a-zA-Z]/.test(code)) {
       return res.status(400).json({ success: false, message: "Invalid coupon code" });
@@ -30,7 +30,24 @@ const addCoupon = async (req, res) => {
     if (!discount || isNaN(discount) || discount < 1 || discount > 100) {
       return res.status(400).json({ success: false, message: "Invalid discount" });
     }
-    if (!expiryDate || new Date(expiryDate) <= new Date()) {
+    if (!startDate || !expiryDate) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Both start and expiry dates are required" });
+    }
+
+    const start = new Date(startDate);
+    const expiry = new Date(expiryDate);
+
+    if (isNaN(start) || isNaN(expiry)) {
+      return res.status(400).json({ success: false, message: "Invalid date format" });
+    }
+    if (start >= expiry) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Start date must be before expiry date" });
+    }
+    if (expiry <= new Date()) {
       return res.status(400).json({ success: false, message: "Expiry date must be in the future" });
     }
 
@@ -39,12 +56,13 @@ const addCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: "Coupon code already exists" });
     }
 
-    const expiryDateMidnight = new Date(expiryDate);
+    const expiryDateMidnight = new Date(expiry);
     expiryDateMidnight.setHours(23, 59, 59, 999);
 
     await Coupon.create({
       code: code.toUpperCase(),
       discount: Number(discount),
+      startDate: start,
       expiryDate: expiryDateMidnight,
     });
 
@@ -96,7 +114,7 @@ const couponDiscount = async (req, res) => {
 const updateCoupon = async (req, res) => {
   const couponId = req.params.couponId;
   try {
-    const { code, discount, expiryDate } = req.body;
+    const { code, discount, startDate, expiryDate } = req.body;
 
     if (!code || code.trim().length < 3 || code.trim().length > 5 || !/[a-zA-Z]/.test(code)) {
       return res.status(400).json({
@@ -109,11 +127,28 @@ const updateCoupon = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Discount must be between 1 and 100" });
     }
-    if (!expiryDate || new Date(expiryDate) <= new Date()) {
+    if (!startDate || !expiryDate) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Both start and expiry dates are required" });
+    }
+
+    const start = new Date(startDate);
+    const expiry = new Date(expiryDate);
+
+    if (isNaN(start) || isNaN(expiry)) {
+      return res.status(400).json({ success: false, message: "Invalid date format" });
+    }
+    if (start >= expiry) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Start date must be before expiry date" });
+    }
+    if (expiry <= new Date()) {
       return res.status(400).json({ success: false, message: "Expiry date must be in the future" });
     }
 
-    const expiryDateMidnight = new Date(expiryDate);
+    const expiryDateMidnight = new Date(expiry);
     expiryDateMidnight.setHours(23, 59, 59, 999);
 
     const updated = await Coupon.findByIdAndUpdate(
@@ -121,6 +156,7 @@ const updateCoupon = async (req, res) => {
       {
         code: code.toUpperCase(),
         discount: Number(discount),
+        startDate: start,
         expiryDate: expiryDateMidnight,
       },
       { new: true, runValidators: true }

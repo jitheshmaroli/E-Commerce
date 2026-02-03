@@ -187,7 +187,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-      // Real-time validation
       const inputs = {
         categoryName: document.getElementById("categoryName"),
         description: document.getElementById("description"),
@@ -197,6 +196,17 @@
         categoryName: document.getElementById("categoryNameError"),
         description: document.getElementById("descriptionError"),
       };
+
+      inputs.categoryName.addEventListener("input", function () {
+        this.value = this.value.toUpperCase();
+
+        validateField(this);
+      });
+
+      inputs.categoryName.addEventListener("blur", function () {
+        this.value = this.value.toUpperCase();
+        validateField(this);
+      });
 
       Object.values(inputs).forEach((input) => {
         if (input) {
