@@ -31,41 +31,156 @@ const sendOTP = function sendOTP(email, otp) {
   });
 };
 
-const verifyOtpView = async (req, res) => {
-  try {
-    const userData = req.session.userData;
-    res.render("auth/verifyOtp", { userData, message: "" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error");
+const verifyOtp = async (email, enteredOtp) => {
+  const otpEntry = await Otp.findOne({ email }).sort({ createdAt: -1 });
+  if (!otpEntry) return { valid: false, message: "OTP expired" };
+
+  if (Date.now() > otpEntry.expiry) {
+    await Otp.deleteOne({ _id: otpEntry._id });
+    return { valid: false, message: "OTP expired" };
   }
+
+  if (enteredOtp !== otpEntry.otp.toString()) {
+    return { valid: false, message: "Invalid OTP" };
+  }
+
+  await Otp.deleteOne({ _id: otpEntry._id });
+  return { valid: true };
 };
 
-const verifyOtp = async (email, enteredOtp) => {
+const getRemainingTime = async (email) => {
+  const latestOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+  if (!latestOtp) return 0;
+
+  const elapsed = Math.floor((Date.now() - latestOtp.createdAt.getTime()) / 1000);
+  return Math.max(60 - elapsed, 0);
+};
+
+const verifyOtpView = async (req, res) => {
+  if (!req.session.userData) return res.redirect("/signup");
+
+  const email = req.session.userData.email;
+  const remainingTime = await getRemainingTime(email);
+  const maskedEmail = email.replace(/(.{2}).*(@.*)/, "$1***$2");
+
+  res.render("auth/verifyOtp", {
+    userData: req.session.userData,
+    maskedEmail,
+    message: "",
+    remainingTime,
+    otp: "",
+  });
+};
+
+const forgotPasswordVerifyOtpView = async (req, res) => {
+  if (!req.session.userData) return res.redirect("/forgot-password");
+
+  const email = req.session.userData;
+  const remainingTime = await getRemainingTime(email);
+
+  const maskedEmail = email.replace(/(.{2}).*(@.*)/, "$1***$2");
+
+  res.render("auth/resetPasswordVerifyOtp", {
+    userData: maskedEmail,
+    message: "",
+    remainingTime,
+    otp: "",
+  });
+};
+
+const verifyOtpSignup = async (req, res) => {
+  const { otp } = req.body;
+  const userData = req.session.userData;
+
+  const maskedEmail = userData.email.replace(/(.{2}).*(@.*)/, "$1***$2");
+  if (!userData || !otp) {
+    return res.render("auth/verifyOtp", {
+      userData,
+      maskedEmail,
+      message: "Invalid request",
+      remainingTime: await getRemainingTime(userData.email),
+      otp: otp || "",
+    });
+  }
+
+  const { valid, message } = await verifyOtp(userData.email, otp);
+  if (!valid) {
+    return res.render("auth/verifyOtp", {
+      userData,
+      maskedEmail,
+      message,
+      remainingTime: await getRemainingTime(userData.email),
+      otp,
+    });
+  }
+
+  const newUser = new User({
+    name: userData.name,
+    email: userData.email,
+    password: userData.hashedPassword,
+    isVerified: true,
+  });
+  await newUser.save();
+
+  req.session.isUserAuthenticated = true;
+  req.session.userId = userData.email;
+  delete req.session.userData;
+
+  res.redirect("/");
+};
+
+const forgotPasswordVerifyOtp = async (req, res) => {
+  const { otp } = req.body;
+  const email = req.session.userData;
+
+  if (!email || !otp) {
+    return res.redirect("/forgot-password");
+  }
+
+  const { valid, message } = await verifyOtp(email, otp);
+
+  const maskedEmail = email.replace(/(.{2}).*(@.*)/, "$1***$2");
+
+  if (!valid) {
+    return res.render("auth/resetPasswordVerifyOtp", {
+      userData: maskedEmail,
+      message,
+      remainingTime: await getRemainingTime(email),
+    });
+  }
+
+  res.render("auth/resetPassword", { message: "" });
+};
+
+const resendOtp = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.json({ success: false, message: "Email required" });
+
   try {
-    const otpEntry = await Otp.findOne({ email });
-    console.log(otpEntry.otp + ": " + enteredOtp);
-    if (!otpEntry || enteredOtp !== otpEntry.otp.toString()) {
-      console.log("no data in db or OTP mismatch");
-      return false;
+    const latestOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+    if (latestOtp && Date.now() < latestOtp.createdAt.getTime() + 60 * 1000) {
+      const remaining = Math.ceil((latestOtp.createdAt.getTime() + 60 * 1000 - Date.now()) / 1000);
+      return res.json({
+        success: false,
+        message: `Please wait ${remaining} seconds before resending`,
+      });
     }
 
-    const currentTime = Date.now();
-    if (currentTime > otpEntry.expiry) {
-      await otpEntry.deleteOne();
-      return "OTP has expired. Please initiate a new request.";
-    }
+    const otp = generateOTP();
+    await Otp.deleteMany({ email });
+    const otpEntry = new Otp({ email, otp, expiry: Date.now() + 5 * 60 * 1000 });
+    await otpEntry.save();
 
-    await otpEntry.deleteOne();
-    return true;
-  } catch (error) {
-    console.error("Error verifying OTP:", error);
-    throw error;
+    await sendOTP(email, otp);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Server error" });
   }
 };
 
 const resetPasswordSendOtp = async (req, res) => {
-  const { email } = req.body.email;
+  const { email } = req.body;
 
   try {
     const user = await User.findOne({ email });
@@ -82,9 +197,10 @@ const resetPasswordSendOtp = async (req, res) => {
       expiry: Date.now() + 5 * 60 * 1000,
     });
     await otpEntry.save();
-    sendOTP(email, otp);
+    await sendOTP(email, otp);
 
-    res.render("auth/forgotPassword", { message: "" });
+    req.session.userData = email;
+    res.redirect("/forgot-password-verify-otp");
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Internal server error" });
@@ -92,176 +208,42 @@ const resetPasswordSendOtp = async (req, res) => {
 };
 
 const resetPasswordVerifyOtp = async (req, res) => {
-  const { email, otp } = req.body;
-  console.log(email + ":" + otp);
-  req.session.userData = email;
-  try {
-    const isValidOtp = await verifyOtp(email, otp);
+  const { otp } = req.body;
+  const email = req.session.userData;
 
-    if (!isValidOtp) {
-      return res.status(401).json({ message: isValidOtp });
+  if (!email || !otp) {
+    return res.redirect("/forgot-password");
+  }
+
+  try {
+    const { valid, message } = await verifyOtp(email, otp);
+
+    const maskedEmail = email.replace(/(.{2}).*(@.*)/, "$1***$2");
+
+    if (!valid) {
+      return res.render("auth/resetPasswordVerifyOtp", {
+        userData: maskedEmail,
+        message,
+        remainingTime: await getRemainingTime(email),
+        otp,
+      });
     }
 
-    res.render("auth/resetPassword", { message: "" });
+    res.render("auth/resetPassword", { userData: email, message: "" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-const forgotPasswordResendOtp = async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const otpEntry = await Otp.findOne({ email });
-
-    if (!otpEntry) {
-      return res.status(400).send("No OTP request found for this email");
-    }
-
-    const currentTime = Date.now();
-    if (currentTime > otpEntry.expiry) {
-      await otpEntry.deleteOne();
-      return res
-        .status(400)
-        .send("OTP has expired. Please initiate a new forgot password request.");
-    }
-
-    const shouldResend = true;
-
-    if (shouldResend) {
-      const newOtp = generateOTP();
-      otpEntry.otp = newOtp;
-      otpEntry.expiry = Date.now() + 5 * 60 * 1000;
-      await otpEntry.save();
-      sendOTP(email, newOtp);
-      res.send("New OTP sent to your email");
-    } else {
-      res.send("OTP resend limit reached. Please try again later.");
-    }
-  } catch (error) {
-    console.error("Error resending OTP:", error);
-    res.status(500).send("Internal server error");
-  }
-};
-
-const forgotPasswordVerifyOtpView = async (req, res) => {
-  try {
-    const userData = req.session.userData;
-    res.render("auth/resetPasswordVerifyOtp", { userData, message: "" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error");
-  }
-};
-
-const forgotPasswordVerifyOtp = async (req, res) => {
-  try {
-    const enteredOtp = req.body.otp;
-    const userData = req.session.userData;
-
-    if (!userData || !enteredOtp) {
-      return res.render("auth/verifyOtp", {
-        userData,
-        message: "Invalid request",
-      });
-    }
-
-    const isValidOtp = await verifyOtp(userData.email, enteredOtp);
-
-    if (isValidOtp) {
-      res.render("auth/resetPassword", { userData, message: "" });
-    } else {
-      return res.render("auth/verifyOtp", {
-        userData,
-        message: "Invalid OTP. Please try again.",
-      });
-    }
-  } catch (error) {
-    console.error("Error verifying OTP:", error);
-    res.status(500).send("Internal server error");
-  }
-};
-
-const verifyOtpSignup = async (req, res) => {
-  try {
-    const enteredOtp = req.body.otp;
-    const userData = req.session.userData;
-
-    if (!userData || !enteredOtp) {
-      return res.render("auth/verifyOtp", {
-        userData,
-        message: "Invalid request",
-      });
-    }
-
-    const isValidOtp = await verifyOtp(userData.email, enteredOtp);
-
-    if (isValidOtp) {
-      const newUser = new User({
-        name: userData.name,
-        email: userData.email,
-        password: userData.hashedPassword,
-        isVerified: true,
-      });
-
-      await newUser.save();
-      req.session.isUserAuthenticated = true;
-      req.session.userId = userData.email;
-      delete req.session.userData;
-      res.redirect("/");
-    } else {
-      return res.render("auth/verifyOtp", {
-        userData,
-        message: "Invalid OTP. Please try again.",
-      });
-    }
-  } catch (error) {
-    console.error("Error verifying OTP:", error);
-    res.status(500).send("Internal server error");
-  }
-};
-
-const resendSignupOtp = async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const otpEntry = await Otp.findOne({ email });
-    if (!otpEntry) {
-      return res.status(400).send("No OTP request found for this email");
-    }
-
-    const currentTime = Date.now();
-    if (currentTime > otpEntry.expiry) {
-      await otpEntry.deleteOne();
-      return res.status(400).send("OTP has expired. Please initiate a new signup request.");
-    }
-    const shouldResend = true;
-    if (shouldResend) {
-      const newOtp = generateOTP();
-      otpEntry.otp = newOtp;
-      otpEntry.expiry = Date.now() + 5 * 60 * 1000;
-      await otpEntry.save();
-      sendOTP(email, newOtp);
-      res.send("New OTP sent to your email");
-    } else {
-      res.send("OTP resend limit reached. Please try again later.");
-    }
-  } catch (error) {
-    console.error("Error resending OTP:", error);
     res.status(500).send("Internal server error");
   }
 };
 
 module.exports = {
-  resendSignupOtp,
+  generateOTP,
+  sendOTP,
+  verifyOtpView,
   verifyOtpSignup,
-  forgotPasswordVerifyOtp,
   forgotPasswordVerifyOtpView,
-  forgotPasswordResendOtp,
+  forgotPasswordVerifyOtp,
+  resendOtp,
   resetPasswordSendOtp,
   resetPasswordVerifyOtp,
-  verifyOtpView,
-  sendOTP,
-  generateOTP,
 };

@@ -44,7 +44,7 @@ body {
   cursor: pointer;
 }
 
-.navbar {
+/* .navbar {
   background-color: #e1eaf4 !important;
   margin: 0;
   width: 100%;
@@ -52,7 +52,7 @@ body {
 
 .navbar-brand {
   color: #ffffff;
-}
+} */
 
 .header {
   display: flex;

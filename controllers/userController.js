@@ -22,9 +22,14 @@ const profilePhotoUpload = upload.array("profile-pic", 1);
 
 const userProfileView = async (req, res) => {
   try {
-    const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
-    });
+    const user =
+      req.user ||
+      (req.session.isUserAuthenticated ? await User.findOne({ email: req.session.userId }) : null);
+
+    if (!user) {
+      return res.redirect("/login");
+    }
+
     const categoryList = await Category.find({ isBlocked: false });
     res.render("users/userProfile", { user, categoryList });
   } catch (error) {
@@ -35,12 +40,12 @@ const userProfileView = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
-    });
+    const user =
+      req.user ||
+      (req.session.isUserAuthenticated ? await User.findOne({ email: req.session.userId }) : null);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(401).redirect("/login");
     }
 
     const { name, gender } = req.body;
@@ -93,14 +98,19 @@ const updateProfile = async (req, res) => {
 
 const walletView = async (req, res) => {
   try {
-    const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
-    }).populate({
+    const user =
+      req.user ||
+      (req.session.isUserAuthenticated ? await User.findOne({ email: req.session.userId }) : null);
+
+    if (!user) return res.redirect("/login");
+
+    const populatedUser = await User.findById(user._id).populate({
       path: "walletTransactions",
       options: { sort: { createdAt: -1 } },
     });
+
     const categoryList = await Category.find({ isBlocked: false });
-    res.render("users/wallet", { user, categoryList });
+    res.render("users/wallet", { user: populatedUser, categoryList });
   } catch (error) {
     console.log(error);
     res.status(500).send("internal error");
@@ -139,10 +149,53 @@ async function updateWallet(userId, amount, orderId, type) {
   }
 }
 
+async function updateUserWallet(userId, amount, orderId, type) {
+  try {
+    amount = Number(amount);
+
+    if (!amount || amount <= 0) {
+      console.log("Invalid wallet amount:", amount);
+      return { success: false, error: "Invalid amount" };
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (type === "credit") {
+      user.wallet += amount;
+    } else if (type === "debit") {
+      if (user.wallet < amount) {
+        throw new Error("Insufficient wallet balance");
+      }
+      user.wallet -= amount;
+    }
+
+    const walletTransaction = new Wallet({
+      userId: user._id,
+      amount: amount,
+      type: type,
+      orderId: orderId,
+      description: type === "credit" ? "Order refund" : "Order payment",
+      createdAt: new Date(),
+    });
+
+    await walletTransaction.save();
+
+    user.walletTransactions.push(walletTransaction._id);
+    await user.save();
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error processing refund:", error);
+    return { success: false, error: error.message };
+  }
+}
 module.exports = {
   userProfileView,
   updateProfile,
   profilePhotoUpload,
   walletView,
   updateWallet,
+  updateUserWallet,
 };

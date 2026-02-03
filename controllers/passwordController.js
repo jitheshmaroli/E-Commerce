@@ -1,90 +1,47 @@
-const bcrypt = require("bcrypt");
 const User = require("../models/user");
-const otpController = require("../controllers/otpController");
-const Otp = require("../models/otp");
+const bcrypt = require("bcrypt");
+const otpController = require("./otpController");
 const Category = require("../models/category");
 
-const forgotPasswordView = async (req, res) => {
-  try {
-    res.render("auth/forgotPassword", { message: "" });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
+const forgotPasswordView = (req, res) => {
+  res.render("auth/forgotPassword", { message: "" });
+};
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.render("auth/forgotPassword", { message: "Email required" });
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.render("auth/forgotPassword", { message: "No account with this email" });
   }
+
+  const otp = otpController.generateOTP();
+  await require("../models/otp").deleteMany({ email });
+  await new (require("../models/otp"))({ email, otp, expiry: Date.now() + 5 * 60 * 1000 }).save();
+  await otpController.sendOTP(email, otp);
+
+  req.session.userData = email;
+  res.redirect("/forgot-password-verify-otp");
 };
 
 const resetPassword = async (req, res) => {
   const { password, confirmPassword } = req.body;
-
   const email = req.session.userData;
-  try {
-    if (password !== confirmPassword) {
-      res.render("auth/resetPassword", { message: "password mismatch" });
-    }
 
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      console.log(passwordError);
-    } else {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await User.findOneAndUpdate({ email }, { password: hashedPassword });
-
-      res.render("auth/login", {
-        message: "password changed successfully,Login for shopping",
-      });
-    }
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Internal server error" });
+  if (!email) return res.redirect("/forgot-password");
+  if (password !== confirmPassword) {
+    return res.render("auth/resetPassword", { message: "Passwords do not match" });
   }
-};
-
-function validatePassword(password) {
   if (password.length < 8) {
-    return "Password must be at least 8 characters long.";
+    return res.render("auth/resetPassword", { message: "Password must be at least 8 characters" });
   }
 
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSymbol = /[!@#$%^&*()_+\-=[\]{};':".,<>/?\\|~`]/g.test(password);
+  const hashed = await bcrypt.hash(password, 12);
+  await User.updateOne({ email }, { password: hashed });
 
-  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
-    return "Password must contain at least one uppercase letter, lowercase letter, number, and symbol.";
-  }
-
-  return null;
-}
-
-const forgotPassword = async (req, res) => {
-  const email = req.body.email;
-  const userDataDb = await User.findOne({ email });
-  if (!userDataDb) {
-    res.render("auth/forgotPassword", {
-      message: "no userdata with this email",
-    });
-  } else {
-    const otp = otpController.generateOTP();
-
-    await Otp.deleteMany({ email });
-    const otpEntry = new Otp({
-      email,
-      otp,
-      expiry: Date.now() + 5 * 60 * 1000,
-    });
-
-    try {
-      await otpEntry.save();
-      otpController.sendOTP(email, otp);
-
-      req.session.userData = email;
-
-      return res.redirect("/forgot-password-verify-otp");
-    } catch (error) {
-      console.error("Error :", error);
-      res.status(500).send("Internal server error");
-    }
-  }
+  delete req.session.userData;
+  res.render("auth/login", { message: "Password reset successful. Please login." });
 };
 
 const changePasswordView = async (req, res) => {
@@ -139,11 +96,28 @@ const changePassword = async (req, res) => {
   }
 };
 
+function validatePassword(password) {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long.";
+  }
+
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSymbol = /[!@#$%^&*()_+\-=[\]{};':".,<>/?\\|~`]/g.test(password);
+
+  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
+    return "Password must contain at least one uppercase letter, lowercase letter, number, and symbol.";
+  }
+
+  return null;
+}
+
 module.exports = {
-  forgotPassword,
   forgotPasswordView,
+  forgotPassword,
+  resetPassword,
   changePassword,
   changePasswordView,
-  resetPassword,
   validatePassword,
 };

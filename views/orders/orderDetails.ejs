@@ -38,14 +38,18 @@
                   <span class="me-3">#<%= order.uniqueOrderId %></span>
                 </div>
                 <div class="invoice">
+                  <!-- Invoice Button – only show if at least one item is delivered -->
+                  <% const hasDeliveredItem = order.items.some(item => item.status === 'Delivered');
+                  %>
+                  <% if (hasDeliveredItem) { %>
                   <button
-                    type="button"
-                    class="btn product-btn btn-sm"
+                    class="btn btn-dark w-100 mb-3"
                     data-bs-toggle="modal"
                     data-bs-target="#invoiceModal"
                   >
-                    <i class="fa fa-download me-1"></i> Invoice
+                    <i class="fas fa-file-invoice me-2"></i> View/Download Invoice
                   </button>
+                  <% } %>
                 </div>
               </div>
               <div class="table-responsive">
@@ -86,6 +90,22 @@
                           class="btn btn-sm review-btn ms-1"
                           >Review</a
                         >
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (item.status === 'Pending') { %>
+                        <form
+                          action="/cancel-item/<%= order._id %>/<%= item.productId._id %>"
+                          method="POST"
+                          class="cancel-item-form"
+                          style="display: inline"
+                        >
+                          <button type="button" class="btn btn-danger btn-sm cancel-item-btn">
+                            Cancel Item
+                          </button>
+                        </form>
+                        <% } else { %>
+                        <span class="text-muted"><%= item.status %></span>
                         <% } %>
                       </td>
                     </tr>
@@ -139,9 +159,9 @@
                     %>
                   </p>
                   <span
-                    class="badge <%= order.paymentStatus === 'paid' ? 'bg-success' : 'bg-warning' %> rounded-pill"
+                    class="badge <%= order.paymentStatus === 'confirmed' ? 'bg-success' : 'bg-warning' %> rounded-pill"
                   >
-                    <%= order.paymentStatus === 'paid' ? 'PAID' : 'PENDING' %>
+                    <%= order.paymentStatus === 'confirmed' ? 'PAID' : 'PENDING' %>
                   </span>
                   <% if (order.paymentMethod === 'online' && order.paymentStatus
                   === 'pending') { %>
@@ -218,133 +238,126 @@
 >
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="invoiceModalLabel">Invoice #<%= order ? order._id : '' %></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="invoiceModalLabel">
+          Invoice – Order #<%= order.uniqueOrderId %> <% if (order.items.some(i => i.status !==
+          'Delivered')) { %>
+          <small class="text-warning ms-2">(Partial – Delivered Items Only)</small>
+          <% } %>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <% if (order) { %>
-        <div class="row">
-          <div class="col-12">
-            <div class="invoice-header text-center mb-4">
-              <img src="/test.jpg" alt="ShoeZone" class="mb-2" style="height: 50px" />
-              <h4>Invoice</h4>
-              <p class="mb-0">Order #<%= order._id %></p>
-            </div>
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <h6>Billed To:</h6>
-                <address>
-                  <%= order.deliveryAddress.address.name %><br />
-                  <%= order.deliveryAddress.address.houseName %><br />
-                  <%= order.deliveryAddress.address.street %>,
-                  <%=
-                  order.deliveryAddress.address.city %><br />
-                  <%= order.deliveryAddress.address.district %>,
-                  <%=
-                  order.deliveryAddress.address.state %>
-                  -
-                  <%=
-                  order.deliveryAddress.address.pinCode %>
-                </address>
-              </div>
-              <div class="col-md-6 text-md-end">
-                <h6>Shipped To:</h6>
-                <address>
-                  <%= order.deliveryAddress.address.name %><br />
-                  <%= order.deliveryAddress.address.houseName %><br />
-                  <%= order.deliveryAddress.address.street %>,
-                  <%=
-                  order.deliveryAddress.address.city %><br />
-                  <%= order.deliveryAddress.address.district %>,
-                  <%=
-                  order.deliveryAddress.address.state %>
-                  -
-                  <%=
-                  order.deliveryAddress.address.pinCode %>
-                </address>
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <p>
-                  <strong>Payment Method:</strong>
-                  <%= order.paymentMethod %>
-                </p>
-              </div>
-              <div class="col-md-6 text-md-end">
-                <p>
-                  <strong>Order Date:</strong>
-                  <%= new
-                  Date(order.createdAt).toDateString() %>
-                </p>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Item</th>
-                    <th class="text-center">Qty</th>
-                    <th class="text-end">Rate</th>
-                    <th class="text-end">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% order.items.forEach((item, index) => { %>
-                  <tr>
-                    <td><%= index + 1 %></td>
-                    <td><%= item.productId.name %></td>
-                    <td class="text-center"><%= item.quantity %></td>
-                    <td class="text-end">
-                      ₹<%= item.productId.currentPrice || item.productId.price %>
-                    </td>
-                    <td class="text-end">
-                      ₹<%= (item.productId.currentPrice || item.productId.price) * item.quantity %>
-                    </td>
-                  </tr>
-                  <% }) %>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colspan="4" class="text-end">
-                      <strong>Subtotal</strong>
-                    </td>
-                    <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
-                  </tr>
-                  <tr>
-                    <td colspan="4" class="text-end">
-                      <strong>Discount</strong>
-                    </td>
-                    <td class="text-end text-danger">-₹<%= order.priceDetails.discountAmount %></td>
-                  </tr>
-                  <tr>
-                    <td colspan="4" class="text-end">
-                      <strong>Delivery Charge</strong>
-                    </td>
-                    <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
-                  </tr>
-                  <tr>
-                    <td colspan="4" class="text-end">
-                      <strong>Sales Tax</strong>
-                    </td>
-                    <td class="text-end">₹<%= order.priceDetails.salesTax %></td>
-                  </tr>
-                  <tr class="fw-bold">
-                    <td colspan="4" class="text-end"><strong>Total</strong></td>
-                    <td class="text-end">₹<%= order.totalCost %></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+      <div class="modal-body p-4">
+        <!-- Header -->
+        <div class="row mb-4 align-items-center">
+          <div class="col-6">
+            <img src="/test.jpg" alt="Logo" height="50" />
+            <h4 class="mt-2">Tax Invoice</h4>
+          </div>
+          <div class="col-6 text-end">
+            <p class="mb-0">
+              <strong>Order ID:</strong>
+              <%= order.uniqueOrderId %>
+            </p>
+            <p>
+              <strong>Date:</strong>
+              <%= new Date(order.createdAt).toLocaleDateString('en-IN') %>
+            </p>
           </div>
         </div>
-        <% } %>
+
+        <!-- Addresses -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <strong>Billed To:</strong><br />
+            <%= order.deliveryAddress.address.name %><br />
+            <%= order.deliveryAddress.address.houseName %>,
+            <%= order.deliveryAddress.address.street %><br />
+            <%= order.deliveryAddress.address.city %>,
+            <%= order.deliveryAddress.address.district %><br />
+            <%= order.deliveryAddress.address.state %>
+            -
+            <%= order.deliveryAddress.address.pinCode %>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <strong>Shipped To:</strong><br />
+            Same as billing address
+          </div>
+        </div>
+
+        <!-- Items Table – only delivered -->
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% let invoiceSubtotal = 0; let index = 1; order.items.forEach(item => { if
+              (item.status === 'Delivered') { const price = item.productId.currentPrice ||
+              item.productId.price; const amount = price * item.quantity; invoiceSubtotal += amount;
+              %>
+              <tr>
+                <td><%= index++ %></td>
+                <td><%= item.productId.name %></td>
+                <td><%= item.quantity %></td>
+                <td>₹<%= price.toFixed(2) %></td>
+                <td>₹<%= amount.toFixed(2) %></td>
+              </tr>
+              <% }
+                }); %>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" class="text-end fw-bold">Subtotal (Delivered Items)</td>
+                <td class="fw-bold">₹<%= invoiceSubtotal.toFixed(2) %></td>
+              </tr>
+              <% if (order.couponCode && order.priceDetails.discountAmount > 0) { %>
+              <tr>
+                <td colspan="4" class="text-end text-danger fw-bold">
+                  Coupon Discount (<%= order.couponCode %>)
+                </td>
+                <td class="text-danger">-₹<%= order.priceDetails.discountAmount.toFixed(2) %></td>
+              </tr>
+              <% } %>
+              <tr>
+                <td colspan="4" class="text-end fw-bold">Delivery Charge</td>
+                <td>₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-end fw-bold">Sales Tax</td>
+                <td>₹<%= order.priceDetails.salesTax.toFixed(2) %></td>
+              </tr>
+              <tr class="table-active">
+                <td colspan="4" class="text-end fw-bold fs-5">Grand Total (Paid at Checkout)</td>
+                <td class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="mt-4 text-muted small">
+          <p>
+            <strong>Note:</strong> This invoice shows only delivered items. Full order amount was
+            charged at checkout.
+          </p>
+          <p>
+            Payment Method: <%= order.paymentMethod.toUpperCase() %> | Status: <%=
+            order.paymentStatus.toUpperCase() %>
+          </p>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="window.print()">Print</button>
+        <button type="button" class="btn btn-dark" onclick="window.print()">
+          <i class="fas fa-print me-2"></i> Print / Download
+        </button>
       </div>
     </div>
   </div>
@@ -426,5 +439,30 @@ include('../includes/userScripts.ejs') %>
       if (dropdownText)
         dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
     }
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".cancel-item-btn").forEach((button) => {
+      button.addEventListener("click", function () {
+        const form = this.closest("form");
+
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to cancel this item? Refund will be processed if applicable.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, cancel it!",
+          cancelButtonText: "No, keep it",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
   });
 </script>

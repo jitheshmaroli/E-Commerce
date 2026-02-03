@@ -1,0 +1,160 @@
+<script>
+  function validateAddressField(input, showError = false) {
+    if (!input) return true;
+
+    const value = input.value.trim();
+    let error = "";
+
+    const fieldRules = {
+      name: {
+        required: true,
+        min: 3,
+        max: 50,
+        pattern: /^[A-Za-z\s.'-]+$/,
+        msg: "Only letters, spaces, dots, hyphens & apostrophes allowed",
+      },
+      houseName: { required: true, min: 2, max: 100 },
+      street: { required: true, min: 2, max: 100 },
+      city: {
+        required: true,
+        min: 2,
+        max: 50,
+        pattern: /^[A-Za-z\s-]+$/,
+        msg: "Only letters, spaces & hyphens allowed",
+      },
+      district: {
+        required: true,
+        min: 2,
+        max: 50,
+        pattern: /^[A-Za-z\s-]+$/,
+        msg: "Only letters, spaces & hyphens allowed",
+      },
+      state: {
+        required: true,
+        min: 2,
+        max: 50,
+        pattern: /^[A-Za-z\s-]+$/,
+        msg: "Only letters, spaces & hyphens allowed",
+      },
+      pinCode: { required: true, pattern: /^\d{6}$/, msg: "PIN must be exactly 6 digits" },
+    };
+
+    const rules = fieldRules[input.id] || fieldRules[input.name];
+    if (!rules) return true;
+
+    if (rules.required && !value) {
+      error = `${input.previousElementSibling?.textContent || input.id} is required`;
+    } else if (rules.min && value.length < rules.min) {
+      error = `Minimum ${rules.min} characters required`;
+    } else if (rules.max && value.length > rules.max) {
+      error = `Maximum ${rules.max} characters allowed`;
+    } else if (rules.pattern && !rules.pattern.test(value)) {
+      error = rules.msg || "Invalid format";
+    }
+
+    const errorEl =
+      input.parentElement.querySelector(".field-error") || document.createElement("small");
+    errorEl.className = "field-error text-danger d-block mt-1";
+
+    if (showError && error) {
+      errorEl.textContent = error;
+      input.classList.add("is-invalid");
+      if (!input.parentElement.querySelector(".field-error")) {
+        input.parentElement.appendChild(errorEl);
+      }
+    } else if (!error) {
+      errorEl.textContent = "";
+      input.classList.remove("is-invalid");
+    }
+
+    return !error;
+  }
+
+  function isFormValid(form, showErrors = false) {
+    let valid = true;
+    form.querySelectorAll("input[required]").forEach((input) => {
+      const fieldValid = validateAddressField(input, showErrors);
+      if (!fieldValid) valid = false;
+    });
+    return valid;
+  }
+
+  function updateSaveButton(form, saveBtn) {
+    saveBtn.disabled = !isFormValid(form, false);
+  }
+
+  // Initialize validation for a form
+  function initAddressValidation(formId, saveBtnId) {
+    const form = document.getElementById(formId);
+    const saveBtn = document.getElementById(saveBtnId);
+
+    if (!form || !saveBtn) return;
+
+    // Initial check
+    updateSaveButton(form, saveBtn);
+
+    // Validate only on blur (user left field) or input (for real-time feel)
+    form.querySelectorAll("input").forEach((input) => {
+      // On blur → show error if invalid
+      input.addEventListener("blur", () => {
+        validateAddressField(input, true);
+        updateSaveButton(form, saveBtn);
+      });
+
+      // On input → clear error + update button state
+      input.addEventListener("input", () => {
+        // Clear error while typing
+        const err = input.parentElement.querySelector(".field-error");
+        if (err) err.textContent = "";
+        input.classList.remove("is-invalid");
+
+        updateSaveButton(form, saveBtn);
+      });
+    });
+
+    // On submit attempt → show all errors
+    form.addEventListener("submit", (e) => {
+      if (!isFormValid(form, true)) {
+        e.preventDefault();
+        Swal.fire({
+          icon: "warning",
+          title: "Please fix the errors",
+          text: "Check the highlighted fields.",
+          confirmButtonText: "OK",
+        });
+      }
+    });
+  }
+
+  // Initialize ALL address forms
+  document.addEventListener("DOMContentLoaded", () => {
+    // Add Address page
+    initAddressValidation("add-address-form", "add-address-submit-btn");
+
+    // Edit Address page
+    initAddressValidation("edit-address-form", "edit-address-submit-btn");
+
+    // Checkout modals
+    initAddressValidation("addAddressForm", "saveNewAddress");
+    initAddressValidation("editAddressForm", "saveEditedAddress");
+
+    // edit modal opens, re-validate (pre-filled values)
+    const editModal = document.getElementById("editAddressModal");
+    if (editModal) {
+      editModal.addEventListener("shown.bs.modal", () => {
+        const form = document.getElementById("editAddressForm");
+        if (form) {
+          isFormValid(form, false); // silent check
+          updateSaveButton(form, document.getElementById("saveEditedAddress"));
+        }
+      });
+    }
+  });
+</script>
+<script>
+  function limitPincode(input) {
+    if (input.value.length > 6) {
+      input.value = input.value.slice(0, 6);
+    }
+  }
+</script>

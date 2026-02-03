@@ -4,60 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Products - Admin</title>
-
-    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
-
-    <!-- Bootstrap 4 CSS -->
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css"
     />
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
-
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/theme.css" />
     <link rel="stylesheet" href="/css/adminAllProducts.css" />
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div class="container-fluid">
-        <button id="sidebarToggle" class="navbar-toggler" type="button" aria-label="Toggle sidebar">
+        <a class="navbar-brand fw-bold" href="/admin">
+          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
+          SportZilon Admin
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="/admin">
-          <img
-            src="/test.jpg"
-            alt="Logo"
-            width="30"
-            height="24"
-            class="d-inline-block align-text-top"
-          />
-          SportZilon
-        </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
               <a
-                class="nav-link dropdown-toggle"
+                class="nav-link dropdown-toggle text-white"
                 href="#"
-                id="navbarDropdown"
+                id="adminDropdown"
                 role="button"
-                data-toggle="dropdown"
-                aria-expanded="false"
+                data-bs-toggle="dropdown"
               >
                 ADMIN
               </a>
-              <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><hr class="dropdown-divider" /></li>
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
               </ul>
             </li>
@@ -66,241 +56,195 @@
       </div>
     </nav>
 
-    <main class="main">
-      <aside id="sidebar" class="sidebar">
-        <div class="p-3">
-          <div class="list-group sidebar-list">
-            <a href="/admin"
-              ><button type="button" class="list-group-item list-group-item-action">HOME</button></a
-            >
-            <a href="/admin/allproducts"
-              ><button type="button" class="list-group-item list-group-item-action active">
-                ALL PRODUCTS
-              </button></a
-            >
-            <a href="/admin/ordersList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                ORDERS LIST
-              </button></a
-            >
-            <a href="/admin/usersList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                USERS LIST
-              </button></a
-            >
-            <a href="/admin/categoryList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                CATEGORY LIST
-              </button></a
-            >
-            <a href="/admin/couponList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                COUPON LIST
-              </button></a
-            >
-            <a href="/admin/offers"
-              ><button type="button" class="list-group-item list-group-item-action">
-                OFFERS
-              </button></a
-            >
-          </div>
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
+        <div class="list-group list-group-flush">
+          <a
+            href="/admin"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-home me-2"></i> HOME
+          </a>
+          <a
+            href="/admin/allproducts"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
+          >
+            <i class="fas fa-box me-2"></i> ALL PRODUCTS
+          </a>
+          <a
+            href="/admin/ordersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
+          </a>
+          <a
+            href="/admin/usersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-users me-2"></i> USERS LIST
+          </a>
+          <a
+            href="/admin/categoryList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-tags me-2"></i> CATEGORY LIST
+          </a>
+          <a
+            href="/admin/couponList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-gift me-2"></i> COUPON LIST
+          </a>
+          <a
+            href="/admin/offers"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-percentage me-2"></i> OFFERS
+          </a>
         </div>
       </aside>
 
-      <section class="content">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">ALL PRODUCTS</li>
-          </ol>
-        </nav>
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="mb-0">Product List</h3>
-          <a href="/admin/addproduct" class="btn btn-success">
-            <i class="fas fa-plus mr-2"></i>NEW PRODUCT
+      <!-- Main Content -->
+      <main class="content flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="mb-0">All Products</h2>
+          <a href="/admin/addproduct" class="btn btn-dark px-4 py-2">
+            <i class="fas fa-plus me-2"></i> Add New Product
           </a>
         </div>
 
-        <% if (products.length === 0) { %>
-        <div class="text-center py-5">
-          <h4 class="text-muted">NO PRODUCTS AVAILABLE</h4>
-          <p>Add your first product using the button above.</p>
+        <% if (products && products.length > 0) { %>
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table id="productsTable" class="table table-hover table-striped align-middle">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% products.forEach(product => { %>
+                  <tr>
+                    <td>
+                      <% if (product.photos && product.photos.length > 0) { %>
+                      <img
+                        src="/uploads/<%= product.photos[0].filename %>"
+                        alt="<%= product.name %>"
+                        class="rounded"
+                        width="60"
+                        height="60"
+                        style="object-fit: cover"
+                      />
+                      <% } else { %>
+                      <img
+                        src="/images/no-image-available.png"
+                        alt="No image"
+                        width="60"
+                        height="60"
+                      />
+                      <% } %>
+                    </td>
+                    <td class="fw-bold"><%= product.name %></td>
+                    <td><%= product.category?.categoryName || 'Uncategorized' %></td>
+                    <td>
+                      <span class="badge <%= product.stock <= 10 ? 'bg-warning' : 'bg-success' %>">
+                        <%= product.stock %>
+                      </span>
+                    </td>
+                    <td>₹<%= Number(product.price).toLocaleString('en-IN') %></td>
+                    <td>
+                      <a
+                        href="/admin/allProducts/edit/<%= product._id %>"
+                        class="btn btn-warning btn-sm me-2"
+                        title="Edit"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="<%= product._id %>"
+                        data-name="<%= product.name %>"
+                        title="Delete"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
         <% } else { %>
-        <div class="table-responsive">
-          <table class="table table-hover align-middle" id="myTable">
-            <thead class="thead-light">
-              <tr>
-                <th class="d-none d-md-table-cell">IMAGE</th>
-                <th>NAME</th>
-                <th>CATEGORY</th>
-                <th>QUANTITY</th>
-                <th>PRICE</th>
-                <th>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% products.forEach(product => { %>
-              <tr>
-                <td class="d-none d-md-table-cell">
-                  <div class="product-image-wrapper position-relative d-inline-block">
-                    <% if (product.photos && product.photos.length > 0) { %>
-                    <!-- Previous Button -->
-                    <div
-                      class="image-navigation prev-nav <%= product.photos.length > 1 ? '' : 'd-none' %>"
-                    >
-                      <button class="prev-btn btn btn-sm btn-light">&lt;</button>
-                    </div>
-
-                    <!-- First image is active by default -->
-                    <img
-                      src="/uploads/<%= product.photos[0].filename %>"
-                      alt="<%= product.name %>"
-                      class="product-image img-thumbnail active"
-                      width="80"
-                    />
-
-                    <!-- Additional images (hidden initially) -->
-                    <% for (let i = 1; i < product.photos.length; i++) { %>
-                    <img
-                      src="/uploads/<%= product.photos[i].filename %>"
-                      alt="<%= product.name %>"
-                      class="product-image img-thumbnail"
-                      width="80"
-                    />
-                    <% } %>
-
-                    <!-- Next Button -->
-                    <div
-                      class="image-navigation next-nav <%= product.photos.length > 1 ? '' : 'd-none' %>"
-                    >
-                      <button class="next-btn btn btn-sm btn-light">&gt;</button>
-                    </div>
-                    <% } else { %>
-                    <img
-                      src="/images/no-image-available.png"
-                      alt="No image"
-                      class="img-thumbnail"
-                      width="80"
-                    />
-                    <% } %>
-                  </div>
-                </td>
-                <td class="font-weight-medium"><%= product.name %></td>
-                <td><%= product.category?.categoryName || 'Uncategorized' %></td>
-                <td>
-                  <% if (product.stock <= 10) { %>
-                  <span class="badge badge-warning"><%= product.stock %></span>
-                  <% } else { %>
-                  <%= product.stock %>
-                  <% } %>
-                </td>
-                <td>₹<%= Number(product.price).toLocaleString('en-IN') %></td>
-                <td>
-                  <a
-                    href="/admin/allProducts/edit/<%= product._id %>"
-                    class="btn btn-sm btn-primary mr-2"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <a
-                    href="#"
-                    onclick="confirmDelete('/admin/allProducts/delete/<%= product._id %>')"
-                    class="btn btn-sm btn-danger"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
+        <div class="alert alert-info text-center py-5">
+          <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
+          <h4>No products found</h4>
+          <p class="text-muted">Add your first product using the button above.</p>
         </div>
         <% } %>
-      </section>
-    </main>
-
-    <footer class="footer mt-auto py-3 bg-light border-top">
-      <div class="container text-center">
-        <p class="copyright mb-0 text-muted">© 2024 ShoesZone. All rights reserved.</p>
-      </div>
-    </footer>
+      </main>
+    </div>
 
     <!-- Scripts -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
       $(document).ready(function () {
-        $("#myTable").DataTable({
+        $("#productsTable").DataTable({
+          responsive: true,
           pageLength: 10,
-          lengthMenu: [10, 25, 50, 100],
+          lengthMenu: [5, 10, 25, 50],
           order: [[1, "asc"]],
-          columnDefs: [{ orderable: false, targets: [0, 5] }],
-        });
-      });
-    </script>
-
-    <script>
-      function confirmDelete(deleteUrl) {
-        if (
-          confirm("Are you sure you want to delete this product? This action cannot be undone.")
-        ) {
-          window.location.href = deleteUrl;
-        }
-      }
-
-      // Image carousel functionality per product
-      document.querySelectorAll(".prev-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const wrapper = this.closest(".product-image-wrapper");
-          const images = wrapper.querySelectorAll(".product-image");
-          let activeIndex = Array.from(images).findIndex((img) => img.classList.contains("active"));
-          images[activeIndex].classList.remove("active");
-          activeIndex = (activeIndex - 1 + images.length) % images.length;
-          images[activeIndex].classList.add("active");
+          language: {
+            search: "Search products:",
+            emptyTable: "No products found",
+          },
         });
       });
 
-      document.querySelectorAll(".next-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const wrapper = this.closest(".product-image-wrapper");
-          const images = wrapper.querySelectorAll(".product-image");
-          let activeIndex = Array.from(images).findIndex((img) => img.classList.contains("active"));
-          images[activeIndex].classList.remove("active");
-          activeIndex = (activeIndex + 1) % images.length;
-          images[activeIndex].classList.add("active");
-        });
-      });
-    </script>
+      // Delete confirmation with SweetAlert
+      document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", async function () {
+          const productId = this.dataset.id;
+          const productName = this.dataset.name;
 
-    <script>
-      // Mobile sidebar toggle
-      document.addEventListener("DOMContentLoaded", function () {
-        const sidebarToggle = document.getElementById("sidebarToggle");
-        const sidebar = document.getElementById("sidebar");
+          const result = await Swal.fire({
+            title: "Are you sure?",
+            text: `Delete "${productName}"? This action cannot be undone.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, Delete!",
+          });
 
-        sidebarToggle.addEventListener("click", function (e) {
-          e.stopPropagation();
-          sidebar.classList.toggle("active");
-        });
+          if (result.isConfirmed) {
+            try {
+              const res = await fetch(`/admin/allProducts/delete/${productId}`, {
+                method: "POST",
+              });
 
-        // Close sidebar when clicking outside
-        document.addEventListener("click", function (e) {
-          if (
-            sidebar.classList.contains("active") &&
-            !sidebar.contains(e.target) &&
-            !sidebarToggle.contains(e.target)
-          ) {
-            sidebar.classList.remove("active");
+              if (res.ok) {
+                Swal.fire("Deleted!", "Product has been deleted.", "success");
+                setTimeout(() => location.reload(), 1200);
+              } else {
+                Swal.fire("Error!", "Failed to delete product.", "error");
+              }
+            } catch (err) {
+              Swal.fire("Error!", "Network error occurred.", "error");
+            }
           }
         });
       });

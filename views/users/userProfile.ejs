@@ -36,6 +36,7 @@
     <section class="content">
       <div class="profile-edit">
         <h2 class="page-title">Edit Profile</h2>
+        <p><%= user.email %></p>
 
         <div class="form-group">
           <label for="name">Name:</label>
@@ -53,22 +54,13 @@
           <label for="gender">Gender:</label>
           <select id="gender" name="gender">
             <option value="">Select Gender</option>
-            <option value="male">
-              <% if (user.gender === 'male') { %> selected="selected" <% } %> >Male
-            </option>
-            <option value="female">
-              <% if (user.gender === 'female') { %> selected="selected" <% } %> >Female
-            </option>
-            <option value="other">
-              <% if (user.gender === 'other') { %> selected="selected" <% } %> >Other
-            </option>
+            <option value="male" <% if (user.gender === 'male') { %>selected<% } %> >Male</option>
+            <option value="female" <% if (user.gender === 'female') { %>selected<% } %> >Female</option>
+            <option value="other" <% if (user.gender === 'other') { %>selected<% } %> >Other</option>
           </select>
         </div>
 
-        <div class="form-group">
-          <label for="email">Email Address:</label>
-          <input type="email" id="email" value="<%= user.email %>" readonly />
-        </div>
+        
 
         <button type="submit" id="saveBtn" class="btn product-btn" disabled>Save</button>
       </div>

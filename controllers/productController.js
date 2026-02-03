@@ -28,60 +28,83 @@ const addProductView = async (req, res) => {
 
 const newProduct = async (req, res) => {
   try {
-    const { name, description, category, brandName, stock, price, tags } = req.body;
+    const { name, description, category, brandName = "", stock, price, tags } = req.body;
 
-    if (!name || !category || !brandName || !stock || !price) {
-      const categoryList = await Category.find();
-      return res.render("admin/addProduct", {
-        categoryList,
-        message: "Incomplete data",
+    if (!name?.trim() || !category || !stock || !price) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing (name, category, stock, price)",
       });
     }
 
-    const existingProduct = await Product.findOne({
-      name: name,
-      brandName: brandName,
+    const stockNum = Number(stock);
+    const priceNum = Number(price);
+
+    if (isNaN(stockNum) || stockNum < 0) {
+      return res.status(400).json({ success: false, message: "Invalid stock value" });
+    }
+    if (isNaN(priceNum) || priceNum <= 0) {
+      return res.status(400).json({ success: false, message: "Invalid price value" });
+    }
+
+    const existing = await Product.findOne({ name: name.trim(), brandName: brandName.trim() });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "Product with this name and brand already exists",
+      });
+    }
+
+    // Handle images
+    let photos = [];
+    if (req.files?.length === 4) {
+      photos = req.files.map((file) => ({
+        filename: file.filename,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+      }));
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Exactly 4 images are required",
+      });
+    }
+
+    const catDoc = await Category.findOne({ categoryName: category.trim() });
+    if (!catDoc) {
+      return res.status(400).json({ success: false, message: "Invalid category" });
+    }
+
+    const product = new Product({
+      name: name.trim(),
+      description: (description || "").trim(),
+      category: catDoc._id,
+      brandName: brandName.trim(),
+      stock: stockNum,
+      price: priceNum,
+      tags: tags
+        ? tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [],
+      photos,
     });
 
-    if (!existingProduct) {
-      let uploadedPhotos = [];
-      if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          uploadedPhotos.push({
-            filename: file.filename,
-            originalname: file.originalname,
-            mimetype: "image/jpeg",
-          });
-        }
-      }
+    await product.save();
 
-      const getCategoryObjectId = async (categoryName) => {
-        const category = await Category.findOne({ categoryName: categoryName });
-        return category ? category._id : null;
-      };
-
-      const categoryId = await getCategoryObjectId(category);
-
-      const newProduct = new Product({
-        name,
-        description,
-        category: categoryId,
-        brandName,
-        stock,
-        price,
-        tags,
-        photos: uploadedPhotos,
-      });
-
-      await newProduct.save();
-
-      res.redirect("/admin/allproducts");
-    } else {
-      res.redirect("/admin/allproducts");
-    }
-  } catch (error) {
-    console.error("An error occurred while adding the product:", error.message);
-    res.status(500).send("An error occurred while adding the product.");
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      productId: product._id,
+    });
+  } catch (err) {
+    console.error("Add product error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while creating product",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 };
 
@@ -102,49 +125,79 @@ const updateProductView = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const productId = req.params.productId;
-  const { existingPhotos } = req.body || [];
-  const newPhotos = req.files || [];
-
-  console.log("existing photos type:" + typeof existingPhotos);
-
   try {
-    async function getCategoryObjectId(categoryName) {
-      const category = await Category.findOne({ categoryName: categoryName });
-      return category ? category._id : null;
-    }
-    const categoryId = await getCategoryObjectId(req.body.category);
-
+    const productId = req.params.productId;
     const product = await Product.findById(productId);
-    product.name = req.body.name;
-    product.description = req.body.description;
-    product.category = categoryId;
-    product.brandName = req.body.brandName;
-    product.stock = req.body.stock;
-    product.price = req.body.price;
-    product.tags = req.body.tags;
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
 
-    if (Array.isArray(newPhotos) && newPhotos.length > 0) {
-      newPhotos.forEach((photo) => {
-        product.photos.push({
-          filename: photo.filename,
-          originalname: photo.originalname,
-          mimetype: photo.mimetype,
-        });
+    const { name, description, category, brandName = "", stock, price, tags } = req.body;
+
+    if (!name?.trim() || !category || !stock || !price) {
+      return res.status(400).json({ success: false, message: "Required fields missing" });
+    }
+
+    const catDoc = await Category.findOne({ categoryName: category.trim() });
+    if (!catDoc) {
+      return res.status(400).json({ success: false, message: "Invalid category" });
+    }
+
+    product.name = name.trim();
+    product.description = (description || "").trim();
+    product.category = catDoc._id;
+    product.brandName = brandName.trim();
+    product.stock = Number(stock);
+    product.price = Number(price);
+    product.tags = tags
+      ? tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : product.tags;
+
+    let keptPhotos = [];
+    if (req.body.existingPhotos) {
+      const existing = Array.isArray(req.body.existingPhotos)
+        ? req.body.existingPhotos
+        : [req.body.existingPhotos];
+      keptPhotos = product.photos.filter((p) => existing.includes(p.filename));
+    }
+
+    if (req.files?.length > 0) {
+      const newOnes = req.files.map((f) => ({
+        filename: f.filename,
+        originalname: f.originalname,
+        mimetype: f.mimetype,
+      }));
+      keptPhotos.push(...newOnes);
+    }
+
+    if (keptPhotos.length < 4) {
+      return res.status(400).json({ success: false, message: "At least four images are required" });
+    }
+
+    if (keptPhotos.length > 4) {
+      return res.status(400).json({
+        success: false,
+        message: "Maximum 4 images allowed per product.",
       });
     }
 
-    await product
-      .save()
-      .then(() => {
-        res.redirect("/admin/allProducts");
-      })
-      .catch((error) => {
-        console.error("Error updating product:", error);
-        res.status(500).send("An error occurred while updating the product.");
-      });
-  } catch (error) {
-    res.status(500).send(error);
+    product.photos = keptPhotos;
+
+    await product.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+    });
+  } catch (err) {
+    console.error("Update product error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while updating product",
+    });
   }
 };
 

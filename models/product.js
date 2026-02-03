@@ -28,7 +28,7 @@ const newProduct = new mongoose.Schema(
       require: true,
     },
     tags: {
-      type: String,
+      type: [String],
     },
     photos: [
       {
