@@ -32,7 +32,7 @@
     >
       <input type="hidden" id="userId" name="userId" value="<%= user._id %>" />
       <div class="form-group">
-        <label for="name">Full Name:</label>
+        <label for="name">Name:</label>
         <input type="text" id="name" name="name" maxlength="50" required />
       </div>
       <div class="form-group">
@@ -67,8 +67,14 @@
           onkeyup="limitPincode(this)"
         />
       </div>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" />
+        <label class="form-check-label" for="isDefault"> Set as Default Address </label>
+      </div>
       <div class="form-group">
-        <button type="submit" class="btn product-btn">Add Address</button>
+        <button type="submit" id="add-address-submit-btn" class="btn product-btn" disabled>
+          Add Address
+        </button>
       </div>
     </form>
   </section>
@@ -76,43 +82,10 @@
 </main>
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
+<%- include('../includes/addressValidation.ejs') %>
 
 <script>
-  function limitPincode(input) {
-    if (input.value.length > 6) input.value = input.value.slice(0, 6);
-  }
-
-  function validateForm() {
-    const name = document.getElementById("name").value.trim();
-    const houseName = document.getElementById("houseName").value.trim();
-    const street = document.getElementById("street").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const district = document.getElementById("district").value.trim();
-    const state = document.getElementById("state").value.trim();
-    const pinCode = document.getElementById("pinCode").value.trim();
-
-    const namePattern = /^[a-zA-Z\s]+$/;
-
-    if (!name || !namePattern.test(name)) {
-      alert("Name must not be empty, contain only spaces, or have special characters.");
-      return false;
-    }
-
-    if (!houseName || !street || !city || !district || !state || !pinCode) {
-      alert("All fields are required.");
-      return false;
-    }
-
-    if (pinCode.length !== 6 || isNaN(pinCode)) {
-      alert("PIN Code must be a 6-digit number.");
-      return false;
-    }
-
-    return true;
-  }
-
   function setCategory(category) {
     const selectedCategory = document.getElementById("selectedCategory");
     if (selectedCategory) selectedCategory.value = category;
@@ -120,4 +93,47 @@ include('../includes/userScripts.ejs') %>
     if (dropdownText)
       dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
+</script>
+<script>
+  document.getElementById("add-address-form")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    data.isDefault = document.getElementById("isDefault").checked;
+
+    try {
+      const res = await fetch("/address/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Address added successfully",
+          timer: 2000,
+          showConfirmButton: false,
+        }).then(() => {
+          window.location.href = "/address";
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: result.message || "Failed to add address",
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Something went wrong. Please try again.",
+      });
+    }
+  });
 </script>

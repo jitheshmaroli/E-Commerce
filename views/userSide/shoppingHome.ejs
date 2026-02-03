@@ -137,11 +137,12 @@
                   >
                     <i class="fas fa-shopping-cart me-1"></i>Add to Cart
                   </button>
-                  <a
-                    href="/checkout/<%= product._id %>/1"
+                  <button
                     class="btn-buy-now flex-fill btn btn-dark btn-sm p-1 fw-bold text-uppercase small"
-                    >Buy Now
-                  </a>
+                    data-product-id="<%= product._id %>"
+                  >
+                    Buy Now
+                  </button>
                 </div>
               </div>
             </div>
@@ -263,11 +264,12 @@
                   >
                     <i class="fas fa-shopping-cart me-1"></i>Add to Cart
                   </button>
-                  <a
-                    href="/checkout/<%= product._id %>/1"
+                  <button
                     class="btn-buy-now flex-fill btn btn-dark btn-sm p-1 fw-bold text-uppercase small"
-                    >Buy Now
-                  </a>
+                    data-product-id="<%= product._id %>"
+                  >
+                    Buy Now
+                  </button>
                 </div>
               </div>
             </div>
@@ -301,6 +303,7 @@
   document.querySelectorAll(".btn-add-cart").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
+
       const productId = btn.dataset.productId;
       const productName = btn
         .closest(".product-card")
@@ -308,6 +311,7 @@
         .textContent.trim();
       const card = btn.closest(".product-card");
       const stock = Number(card.dataset.stock);
+
       if (stock <= 0) {
         Swal.fire("Out of Stock!", "This product is unavailable.", "warning");
         return;
@@ -320,14 +324,31 @@
         });
 
         if (res.status === 401) {
-          window.location.href = `/login?redirect=/product-details/${productId}`;
+          Swal.fire({
+            title: "Please Log In",
+            text: "You need to be logged in to add items to cart",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Go to Login",
+            cancelButtonText: "Cancel",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const returnTo = encodeURIComponent(
+                window.location.pathname + window.location.search
+              );
+              window.location.href = `/login?redirect=${returnTo}`;
+            }
+          });
           return;
         }
-        const data = await res.json();
+
         if (!res.ok) {
+          const data = await res.json();
           Swal.fire("Error", data.message || "Something went wrong", "error");
           return;
         }
+
+        const data = await res.json();
         Swal.fire("Added!", `${productName} added to cart!`, "success");
       } catch (err) {
         console.error(err);
@@ -335,42 +356,98 @@
     });
   });
   // Wishlist Toggle
-  function toggleWishlist(btn) {
+  async function toggleWishlist(btn) {
     const icon = btn.querySelector("i");
-    const productId = btn.closest(".product-card").dataset.product;
-    fetch("/toggle-wishlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          if (data.isInWishlist) {
-            icon.className = "fa fa-heart text-danger fas fs-6";
-          } else {
-            icon.className = "fa fa-heart text-muted far fs-6";
+    const productCard = btn.closest(".product-card");
+    const productId = productCard.dataset.product;
+
+    try {
+      const res = await fetch("/toggle-wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        Swal.fire({
+          title: "Please Log In",
+          text: "You need to be logged in to add items to your wishlist",
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonText: "Go to Login",
+          cancelButtonText: "Cancel",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/login?redirect=${returnTo}`;
           }
+        });
+        return;
+      }
+
+      if (data.success) {
+        if (data.isInWishlist) {
+          icon.className = "fa fa-heart text-danger fas fs-6";
         } else {
-          Swal.fire("Error!", data.message, "error");
+          icon.className = "fa fa-heart text-muted far fs-6";
         }
-      })
-      .catch((err) => console.error(err));
-  }
-  // Rail Navigation with Arrows
-  document.querySelectorAll(".rail-prev-btn, .rail-next-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const targetId = btn.dataset.target;
-      const row = document.getElementById(targetId);
-      const slideWidth = row.children[0].offsetWidth + 12;
-      if (btn.classList.contains("rail-prev-btn")) {
-        row.scrollLeft -= slideWidth * 3;
       } else {
-        row.scrollLeft += slideWidth * 3;
+        Swal.fire("Error!", data.message || "Something went wrong", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to update wishlist", "error");
+    }
+  }
+
+  document.querySelectorAll(".btn-buy-now").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const productId = btn.dataset.productId;
+      const card = btn.closest(".product-card");
+      const stock = Number(card.dataset.stock);
+
+      if (stock && stock <= 0) {
+        Swal.fire("Out of Stock!", "This product is currently unavailable.", "warning");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/checkout/${productId}/1`, { method: "GET" });
+
+        if (res.status === 401 || (res.redirected && res.url.includes("/login"))) {
+          Swal.fire({
+            title: "Please Log In",
+            text: "You need to login to proceed with checkout",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Login Now",
+            cancelButtonText: "Cancel",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const returnTo = encodeURIComponent(`/checkout/${productId}/1`);
+              window.location.href = `/login?redirect=${returnTo}`;
+            }
+          });
+          return;
+        }
+
+        if (!res.ok) {
+          Swal.fire("Error", "Something went wrong", "error");
+          return;
+        }
+
+        window.location.href = `/checkout/${productId}/1`;
+      } catch (err) {
+        console.error(err);
+        Swal.fire("Error", "Failed to process request", "error");
       }
     });
   });
+
   //  Drag-to-scroll rails (mouse/touch)
   document.querySelectorAll(".products-row.rail-scroll").forEach((row) => {
     let isDown = false;

@@ -129,13 +129,17 @@
               <td>EXPIRED</td>
               <% } %>
               <td>
-                <a href="#" class="btn btn-warning btn-sm edit-coupon"><i class="fas fa-edit"></i></a>
+                <a href="#" class="btn btn-warning btn-sm edit-coupon"
+                  ><i class="fas fa-edit"></i
+                ></a>
                 <form
                   action="/admin/removecoupon/<%= coupon._id %>?_method=DELETE"
                   method="POST"
                   style="display: inline"
                 >
-                  <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </form>
               </td>
             </tr>

@@ -51,12 +51,19 @@ const verifyLogin = async (req, res) => {
       return res.render("auth/login", { message: "Your account is blocked" });
     }
 
-    req.session.isUserAuthenticated = true;
-    req.session.userId = user.email;
+    if (user.isAdmin) {
+      req.session.isAdminAuthenticated = true;
+      req.session.adminId = email;
+      const redirectTo = req.session.returnTo || "/admin";
+      res.redirect(redirectTo);
+    } else {
+      req.session.isUserAuthenticated = true;
+      req.session.userId = user.email;
+      const redirectTo = req.session.returnTo || "/";
+      res.redirect(redirectTo);
+    }
 
-    const redirectTo = req.session.returnTo || "/";
-    delete req.session.returnTo;
-    res.redirect(redirectTo);
+    res.render("auth/login", { message: "Invalid credentials" });
   } catch (err) {
     console.error(err);
     res.render("auth/login", { message: "Server error" });

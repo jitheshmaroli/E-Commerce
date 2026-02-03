@@ -8,8 +8,13 @@ const toggleWishList = async (req, res) => {
 
   try {
     const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
+      email: req.session.userId || req.session.passport?.user?.userId,
     });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: "please log in to continue" });
+    }
+
     const userId = user._id;
     let wishlist = await Wishlist.findOne({ userId: userId });
 

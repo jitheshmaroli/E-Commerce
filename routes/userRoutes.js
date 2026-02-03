@@ -64,14 +64,13 @@ router.post("/update-profile", userController.profilePhotoUpload, userController
 router.get("/address", authentication.isUserAuthenticated, addressController.addressesView);
 router.get("/addresses/add", authentication.isUserAuthenticated, addressController.addAddressView);
 router.post("/addresses/add", addressController.addAddress);
-router.post("/set-default-address/:addressId", addressController.setDefaultAddress);
 router.get(
   "/address/edit/:addressId",
   authentication.isUserAuthenticated,
   addressController.editAddressView
 );
 router.post("/address/edit", addressController.updateAddress);
-router.get(
+router.post(
   "/address/delete/:addressId",
   authentication.isUserAuthenticated,
   addressController.deleteAddress

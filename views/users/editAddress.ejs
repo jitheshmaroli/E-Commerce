@@ -27,7 +27,7 @@
     <h2 class="page-title">Edit Address</h2>
 
     <% if (address) { %>
-    <form action="/address/edit?addressId=<%= address._id %>" method="POST">
+    <form id="edit-address-form" action="/address/edit?addressId=<%= address._id %>" method="POST">
       <div class="form-group">
         <label for="name">Name</label>
         <input type="text" id="name" name="name" value="<%= address.name %>" required />
@@ -67,30 +67,37 @@
       <div class="form-group">
         <label for="pinCode">Pin Code</label>
         <input
-          type="number"
+          type="text"
           id="pinCode"
           name="pinCode"
           value="<%= address.pinCode %>"
-          minlength="6"
+          inputmode="numeric"
+          pattern="\d{6}"
           maxlength="6"
           required
-          onkeyup="limitPincode(this)"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+          onkeyup="limitPincode()"
         />
         <% if (message) { %>
         <span class="alert alert-danger d-block mt-2"><%= message %></span>
         <% } %>
       </div>
-
-      <div class="form-group form-check">
-        <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" />
-        <% if (address.isDefault) { %>
-        checked="checked"
-        <% } %>
-        <label class="form-check-label" for="isDefault">Set as Default</label>
+      <div class="form-check">
+        <input 
+          type="checkbox" 
+          class="form-check-input" 
+          id="isDefault" 
+          name="isDefault" 
+          <%= address.isDefault ? 'checked' : '' %> 
+        />
+        <label class="form-check-label" for="isDefault">
+          Set as Default Address
+        </label>
       </div>
-
       <div class="form-group">
-        <button type="submit" class="btn product-btn">Update Address</button>
+        <button type="submit" id="edit-address-submit-btn" class="btn product-btn" disabled>
+          Update Address
+        </button>
       </div>
     </form>
     <% } else { %>
@@ -102,11 +109,48 @@
 
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
+<%- include('../includes/addressValidation.ejs') %>
 
 <script>
-  function limitPincode(input) {
-    if (input.value.length > 6) {
-      input.value = input.value.slice(0, 6);
+  document.getElementById("edit-address-form")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    data.isDefault = document.getElementById("isDefault").checked;
+
+    try {
+      const res = await fetch(this.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Address updated successfully",
+          timer: 2000,
+          showConfirmButton: false,
+        }).then(() => {
+          window.location.href = "/address";
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: result.message || "Failed to update address",
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Something went wrong. Please try again.",
+      });
     }
-  }
+  });
 </script>

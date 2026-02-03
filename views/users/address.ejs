@@ -44,17 +44,14 @@
         <% if (address.isDefault) { %>
         <span class="default-address-tag">Default Address</span>
         <% } else { %>
-        <button class="btn product-btn btn-sm" onclick="setDefaultAddress('<%= address._id %>')">
+        <button class="btn product-btn btn-sm set-default-btn" data-address-id="<%= address._id %>">
           Set as Default
         </button>
         <% } %>
         <a href="/address/edit/<%= address._id %>" class="btn product-btn btn-sm">Edit</a>
-        <a
-          href="/address/delete/<%= address._id %>"
-          class="btn product-btn btn-sm delete-btn"
-          onclick="return confirm('Are you sure?');"
-          >Delete</a
-        >
+        <button class="btn product-btn btn-sm delete-btn" data-address-id="<%= address._id %>">
+          Delete
+        </button>
       </div>
       <% }) %>
     </div>
@@ -69,27 +66,81 @@
 </main>
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
 
 <script>
-  function setDefaultAddress(addressId) {
-    fetch(`/set-default-address/${addressId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ addressId }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          location.reload();
-        } else {
-          alert("Error setting default address");
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  }
+  document.querySelectorAll(".set-default-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const addressId = btn.dataset.addressId;
 
+      try {
+        const res = await fetch("/set-default", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ addressId }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Default address updated",
+            timer: 1500,
+            showConfirmButton: false,
+          }).then(() => location.reload());
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: data.message || "Failed to set default",
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Network Error",
+          text: "Something went wrong",
+        });
+      }
+    });
+  });
+
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const addressId = btn.dataset.addressId;
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const res = await fetch(`/address/delete/${addressId}`, { method: "POST" });
+            const data = await res.json();
+
+            if (data.success) {
+              Swal.fire("Deleted!", "Address has been deleted.", "success").then(() =>
+                location.reload()
+              );
+            } else {
+              Swal.fire("Error!", data.message || "Failed to delete.", "error");
+            }
+          } catch (err) {
+            Swal.fire("Error!", "Network error occurred.", "error");
+          }
+        }
+      });
+    });
+  });
+</script>
+<script>
   function setCategory(category) {
     const selectedCategory = document.getElementById("selectedCategory");
     if (selectedCategory) selectedCategory.value = category;

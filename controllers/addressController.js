@@ -1,22 +1,29 @@
 const User = require("../models/user");
 const Category = require("../models/category");
 const Addresses = require("../models/address");
+
 const addressesView = async (req, res) => {
   try {
     const user = await User.findOne({
       email: req.session.userId || req.session.passport.user.userId,
     });
+
     const categoryList = await Category.find({ isBlocked: false });
-    const address = await Addresses.findOne({
-      userId: user._id,
-    }).populate("address");
-    if (!address) {
-      return res.render("users/address", { user, addresses: "", categoryList });
+
+    const addressDoc = await Addresses.findOne({ userId: user._id });
+
+    let addresses = [];
+    if (addressDoc) {
+      addresses = addressDoc.address.sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
     }
 
-    res.render("users/address", { user, addresses: address, categoryList });
+    res.render("users/address", {
+      user,
+      addresses: { address: addresses },
+      categoryList,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Addresses view error:", error);
     res.status(500).send("Internal server error");
   }
 };
@@ -85,30 +92,32 @@ const addNewAddress = async (req, res) => {
       district,
       state,
       pinCode,
-      isDefault,
+      isDefault: isDefault === "true" || isDefault === true,
     };
 
-    let address = await Addresses.findOne({ userId: user._id });
-    if (!address) {
-      address = new Addresses({ userId: user._id, address: [] });
+    let addressDoc = await Addresses.findOne({ userId: user._id });
+    if (!addressDoc) {
+      addressDoc = new Addresses({ userId: user._id, address: [] });
     }
 
-    // If the new address should be set as default
     if (newAddress.isDefault) {
-      // Set all existing addresses to non-default
-      address.address = address.address.map((addr) => ({
-        ...addr,
-        isDefault: false,
-      }));
+      addressDoc.address.forEach((addr) => (addr.isDefault = false));
     }
 
-    address.address.push(newAddress);
-    await address.save();
-    res.json({ success: true });
-    // res.render("users/addAddress", { user, message: 'Address added successfully' });
+    addressDoc.address.push(newAddress);
+    await addressDoc.save();
+
+    if (req.headers["content-type"] === "application/json") {
+      return res.json({ success: true, message: "Address added successfully" });
+    }
+
+    res.redirect("/address");
   } catch (error) {
-    console.error("Error adding address:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Add address error:", error);
+    if (req.headers["content-type"] === "application/json") {
+      return res.status(500).json({ success: false, message: "Failed to add address" });
+    }
+    res.status(500).send("Internal server error");
   }
 };
 
@@ -122,67 +131,16 @@ const setDefault = async (req, res) => {
 
     const userId = user._id;
 
-    console.log(user._id);
-    const addressDoc = await Addresses.findOne({ userId: userId });
-
-    if (!addressDoc) {
-      return res.status(404).json({ success: false, message: "Address document not found" });
-    }
-
-    // Update isDefault for all addresses (using atomic operator)
-    // await Addresses.updateOne(
-    //   { userId: user._id },
-    //   { $set: { 'address.$[].isDefault': false } }
-    // );
-
-    await Addresses.findOneAndUpdate(
-      { userId: userId },
-      { $set: { "address.$[].isDefault": false } },
-      { upsert: false, returnOriginal: false }
-    );
-
+    await Addresses.updateOne({ userId }, { $set: { "address.$[].isDefault": false } });
     await Addresses.updateOne(
-      { userId: user._id, "address._id": addressId },
+      { userId, "address._id": addressId },
       { $set: { "address.$.isDefault": true } }
     );
 
-    res.json({ success: true });
+    res.json({ success: true, message: "Default address updated" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
-
-const setDefaultAddress = async (req, res) => {
-  try {
-    const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
-    });
-    const userId = user._id;
-    const addressId = req.params.addressId;
-    const isDefault = req.body.isDefault;
-
-    await Addresses.updateMany(
-      { userId, "address._id": { $ne: addressId } },
-      { $set: { "address.$[].isDefault": false } }
-    );
-
-    const updatedAddress = await Addresses.findOneAndUpdate(
-      { userId, "address._id": addressId },
-      { $set: { "address.$.isDefault": isDefault } },
-      { new: true }
-    );
-    updatedAddress.address.forEach((addr) => {
-      addr.isDefaultForUI = addr._id.toString() === addressId;
-    });
-
-    res.json({
-      message: "Default address updated successfully",
-      updatedAddress: updatedAddress.address,
-    });
-  } catch (error) {
-    console.error("Error setting default address:", error);
-    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -225,19 +183,16 @@ const updateAddress = async (req, res) => {
       email: req.session.userId || req.session.passport.user.userId,
     });
     const addressDoc = await Addresses.findOne({ userId: user._id });
-    console.log(addressDoc);
 
     if (!addressDoc) {
-      return res.status(404).json({ error: "Address not found" });
+      return res.status(404).json({ success: false, message: "Address document not found" });
     }
 
     const addressIndex = addressDoc.address.findIndex((addr) => addr._id.toString() === addressId);
-
     if (addressIndex === -1) {
-      return res.status(404).json({ error: "Address not found" });
+      return res.status(404).json({ success: false, message: "Address not found" });
     }
 
-    console.log(addressIndex);
     addressDoc.address[addressIndex].name = req.body.name;
     addressDoc.address[addressIndex].houseName = req.body.houseName;
     addressDoc.address[addressIndex].street = req.body.street;
@@ -245,7 +200,8 @@ const updateAddress = async (req, res) => {
     addressDoc.address[addressIndex].district = req.body.district;
     addressDoc.address[addressIndex].state = req.body.state;
     addressDoc.address[addressIndex].pinCode = req.body.pinCode;
-    addressDoc.address[addressIndex].isDefault = req.body.isDefault === true;
+    addressDoc.address[addressIndex].isDefault =
+      req.body.isDefault === true || req.body.isDefault === true;
 
     if (req.body.isDefault) {
       addressDoc.address.forEach((address) => {
@@ -255,11 +211,17 @@ const updateAddress = async (req, res) => {
       });
     }
     await addressDoc.save();
-    res.json({ success: true });
-    // res.redirect('/address');
+    if (req.headers["content-type"] === "application/json") {
+      return res.json({ success: true, message: "Address updated successfully" });
+    }
+
+    res.redirect("/address");
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Update address error:", error);
+    if (req.headers["content-type"] === "application/json") {
+      return res.status(500).json({ success: false, message: "Failed to update address" });
+    }
+    res.status(500).send("Internal server error");
   }
 };
 
@@ -267,32 +229,34 @@ const deleteAddress = async (req, res) => {
   try {
     const addressId = req.params.addressId;
     const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
+      email: req.session.userId || req.session?.passport?.user?.userId,
     });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
     const addressDoc = await Addresses.findOne({ userId: user._id });
-
     if (!addressDoc) {
-      return res.status(404).json({ error: "Address not found" });
+      return res.status(404).json({ success: false, message: "No addresses found" });
     }
 
-    const addressIndex = addressDoc.address.findIndex((addr) => addr._id.toString() === addressId);
-
-    if (addressIndex === -1) {
-      return res.status(404).json({ error: "Address not found" });
+    const addr = addressDoc.address.id(addressId);
+    if (!addr) {
+      return res.status(404).json({ success: false, message: "Address not found" });
     }
 
-    if (addressDoc.address[addressIndex].isDefault) {
-      return res.status(403).json({ error: "Cannot delete default address" });
+    if (addr.isDefault) {
+      return res.status(403).json({ success: false, message: "Cannot delete default address" });
     }
 
-    addressDoc.address.splice(addressIndex, 1);
-
+    addressDoc.address.pull(addressId);
     await addressDoc.save();
 
-    res.redirect("/address");
+    res.json({ success: true, message: "Address deleted successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Delete address error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -320,6 +284,5 @@ module.exports = {
   addNewAddress,
   editAddressView,
   setDefault,
-  setDefaultAddress,
   getAddress,
 };
