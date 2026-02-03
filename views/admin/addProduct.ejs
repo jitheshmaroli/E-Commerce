@@ -3,47 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add New Product</title>
-    <!-- Bootstrap 4 CSS -->
+    <title>Add New Product - Admin</title>
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.0/cropper.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    <link rel="stylesheet" href="/css/theme.css" />
     <link rel="stylesheet" href="/css/addProduct.css" />
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <body class="bg-light">
+    <!-- Navbar & Sidebar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="/test.jpg"
-            alt="Logo"
-            width="30"
-            height="24"
-            class="d-inline-block align-text-top"
-          />
-          SportZilon
+        <a class="navbar-brand fw-bold" href="/admin">
+          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
+          SportZilon Admin
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
               <a
-                class="nav-link dropdown-toggle"
+                class="nav-link dropdown-toggle text-white"
                 href="#"
-                id="navbarDropdown"
+                id="adminDropdown"
                 role="button"
-                data-toggle="dropdown"
-                aria-expanded="false"
+                data-bs-toggle="dropdown"
               >
                 ADMIN
               </a>
-              <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><hr class="dropdown-divider" /></li>
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
               </ul>
             </li>
@@ -52,361 +52,313 @@
       </div>
     </nav>
 
-    <main class="main">
-      <aside class="sidebar">
-        <div class="">
-          <div class="list-group sidebar-list" id="myListGroup">
-            <a href="/admin"
-              ><button type="button" class="list-group-item list-group-item-action">HOME</button></a
-            >
-            <a href="/admin/allproducts"
-              ><button type="button" class="list-group-item list-group-item-action active">
-                ALL PRODUCTS
-              </button></a
-            >
-            <a href="/admin/ordersList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                ORDERS LIST
-              </button></a
-            >
-            <a href="/admin/usersList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                USERS LIST
-              </button></a
-            >
-            <a href="/admin/categoryList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                CATEGORY LIST
-              </button></a
-            >
-            <a href="/admin/couponList"
-              ><button type="button" class="list-group-item list-group-item-action">
-                COUPON LIST
-              </button></a
-            >
-            <a href="/admin/offers"
-              ><button type="button" class="list-group-item list-group-item-action">
-                OFFERS
-              </button></a
-            >
-          </div>
+    <div class="d-flex">
+      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
+        <div class="list-group list-group-flush">
+          <a
+            href="/admin"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-home me-2"></i> HOME
+          </a>
+          <a
+            href="/admin/allproducts"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
+          >
+            <i class="fas fa-box me-2"></i> ALL PRODUCTS
+          </a>
+          <a
+            href="/admin/ordersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
+          </a>
+          <a
+            href="/admin/usersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-users me-2"></i> USERS LIST
+          </a>
+          <a
+            href="/admin/categoryList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-tags me-2"></i> CATEGORY LIST
+          </a>
+          <a
+            href="/admin/couponList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-gift me-2"></i> COUPON LIST
+          </a>
+          <a
+            href="/admin/offers"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-percentage me-2"></i> OFFERS
+          </a>
         </div>
       </aside>
 
-      <section class="content">
+      <main class="content flex-grow-1 p-4">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/admin/allproducts">ALL PRODUCTS</a></li>
-            <li class="breadcrumb-item active" aria-current="page">ADD NEW PRODUCT</li>
+          <ol class="breadcrumb bg-transparent p-0 mb-4">
+            <li class="breadcrumb-item">
+              <a href="/admin/allproducts" class="text-dark">All Products</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
           </ol>
         </nav>
 
-        <div class="container">
-          <% if (message) { %>
-          <script>
-            alert("<!= message !>");
-          </script>
-          <% } %>
+        <div class="card shadow-lg border-0" style="max-width: 900px; margin: 0 auto">
+          <div class="card-header bg-dark text-white text-center py-3">
+            <h4 class="mb-0">Add New Product</h4>
+          </div>
+          <div class="card-body p-4">
+            <form
+              id="productForm"
+              method="POST"
+              action="/admin/addproduct"
+              enctype="multipart/form-data"
+            >
+              <div class="row">
+                <!-- Left Column: Form Fields -->
+                <div class="col-lg-7">
+                  <div class="mb-4">
+                    <label for="name" class="form-label fw-bold"
+                      >Product Name <span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      maxlength="50"
+                      required
+                    />
+                    <small id="nameError" class="text-danger"></small>
+                  </div>
 
-          <div class="row justify-content-center">
-            <div class="col-md-8">
-              <form
-                method="POST"
-                action="/admin/addproduct"
-                id="myForm"
-                enctype="multipart/form-data"
-              >
-                <div class="form-group">
-                  <label for="name">Product Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name"
-                    placeholder="Product name"
-                    name="name"
-                    maxlength="50"
-                  />
-                  <span id="name-error" class="text-danger"></span>
-                </div>
+                  <div class="mb-4">
+                    <label for="description" class="form-label fw-bold"
+                      >Description <span class="text-danger">*</span></label
+                    >
+                    <textarea
+                      class="form-control"
+                      id="description"
+                      name="description"
+                      rows="4"
+                      maxlength="500"
+                      required
+                    ></textarea>
+                    <small id="descriptionError" class="text-danger"></small>
+                  </div>
 
-                <div class="form-group">
-                  <label for="description">Product Description</label>
-                  <textarea
-                    class="form-control"
-                    id="description"
-                    placeholder="Product description"
-                    name="description"
-                    rows="4"
-                    maxlength="500"
-                  ></textarea>
-                  <span id="description-error" class="text-danger"></span>
-                </div>
+                  <div class="mb-4">
+                    <label for="category" class="form-label fw-bold"
+                      >Category <span class="text-danger">*</span></label
+                    >
+                    <select class="form-control" id="category" name="category" required>
+                      <option value="">Select Category</option>
+                      <% categoryList.forEach(cat => { %>
+                      <option value="<%= cat.categoryName %>"><%= cat.categoryName %></option>
+                      <% }) %>
+                    </select>
+                    <small id="categoryError" class="text-danger"></small>
+                  </div>
 
-                <div class="form-group">
-                  <% if (categoryList && categoryList.length > 0) { %>
-                  <label for="category">Category</label>
-                  <select class="form-control" id="category" name="category">
-                    <option value="" disabled selected>Select Category</option>
-                    <% categoryList.forEach(category => { %>
-                    <option value="<%= category.categoryName %>">
-                      <%= category.categoryName %>
-                    </option>
-                    <% }) %>
-                  </select>
-                  <span id="category-error" class="text-danger"></span>
-                  <% } else { %>
-                  <p class="text-warning">No categories available. Please add categories first.</p>
-                  <% } %>
-                </div>
-
-                <div class="form-group">
-                  <div class="row">
+                  <div class="row mb-4">
                     <div class="col-md-4">
-                      <label for="brandName">Brand Name</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="brandName"
-                        placeholder="Brand name"
-                        name="brandName"
-                      />
-                      <span id="brandName-error" class="text-danger"></span>
+                      <label for="brandName" class="form-label fw-bold">Brand Name</label>
+                      <input type="text" class="form-control" id="brandName" name="brandName" />
+                      <small id="brandNameError" class="text-danger"></small>
                     </div>
                     <div class="col-md-4">
-                      <label for="stockQuantity">Stock Quantity</label>
+                      <label for="stock" class="form-label fw-bold"
+                        >Stock Quantity <span class="text-danger">*</span></label
+                      >
                       <input
                         type="number"
                         class="form-control"
-                        id="stockQuantity"
-                        placeholder="Stock"
+                        id="stock"
                         name="stock"
                         min="0"
+                        required
                       />
-                      <span id="stockQuantity-error" class="text-danger"></span>
+                      <small id="stockError" class="text-danger"></small>
                     </div>
                     <div class="col-md-4">
-                      <label for="price">Price (₹)</label>
+                      <label for="price" class="form-label fw-bold"
+                        >Price (₹) <span class="text-danger">*</span></label
+                      >
                       <input
                         type="number"
                         step="0.01"
                         class="form-control"
                         id="price"
-                        placeholder="Price"
                         name="price"
                         min="0"
+                        required
                       />
-                      <span id="price-error" class="text-danger"></span>
+                      <small id="priceError" class="text-danger"></small>
                     </div>
                   </div>
-                </div>
 
-                <div class="form-group">
-                  <label for="tags">Tags (comma separated)</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="tags"
-                    placeholder="e.g. running, sports, lightweight"
-                    name="tags"
-                  />
-                  <small class="form-text text-muted">Separate multiple tags with commas.</small>
-                  <span id="tags-error" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                  <label for="photos">Upload Product Images (Exactly 4 required)</label>
-                  <input
-                    type="file"
-                    class="form-control-file"
-                    id="photos"
-                    name="photos"
-                    accept="image/*"
-                    multiple
-                  />
-                  <small class="form-text text-muted"
-                    >Select exactly 4 images (JPEG, PNG, GIF).</small
-                  >
-                  <span id="photo-error" class="text-danger"></span>
-                </div>
-
-                <div class="image-preview-container d-flex flex-wrap" id="preview"></div>
-
-                <div class="row mt-4">
-                  <div class="col">
-                    <button type="submit" class="btn btn-success btn-lg mr-3">ADD PRODUCT</button>
-                    <button type="reset" class="btn btn-secondary btn-lg mr-3">CLEAR FIELDS</button>
-                    <a href="/admin/allproducts" class="btn btn-outline-primary btn-lg">BACK</a>
+                  <div class="mb-4">
+                    <label for="tags" class="form-label fw-bold">Tags (comma separated)</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="tags"
+                      name="tags"
+                      placeholder="e.g. running, sports, lightweight"
+                    />
+                    <small id="tagsError" class="text-danger"></small>
                   </div>
                 </div>
-              </form>
-            </div>
+
+                <!-- Right Column: Image Upload -->
+                <div class="col-lg-5">
+                  <div class="border p-4 rounded bg-light">
+                    <h5 class="text-center mb-4">Product Images (Exactly 4 required)</h5>
+                    <input
+                      type="file"
+                      class="form-control"
+                      id="photos"
+                      name="photos"
+                      accept="image/*"
+                      multiple
+                      required
+                    />
+                    <small class="form-text text-muted mt-2"
+                      >Select exactly 4 images (JPEG, PNG, WebP).</small
+                    >
+                    <small id="photosError" class="text-danger d-block mt-2"></small>
+
+                    <div
+                      class="image-preview-container d-flex flex-wrap justify-content-center mt-4"
+                      id="preview"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-flex gap-3 mt-5">
+                <button type="submit" class="btn btn-dark flex-grow-1 py-3 fw-bold">
+                  ADD PRODUCT
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-dark flex-grow-1 py-3"
+                  onclick="clearFields()"
+                >
+                  CLEAR
+                </button>
+                <a
+                  href="/admin/allproducts"
+                  class="btn btn-outline-secondary flex-grow-1 py-3 text-center"
+                  >BACK</a
+                >
+              </div>
+            </form>
           </div>
         </div>
-      </section>
-    </main>
+      </main>
+    </div>
 
-    <footer class="footer mt-auto py-3 bg-light">
-      <div class="container text-center">
-        <p class="copyright mb-0">© 2024 ShoesZone.</p>
-      </div>
-    </footer>
-
-    <!-- Bootstrap 4 JS + Popper -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-      const form = document.getElementById("myForm");
+      const form = document.getElementById("productForm");
       const photoInput = document.getElementById("photos");
-      const imagePreviewContainer = document.getElementById("preview");
-      const photoError = document.getElementById("photo-error");
-      const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      const preview = document.getElementById("preview");
 
-      function validateProductName(name) {
-        if (name.trim() === "") return "Product name is required.";
-        if (!/^[a-zA-Z]/.test(name)) return "Product name must start with a letter.";
-        if (name.trim().length < 3) return "Product name must be at least 3 characters.";
-        return "";
-      }
+      // Real-time image preview & validation
+      photoInput.addEventListener("change", function () {
+        preview.innerHTML = "";
+        const files = Array.from(this.files);
+        const errorEl = document.getElementById("photosError");
 
-      function validateDescription(description) {
-        if (description.trim() === "") return "Description is required.";
-        if (description.trim().length < 10) return "Description must be at least 10 characters.";
-        return "";
-      }
-
-      function validateCategory(category) {
-        return category === "" ? "Please select a category." : "";
-      }
-
-      function validateBrandName(brandName) {
-        return brandName.trim() === "" ? "Brand name is required." : "";
-      }
-
-      function validateStockQuantity(stock) {
-        if (stock === "" || isNaN(stock) || parseInt(stock) < 0) {
-          return "Stock quantity must be a valid non-negative number.";
+        if (files.length !== 4) {
+          errorEl.textContent = "Exactly 4 images are required.";
+          this.value = "";
+          return;
         }
-        return "";
-      }
 
-      function validatePrice(price) {
-        if (price === "" || isNaN(price) || parseFloat(price) < 0) {
-          return "Price must be a valid positive number.";
-        }
-        return "";
-      }
-
-      function validateTags(tags) {
-        return tags.trim() === "" ? "At least one tag is required." : "";
-      }
-
-      function validatePhoto(input) {
-        const files = input.files;
-        if (files.length === 0) return "Please select images.";
-        if (files.length < 4) return "Please select exactly 4 images.";
-        if (files.length > 4) return "Maximum 4 images allowed.";
-        for (let file of files) {
-          if (!validImageTypes.includes(file.type)) {
-            return "Only JPEG, PNG, GIF, and WebP images are allowed.";
+        let valid = true;
+        files.forEach((file) => {
+          if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+            valid = false;
           }
-        }
-        return "";
-      }
+        });
 
-      function displayImagePreviews(files) {
-        imagePreviewContainer.innerHTML = "";
-        Array.from(files).forEach((file) => {
+        if (!valid) {
+          errorEl.textContent = "Only JPEG, PNG, and WebP images allowed.";
+          this.value = "";
+          return;
+        }
+
+        errorEl.textContent = "";
+        files.forEach((file) => {
           const reader = new FileReader();
           reader.onload = (e) => {
             const img = document.createElement("img");
             img.src = e.target.result;
             img.className = "img-thumbnail m-2";
-            img.style.maxHeight = "150px";
-            imagePreviewContainer.appendChild(img);
+            img.style.width = "120px";
+            img.style.height = "120px";
+            img.style.objectFit = "cover";
+            preview.appendChild(img);
           };
           reader.readAsDataURL(file);
         });
-      }
+      });
 
-      // Real-time validation on input/change
-      form.querySelectorAll("input, select, textarea").forEach((field) => {
+      // Real-time field validation
+      form.querySelectorAll("input, textarea, select").forEach((field) => {
         field.addEventListener("input", () => {
-          const errorSpan = document.getElementById(`${field.id}-error`);
-          if (errorSpan) {
-            let error = "";
-            switch (field.id) {
-              case "name":
-                error = validateProductName(field.value);
-                break;
-              case "description":
-                error = validateDescription(field.value);
-                break;
-              case "category":
-                error = validateCategory(field.value);
-                break;
-              case "brandName":
-                error = validateBrandName(field.value);
-                break;
-              case "stockQuantity":
-                error = validateStockQuantity(field.value);
-                break;
-              case "price":
-                error = validatePrice(field.value);
-                break;
-              case "tags":
-                error = validateTags(field.value);
-                break;
-            }
-            errorSpan.textContent = error;
-          }
+          const errorEl = document.getElementById(`${field.id}Error`);
+          if (errorEl) errorEl.textContent = "";
         });
       });
 
-      photoInput.addEventListener("change", () => {
-        const error = validatePhoto(photoInput);
-        photoError.textContent = error;
-        if (!error) {
-          displayImagePreviews(photoInput.files);
-        } else {
-          imagePreviewContainer.innerHTML = "";
-        }
-      });
-
-      // Final validation on submit
-      form.addEventListener("submit", (e) => {
+      // Form submit with SweetAlert
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        let hasError = false;
+        if (photoInput.files.length !== 4) {
+          Swal.fire("Error", "Exactly 4 images are required.", "error");
+          return;
+        }
 
-        document.querySelectorAll('[id$="-error"]').forEach((span) => {
-          span.textContent = "";
-        });
+        try {
+          const formData = new FormData(form);
+          const res = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+          });
 
-        const errors = {
-          name: validateProductName(document.getElementById("name").value),
-          description: validateDescription(document.getElementById("description").value),
-          category: validateCategory(document.getElementById("category")?.value || ""),
-          brandName: validateBrandName(document.getElementById("brandName").value),
-          stockQuantity: validateStockQuantity(document.getElementById("stockQuantity").value),
-          price: validatePrice(document.getElementById("price").value),
-          tags: validateTags(document.getElementById("tags").value),
-          photo: validatePhoto(photoInput),
-        };
+          const result = await res.json();
 
-        Object.keys(errors).forEach((key) => {
-          const span = document.getElementById(`${key}-error`);
-          if (span && errors[key]) {
-            span.textContent = errors[key];
-            hasError = true;
+          if (result.success || res.ok) {
+            await Swal.fire("Success", "Product added successfully!", "success");
+            window.location.href = "/admin/allproducts";
+          } else {
+            Swal.fire("Error", result.message || "Failed to add product.", "error");
           }
-        });
-
-        if (!hasError) {
-          form.submit();
+        } catch (err) {
+          Swal.fire("Error", "Network error occurred.", "error");
         }
       });
+
+      function clearFields() {
+        form.reset();
+        preview.innerHTML = "";
+        document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
+      }
     </script>
   </body>
 </html>

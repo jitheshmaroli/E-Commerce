@@ -3,63 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ORDERS LIST</title>
+    <title>Order Details - Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
-      integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
-    />
+    <link rel="stylesheet" href="/css/theme.css" />
     <link rel="stylesheet" href="/css/adminOrderDetails.css" />
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="/test.jpg"
-            alt=""
-            width="30"
-            height="24"
-            class="d-inline-block align-text-top"
-          />
-          SportZilon
+        <a class="navbar-brand fw-bold" href="/admin">
+          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
+          SportZilon Admin
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
               <a
-                class="nav-link dropdown-toggle"
+                class="nav-link dropdown-toggle text-white"
                 href="#"
-                id="navbarDropdown"
+                id="adminDropdown"
                 role="button"
                 data-bs-toggle="dropdown"
-                aria-expanded="false"
               >
                 ADMIN
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li>
-                  <hr class="dropdown-divider" />
-                </li>
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
               </ul>
             </li>
@@ -67,484 +51,477 @@
         </div>
       </div>
     </nav>
-    <main class="main">
-      <aside class="sidebar">
-        <div class="">
-          <div class="list-group sidebar-list" id="myListGroup">
-            <a href="/admin">
-              <button type="button" class="list-group-item list-group-item-action">HOME</button>
-            </a>
-            <a href="/admin/allproducts">
-              <button type="button" class="list-group-item list-group-item-action">
-                ALL PRODUCTS
-              </button>
-            </a>
-            <a href="/admin/ordersList">
-              <button type="button" class="list-group-item list-group-item-action">
-                ORDERS LIST
-              </button>
-            </a>
-            <a href="/admin/usersList">
-              <button type="button" class="list-group-item list-group-item-action">
-                USERS LIST
-              </button>
-            </a>
-            <a href="/admin/categoryList">
-              <button type="button" class="list-group-item list-group-item-action">
-                CATEGORY LIST
-              </button>
-            </a>
-            <a href="/admin/couponList">
-              <button type="button" class="list-group-item list-group-item-action">
-                COUPON LIST
-              </button>
-            </a>
-            <a href="/admin/offers">
-              <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
-            </a>
-          </div>
+
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
+        <div class="list-group list-group-flush">
+          <a
+            href="/admin"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-home me-2"></i> HOME
+          </a>
+          <a
+            href="/admin/allproducts"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-box me-2"></i> ALL PRODUCTS
+          </a>
+          <a
+            href="/admin/ordersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
+          >
+            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
+          </a>
+          <a
+            href="/admin/usersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-users me-2"></i> USERS LIST
+          </a>
+          <a
+            href="/admin/categoryList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-tags me-2"></i> CATEGORY LIST
+          </a>
+          <a
+            href="/admin/couponList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-gift me-2"></i> COUPON LIST
+          </a>
+          <a
+            href="/admin/offers"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-percentage me-2"></i> OFFERS
+          </a>
         </div>
       </aside>
-      <section class="content">
+
+      <!-- Main Content -->
+      <main class="content flex-grow-1 p-4">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/admin/ordersList">ORDERS LIST</a></li>
-            <li class="breadcrumb-item active" aria-current="page">ORDER DETAILS</li>
+          <ol class="breadcrumb bg-transparent p-0 mb-4">
+            <li class="breadcrumb-item">
+              <a href="/admin/ordersList" class="text-dark">Orders List</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Order Details</li>
           </ol>
         </nav>
+
         <% if (order) { %>
-        <div class="d-flex justify-content-between align-items-center py-3">
-          <h2 class="h5 mb-0">
-            <a href="#" class="text-muted"></a> Order id:
-            <%= order.uniqueOrderId%>
-          </h2>
-        </div>
-        <div class="row">
-          <div class="col-lg-8">
-            <div class="card mb-4">
-              <div class="card-body">
-                <div class="mb-3 d-flex justify-content-between">
-                  <div>
-                    <span class="me-3"><%= new Date(order.createdAt).toLocaleDateString() %></span>
-                    <!-- <span class="me-3">#16123222</span>
-                    <span class="me-3">Visa -1234</span>
-                    <span class="badge rounded-pill bg-info">SHIPPING</span> -->
+        <div class="card shadow-lg border-0 mb-4">
+          <div
+            class="card-header bg-dark text-white d-flex justify-content-between align-items-center"
+          >
+            <h5 class="mb-0">Order #<%= order.uniqueOrderId %></h5>
+            <span class="badge bg-info"><%= order.paymentMethod.toUpperCase() %></span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Order Items -->
+              <div class="col-lg-8">
+                <h6 class="mb-3">Order Items</h6>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% order.items.forEach(item => { %>
+                      <tr id="item-row-<%= item.productId._id %>">
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/uploads/<%= item.productId.photos?.[0]?.filename || 'placeholder.jpg' %>"
+                              alt="<%= item.productId.name %>"
+                              width="50"
+                              class="me-3 rounded"
+                            />
+                            <div>
+                              <strong><%= item.productId.name %></strong><br />
+                              <small class="text-muted"
+                                >₹<%= item.productId.price.toFixed(2) %></small
+                              >
+                            </div>
+                          </div>
+                        </td>
+                        <td><%= item.quantity %></td>
+                        <td>₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                        <% 
+                          function getStatusClass(status) {
+                            switch (status) {
+                              case 'Pending':   return 'bg-warning';
+                              case 'Shipped':   return 'bg-info';
+                              case 'Delivered': return 'bg-success';
+                              case 'Cancelled': return 'bg-danger';
+                              default:          return 'bg-secondary';
+                            }
+                          }
+                        %>
+                        <td>
+                          <span
+                            id="item-status-<%= item.productId._id %>"
+                            class="badge <%= getStatusClass(item.status) %>"
+                          >
+                            <%= item.status %>
+                          </span>
+                        </td>
+                        <td id="action-buttons-<%= item.productId._id %>">
+                          <% if (item.status === 'Pending') { %>
+                          <!-- <button
+                            class="btn btn-sm btn-danger me-1"
+                            onclick="
+                              updateOrderStatus(
+                                '<%= order._id %>',
+                                '<%= item.productId._id %>',
+                                'Cancelled'
+                              )
+                            "
+                          >
+                            Cancel
+                          </button> -->
+                          <button
+                            class="btn btn-sm btn-primary"
+                            onclick="
+                              updateOrderStatus(
+                                '<%= order._id %>',
+                                '<%= item.productId._id %>',
+                                'Shipped'
+                              )
+                            "
+                          >
+                            Ship
+                          </button>
+                          <% } else if (item.status === 'Shipped') { %>
+                          <!-- <button
+                            class="btn btn-sm btn-danger me-1"
+                            onclick="
+                              updateOrderStatus(
+                                '<%= order._id %>',
+                                '<%= item.productId._id %>',
+                                'Cancelled'
+                              )
+                            "
+                          >
+                            Cancel
+                          </button> -->
+                          <button
+                            class="btn btn-sm btn-success"
+                            onclick="
+                              updateOrderStatus(
+                                '<%= order._id %>',
+                                '<%= item.productId._id %>',
+                                'Delivered'
+                              )
+                            "
+                          >
+                            Delivered
+                          </button>
+                          <% } else { %>
+                          <span class="text-muted"><%= item.status %></span>
+                          <% } %>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="3" class="text-end fw-bold">Subtotal</td>
+                        <td colspan="2">₹<%= order.priceDetails.subTotal.toFixed(2) %></td>
+                      </tr>
+                      <% if (order.couponCode) { %>
+                      <tr>
+                        <td colspan="3" class="text-end text-danger fw-bold">
+                          Discount (<%= order.couponCode %>)
+                        </td>
+                        <td colspan="2" class="text-danger">
+                          -₹<%= order.priceDetails.discountAmount.toFixed(2) %>
+                        </td>
+                      </tr>
+                      <% } %>
+                      <tr>
+                        <td colspan="3" class="text-end fw-bold">Delivery Charge</td>
+                        <td colspan="2">₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
+                      </tr>
+                      <tr>
+                        <td colspan="3" class="text-end fw-bold">Sales Tax</td>
+                        <td colspan="2"><%= order.priceDetails.salesTax %></td>
+                      </tr>
+                      <tr class="table-active">
+                        <td colspan="3" class="text-end fw-bold fs-5">TOTAL</td>
+                        <td colspan="2" class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Payment & Address -->
+              <div class="col-lg-4">
+                <div class="card mb-4">
+                  <div class="card-header bg-dark text-white">
+                    <h6 class="mb-0">Payment & Order Info</h6>
                   </div>
-                  <div class="d-flex invoice">
-                    <!-- <a href="" data-bs-toggle="modal" data-bs-target="#invoiceModal">invoice</a> -->
-                    <button
-                      type="button"
-                      class="btn btn-secondary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#invoiceModal"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-download"
-                        viewBox="0 0 16 16"
+                  <div class="card-body">
+                    <p>
+                      <strong>Payment Method:</strong>
+                      <%= order.paymentMethod.toUpperCase() %>
+                    </p>
+                    <p>
+                      <strong>Payment Status:</strong>
+                      <span
+                        class="badge <%= order.paymentStatus === 'confirmed' || order.paymentStatus === 'paid' ? 'bg-success' : 'bg-warning' %>"
                       >
-                        <path
-                          d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"
-                        ></path>
-                        <path
-                          d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"
-                        ></path>
-                      </svg>
-                      Invoice
-                    </button>
+                        <%= order.paymentStatus.toUpperCase() %>
+                      </span>
+                    </p>
+                    <p>
+                      <strong>Order Date:</strong>
+                      <%= new Date(order.createdAt).toLocaleString('en-IN') %>
+                    </p>
                   </div>
                 </div>
-                <table class="table table-borderless">
-                  <tbody>
-                    <% order.items.forEach(item => { %>
-                    <tr id="item-row-<%= item.productId._id %>">
-                      <td>
-                        <div class="d-flex mb-2">
-                          <div class="flex-shrink-0">
-                            <img
-                              src="/uploads/<%= item.productId.photos[0].filename %>"
-                              alt=""
-                              width="35"
-                              class="img-fluid"
-                            />
-                          </div>
-                          <div class="flex-lg-grow-1 ms-3">
-                            <h6 class="small mb-0">
-                              <a href="#" class="text-reset"><%= item.productId.name %></a>
-                            </h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td id="item-status-<%= item.productId._id %>"><%= item.status %></td>
-                      <td><%= item.quantity %></td>
-                      <td class="text-end">₹<%= item.productId.price %></td>
-                      <td id="action-buttons-<%= item.productId._id %>">
-                        <% if (item.status === "Pending") { %>
-                        <form
-                          onsubmit="
-                            updateOrderStatus(
-                              event,
-                              '<%= order._id %>',
-                              '<%= item.productId._id %>',
-                              'Cancelled'
-                            );
-                            return false;
-                          "
-                          style="display: inline"
-                        >
-                          <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
-                        </form>
-                        <form
-                          onsubmit="
-                            updateOrderStatus(
-                              event,
-                              '<%= order._id %>',
-                              '<%= item.productId._id %>',
-                              'Shipped'
-                            );
-                            return false;
-                          "
-                          style="display: inline"
-                        >
-                          <button class="btn btn-primary btn-sm" type="submit">Ship</button>
-                        </form>
-                        <% } else if (item.status === "Cancelled") { %>
-                        <p>CANCELLED</p>
-                        <% } else if (item.status === "Shipped") { %>
-                        <form
-                          onsubmit="
-                            updateOrderStatus(
-                              event,
-                              '<%= order._id %>',
-                              '<%= item.productId._id %>',
-                              'Cancelled'
-                            );
-                            return false;
-                          "
-                          style="display: inline"
-                        >
-                          <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
-                        </form>
-                        <form
-                          onsubmit="
-                            updateOrderStatus(
-                              event,
-                              '<%= order._id %>',
-                              '<%= item.productId._id %>',
-                              'Delivered'
-                            );
-                            return false;
-                          "
-                          style="display: inline"
-                        >
-                          <button class="btn btn-success btn-sm" type="submit">Delivered</button>
-                        </form>
-                        <% } else if (item.status === "Delivered") { %>
-                        <p>DELIVERED</p>
-                        <% } %>
-                      </td>
-                    </tr>
-                    <% }) %>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colspan="2">Discount(code: <%= order.couponCode %>)</td>
-                      <td class="text-danger text-end">
-                        -₹<%= order.priceDetails.discountAmount %>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">Subtotal</td>
-                      <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">Delivery charge</td>
-                      <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">Sales Tax</td>
-                      <td class="text-end"><%= order.priceDetails.salesTax %></td>
-                    </tr>
-                    <tr class="fw-bold">
-                      <td colspan="2">TOTAL</td>
-                      <td class="text-end">₹<%= order.totalCost %></td>
-                    </tr>
-                  </tfoot>
-                </table>
+
+                <div class="card mb-4">
+                  <div class="card-header bg-dark text-white">
+                    <h6 class="mb-0">Delivery Address</h6>
+                  </div>
+                  <div class="card-body">
+                    <address class="mb-0">
+                      <strong><%= order.deliveryAddress.address.name %></strong><br />
+                      <%= order.deliveryAddress.address.houseName %><br />
+                      <%= order.deliveryAddress.address.street %>,
+                      <%= order.deliveryAddress.address.city %><br />
+                      <%= order.deliveryAddress.address.district %>,
+                      <%= order.deliveryAddress.address.state %>
+                      -
+                      <%= order.deliveryAddress.address.pinCode %>
+                    </address>
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-dark w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#invoiceModal"
+                >
+                  <i class="fas fa-file-invoice me-2"></i> View Invoice
+                </button>
               </div>
             </div>
           </div>
-          <div class="col-lg-4">
-            <div class="card mb-4">
-              <div class="card-body">
-                <h3 class="h6">Payment Method</h3>
-                <p>
-                  <%= order.paymentMethod %> <br />
-                  Total: ₹<%= order.totalCost %>
-                  <span class="badge bg-success rounded-pill">PAID</span>
-                </p>
+        </div>
+
+        <!-- Invoice Modal -->
+        <div
+          class="modal fade"
+          id="invoiceModal"
+          tabindex="-1"
+          aria-labelledby="invoiceModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="invoiceModalLabel">
+                  Invoice - <%= order.uniqueOrderId %>
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
-            </div>
-            <div class="card mb-4">
-              <div class="card-body">
-                <h3 class="h6">Billing Address</h3>
-                <address>
-                  <strong><%= order.deliveryAddress.address.name %></strong><br />
-                  <%= order.deliveryAddress.address.houseName %><br />
-                  <%= order.deliveryAddress.address.street %>,<%= order.deliveryAddress.address.city %><br />
-                  <%= order.deliveryAddress.address.district %><br />
-                  <%= order.deliveryAddress.address.state %>-<%= order.deliveryAddress.address.pinCode %><br />
-                  <!-- <abbr title="Phone">P:</abbr> (123) 456-7890 -->
-                </address>
+              <div class="modal-body p-4">
+                <div class="row mb-4">
+                  <div class="col-6">
+                    <img src="/test.jpg" alt="Logo" height="40" />
+                  </div>
+                  <div class="col-6 text-end">
+                    <h4>Invoice</h4>
+                    <p class="mb-0">Order #<%= order.uniqueOrderId %></p>
+                    <p>Date: <%= new Date(order.createdAt).toLocaleDateString('en-IN') %></p>
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col-6">
+                    <strong>Billed To:</strong><br />
+                    <%= order.deliveryAddress.address.name %><br />
+                    <%= order.deliveryAddress.address.houseName %><br />
+                    <%= order.deliveryAddress.address.street %>,
+                    <%= order.deliveryAddress.address.city %><br />
+                    <%= order.deliveryAddress.address.district %>,
+                    <%= order.deliveryAddress.address.state %>
+                    -
+                    <%= order.deliveryAddress.address.pinCode %>
+                  </div>
+                  <div class="col-6 text-end">
+                    <strong>Shipped To:</strong><br />
+                    Same as billing address
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% order.items.forEach((item, index) => { %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= item.productId.name %></td>
+                        <td><%= item.quantity %></td>
+                        <td>₹<%= item.productId.price.toFixed(2) %></td>
+                        <td>₹<%= (item.quantity * item.productId.price).toFixed(2) %></td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="4" class="text-end fw-bold">Subtotal</td>
+                        <td>₹<%= order.priceDetails.subTotal.toFixed(2) %></td>
+                      </tr>
+                      <% if (order.couponCode) { %>
+                      <tr>
+                        <td colspan="4" class="text-end text-danger fw-bold">
+                          Discount (<%= order.couponCode %>)
+                        </td>
+                        <td class="text-danger">
+                          -₹<%= order.priceDetails.discountAmount.toFixed(2) %>
+                        </td>
+                      </tr>
+                      <% } %>
+                      <tr>
+                        <td colspan="4" class="text-end fw-bold">Delivery Charge</td>
+                        <td>₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
+                      </tr>
+                      <tr>
+                        <td colspan="4" class="text-end fw-bold">Sales Tax</td>
+                        <td><%= order.priceDetails.salesTax %></td>
+                      </tr>
+                      <tr class="table-active">
+                        <td colspan="4" class="text-end fw-bold fs-5">TOTAL</td>
+                        <td class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+                <button type="button" class="btn btn-dark" onclick="window.print()">
+                  <i class="fas fa-print me-2"></i> Print Invoice
+                </button>
               </div>
             </div>
           </div>
+        </div>
+        <% } else { %>
+        <div class="alert alert-danger text-center py-5">
+          <h4>Order not found</h4>
+          <a href="/admin/ordersList" class="btn btn-dark mt-3">Back to Orders</a>
         </div>
         <% } %>
-      </section>
-    </main>
-    <!-- Invoice Modal -->
-    <div
-      class="modal fade"
-      id="invoiceModal"
-      tabindex="-1"
-      aria-labelledby="invoiceModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="invoiceModalLabel">Invoice</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <!-- Invoice content will be here -->
-            <% if (order) { %>
-            <div class="container">
-              <div class="row">
-                <!-- BEGIN INVOICE -->
-                <div class="col-xs-12">
-                  <div class="grid invoice">
-                    <div class="grid-body">
-                      <div class="invoice-title">
-                        <div class="row">
-                          <div class="col-xs-12">
-                            <img src="/images/test.jpg" alt="Brand Logo" height="35" />
-                          </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                          <div class="col-xs-12">
-                            <h2>
-                              Invoice<br />
-                              <span class="small">Order #<%= order._id %></span>
-                            </h2>
-                          </div>
-                        </div>
-                      </div>
-                      <hr />
-                      <div class="row">
-                        <div class="col-xs-6">
-                          <address>
-                            <strong>Billed To:</strong><br />
-                            <%= order.deliveryAddress.address.name %><br />
-                            <%= order.deliveryAddress.address.houseName %><br />
-                            <%= order.deliveryAddress.address.street %>,
-                            <%= order.deliveryAddress.address.city %><br />
-                            <%= order.deliveryAddress.address.district %>,
-                            <%= order.deliveryAddress.address.state %>
-                            -
-                            <%= order.deliveryAddress.address.pinCode %>
-                          </address>
-                        </div>
-                        <div class="col-xs-6 text-right">
-                          <address>
-                            <strong>Shipped To:</strong><br />
-                            <%= order.deliveryAddress.address.name %><br />
-                            <%= order.deliveryAddress.address.houseName %><br />
-                            <%= order.deliveryAddress.address.street %>,
-                            <%= order.deliveryAddress.address.city %><br />
-                            <%= order.deliveryAddress.address.district %>,
-                            <%= order.deliveryAddress.address.state %>
-                            -
-                            <%= order.deliveryAddress.address.pinCode %>
-                          </address>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xs-6">
-                          <address>
-                            <strong>Payment Method:</strong><br />
-                            <%= order.paymentMethod %><br />
-                          </address>
-                        </div>
-                        <div class="col-xs-6 text-right">
-                          <address>
-                            <strong>Order Date:</strong><br />
-                            <%= new Date(order.createdAt).toDateString() %>
-                          </address>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-12">
-                          <h3>ORDER SUMMARY</h3>
-                          <table class="table table-striped">
-                            <thead>
-                              <tr class="line">
-                                <td><strong>#</strong></td>
-                                <td class="text-center"><strong>ITEM</strong></td>
-                                <td class="text-center"><strong>QTY</strong></td>
-                                <td class="text-right"><strong>RATE</strong></td>
-                                <td class="text-right"><strong>SUBTOTAL</strong></td>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <% order.items.forEach((item, index) => { %>
-                              <tr>
-                                <td><%= index + 1 %></td>
-                                <td>
-                                  <strong><%= item.productId.name %></strong>
-                                </td>
-                                <td class="text-center"><%= item.quantity %></td>
-                                <td class="text-center">₹<%= item.productId.currentPrice %></td>
-                                <td class="text-right">
-                                  ₹<%= item.quantity * item.productId.currentPrice %>
-                                </td>
-                              </tr>
-                              <% }); %>
-                              <tr>
-                                <td colspan="3"></td>
-                                <td class="text-right"><strong>Subtotal</strong></td>
-                                <td class="text-right">
-                                  <strong>₹<%= order.priceDetails.subTotal %></strong>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"></td>
-                                <td class="text-right"><strong>Discount</strong></td>
-                                <td class="text-right">
-                                  <strong>-₹<%= order.priceDetails.discountAmount %></strong>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"></td>
-                                <td class="text-right"><strong>Delivery Charge</strong></td>
-                                <td class="text-right">
-                                  <strong>₹<%= order.priceDetails.deliveryCharge %></strong>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"></td>
-                                <td class="text-right"><strong>Sales Tax</strong></td>
-                                <td class="text-right">
-                                  <strong><%= order.priceDetails.salesTax %></strong>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"></td>
-                                <td class="text-right"><strong>Total</strong></td>
-                                <td class="text-right">
-                                  <strong>₹<%= order.totalCost %></strong>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- END INVOICE -->
-              </div>
-            </div>
-            <% } %>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="window.print()">
-              Print Invoice
-            </button>
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
-    <footer class="footer">
-      <div class="container">
-        <p class="copyright">© 2024 ShoesZone.</p>
-      </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-      async function updateOrderStatus(event, orderId, productId, status) {
-        event.preventDefault();
-
-        try {
-          const response = await fetch(
-            `/admin/updateOrderStatus/${orderId}/${productId}?status=${status}`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (response.ok) {
-            document.getElementById(`item-status-${productId}`).textContent = status;
-            document.getElementById(`action-buttons-${productId}`).innerHTML = getActionButtons(
-              status,
-              orderId,
-              productId
-            );
-            location.reload();
-          } else {
-            console.error("Failed to update order status");
-          }
-        } catch (error) {
-          console.error("Error:", error);
+      // Status badge color helper
+      function getStatusClass(status) {
+        switch (status) {
+          case "Pending":
+            return "bg-warning";
+          case "Shipped":
+            return "bg-info";
+          case "Delivered":
+            return "bg-success";
+          case "Cancelled":
+            return "bg-danger";
+          default:
+            return "bg-secondary";
         }
       }
 
-      function getActionButtons(status, orderId, productId) {
-        let buttons = "";
+      // Update order item status with confirmation
+      async function updateOrderStatus(orderId, productId, newStatus) {
+        const action = newStatus.toLowerCase();
+        const result = await Swal.fire({
+          title: `Confirm ${action}?`,
+          text: `This will change the item status to "${newStatus}".`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor:
+            action === "cancelled" ? "#d33" : action === "delivered" ? "#28a745" : "#007bff",
+          confirmButtonText: `Yes, ${action.toUpperCase()}`,
+        });
 
-        if (status === "Pending") {
-          buttons += `
-        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Cancelled'); return false;" style="display: inline;">
-          <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
-        </form>
-        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Shipped'); return false;" style="display: inline;">
-          <button class="btn btn-primary btn-sm" type="submit">Ship</button>
-        </form>
-      `;
-        } else if (status === "Cancelled") {
-          buttons += `
-        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Shipped'); return false;" style="display: inline;">
-          <button class="btn btn-primary btn-sm" type="submit">Ship</button>
-        </form>
-      `;
-        } else if (status === "Shipped") {
-          buttons += `
-        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Cancelled'); return false;" style="display: inline;">
-          <button class="btn btn-danger btn-sm" type="submit">Cancel</button>
-        </form>
-        <form onsubmit="updateOrderStatus(event, '${orderId}', '${productId}', 'Delivered'); return false;" style="display: inline;">
-          <button class="btn btn-success btn-sm" type="submit">Delivered</button>
-        </form>
-      `;
-        } else if (status === "Delivered") {
-          buttons += "<p>DELIVERED</p>";
+        if (!result.isConfirmed) return;
+
+        try {
+          const res = await fetch(
+            `/admin/updateOrderStatus/${orderId}/${productId}?status=${newStatus}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          if (res.ok) {
+            // Update UI live
+            const statusEl = document.getElementById(`item-status-${productId}`);
+            const actionsEl = document.getElementById(`action-buttons-${productId}`);
+
+            statusEl.textContent = newStatus;
+            statusEl.className = `badge ${getStatusClass(newStatus)}`;
+
+            // Update action buttons based on new status
+            if (newStatus === "Pending") {
+              actionsEl.innerHTML = `
+              <button class="btn btn-sm btn-danger me-1" onclick="updateOrderStatus('${orderId}', '${productId}', 'Cancelled')">Cancel</button>
+              <button class="btn btn-sm btn-primary" onclick="updateOrderStatus('${orderId}', '${productId}', 'Shipped')">Ship</button>
+            `;
+            } else if (newStatus === "Shipped") {
+              actionsEl.innerHTML = `
+              <button class="btn btn-sm btn-danger me-1" onclick="updateOrderStatus('${orderId}', '${productId}', 'Cancelled')">Cancel</button>
+              <button class="btn btn-sm btn-success" onclick="updateOrderStatus('${orderId}', '${productId}', 'Delivered')">Delivered</button>
+            `;
+            } else {
+              actionsEl.innerHTML = `<span class="text-muted">${newStatus}</span>`;
+            }
+
+            Swal.fire("Success!", `Item status updated to ${newStatus}.`, "success");
+          } else {
+            Swal.fire("Error!", "Failed to update status.", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          Swal.fire("Error!", "Network error occurred.", "error");
         }
-
-        return buttons;
       }
     </script>
   </body>

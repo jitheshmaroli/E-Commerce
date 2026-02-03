@@ -3,220 +3,280 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CATEGORY LIST</title>
-    <!-- Bootstrap CSS -->
+    <title>Category List - Admin</title>
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css"
+    />
+    <link rel="stylesheet" href="/css/theme.css" />
     <link rel="stylesheet" href="/css/adminCategoryList.css" />
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="/test.jpg"
-            alt=""
-            width="30"
-            height="24"
-            class="d-inline-block align-text-top"
-          />
-          SportZilon
+        <a class="navbar-brand fw-bold" href="/admin">
+          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
+          SportZilon Admin
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
               <a
-                class="nav-link dropdown-toggle"
+                class="nav-link dropdown-toggle text-white"
                 href="#"
-                id="navbarDropdown"
+                id="adminDropdown"
                 role="button"
                 data-bs-toggle="dropdown"
-                aria-expanded="false"
               >
                 ADMIN
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li>
-                  <hr class="dropdown-divider" />
-                </li>
-                <li>
-                  <a class="dropdown-item" href="/admin/logout">Logout</a>
-                </li>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
               </ul>
             </li>
           </ul>
         </div>
       </div>
     </nav>
-    <main class="main">
-      <aside class="sidebar">
-        <div class="">
-          <div class="list-group sidebar-list" id="myListGroup">
-            <a href="/admin">
-              <button type="button" class="list-group-item list-group-item-action">HOME</button>
-            </a>
-            <a href="/admin/allproducts">
-              <button type="button" class="list-group-item list-group-item-action">
-                ALL PRODUCTS
-              </button>
-            </a>
-            <a href="/admin/ordersList">
-              <button type="button" class="list-group-item list-group-item-action">
-                ORDERS LIST
-              </button>
-            </a>
-            <a href="/admin/usersList">
-              <button type="button" class="list-group-item list-group-item-action">
-                USERS LIST
-              </button>
-            </a>
-            <a href="/admin/categoryList">
-              <button type="button" class="list-group-item list-group-item-action">
-                CATEGORY LIST
-              </button>
-            </a>
-            <a href="/admin/couponList">
-              <button type="button" class="list-group-item list-group-item-action">
-                COUPON LIST
-              </button>
-            </a>
-            <a href="/admin/offers">
-              <button type="button" class="list-group-item list-group-item-action">OFFERS</button>
-            </a>
-          </div>
+
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
+        <div class="list-group list-group-flush">
+          <a
+            href="/admin"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-home me-2"></i> HOME
+          </a>
+          <a
+            href="/admin/allproducts"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-box me-2"></i> ALL PRODUCTS
+          </a>
+          <a
+            href="/admin/ordersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
+          </a>
+          <a
+            href="/admin/usersList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-users me-2"></i> USERS LIST
+          </a>
+          <a
+            href="/admin/categoryList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
+          >
+            <i class="fas fa-tags me-2"></i> CATEGORY LIST
+          </a>
+          <a
+            href="/admin/couponList"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-gift me-2"></i> COUPON LIST
+          </a>
+          <a
+            href="/admin/offers"
+            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
+          >
+            <i class="fas fa-percentage me-2"></i> OFFERS
+          </a>
         </div>
       </aside>
-      <section class="content">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">ALL CATEGORIES</li>
-          </ol>
-        </nav>
-        <a href="/admin/addcategory" class="btn btn-primary mb-2">NEW CATEGORY</a>
-        <div class="container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">CATEGORY NAME</th>
-                <th scope="col">CATEGORY DESCRIPTION</th>
-                <th scope="col">STATUS</th>
-                <th scope="col">ACTION</th>
-              </tr>
-            </thead>
-            <% categoryList.forEach(category => { %>
-            <tbody>
-              <tr>
-                <td><%= category.categoryName %></td>
-                <td><%= category.description %></td>
-                <td>
-                  <span
-                    id="status-<%= category._id %>"
-                    class="<%= category.isBlocked ? 'text-danger' : 'text-success' %>"
-                  >
-                    <%= category.isBlocked ? 'INACTIVE' : 'ACTIVE' %>
-                  </span>
-                </td>
-                <td>
-                  <a
-                    href="/admin/categoryList/edit/<%= category._id %>"
-                    class="btn btn-sm btn-warning"
-                    ><i class="fas fa-edit"></i
-                  ></a>
-                  <button
-                    data-id="<%= category._id %>"
-                    data-status="<%= category.isBlocked %>"
-                    class="btn toggle-status-btn btn-sm <%= category.isBlocked ? 'btn-success' : 'btn-danger' %>"
-                  >
-                    <%= category.isBlocked ? 'ACTIVATE' : 'DEACTIVATE' %>
-                  </button>
-                  <!-- <form action="/admin/categoryList/delete/< %= category._id %>?_method=DELETE" method="POST" style="display: inline">
-                    <button type="submit" class="btn btn-sm btn-danger">DELETE</button>
-                  </form> -->
-                </td>
-              </tr>
-            </tbody>
-            <% }) %>
-          </table>
-        </div>
-      </section>
-    </main>
-    <footer class="footer">
-      <div class="container">
-        <p class="copyright">© 2024 ShoesZone.</p>
-      </div>
-    </footer>
 
-    <!-- Bootstrap JS -->
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-      crossorigin="anonymous"
-    ></script>
+      <!-- Main Content -->
+      <main class="content flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="mb-0">Category List</h2>
+          <a href="/admin/addcategory" class="btn btn-dark px-4 py-2">
+            <i class="fas fa-plus me-2"></i> Add New Category
+          </a>
+        </div>
+
+        <% if (categoryList && categoryList.length > 0) { %>
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table id="categoryTable" class="table table-hover table-striped align-middle">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% categoryList.forEach(category => { %>
+                  <tr data-category-id="<%= category._id %>">
+                    <td class="fw-bold"><%= category.categoryName %></td>
+                    <td><%= category.description || '—' %></td>
+                    <td>
+                      <span
+                        id="status-<%= category._id %>"
+                        class="badge <%= category.isBlocked ? 'bg-danger' : 'bg-success' %>"
+                      >
+                        <%= category.isBlocked ? 'INACTIVE' : 'ACTIVE' %>
+                      </span>
+                    </td>
+                    <td>
+                      <a
+                        href="/admin/categoryList/edit/<%= category._id %>"
+                        class="btn btn-warning btn-sm me-2"
+                        title="Edit"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button
+                        class="btn btn-sm toggle-status-btn <%= category.isBlocked ? 'btn-success' : 'btn-danger' %>"
+                        data-id="<%= category._id %>"
+                        data-status="<%= category.isBlocked %>"
+                        title="<%= category.isBlocked ? 'Activate' : 'Deactivate' %>"
+                      >
+                        <%= category.isBlocked ? 'ACTIVATE' : 'DEACTIVATE' %>
+                      </button>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <% } else { %>
+        <div class="alert alert-info text-center py-5">
+          <i class="fas fa-tags fa-3x mb-3 text-muted"></i>
+          <h4>No categories found</h4>
+          <p class="text-muted">Click "Add New Category" to create your first category</p>
+        </div>
+        <% } %>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        document.body.addEventListener("click", function (event) {
-          if (event.target.classList.contains("toggle-status-btn")) {
-            const categoryId = event.target.getAttribute("data-id");
-            const isBlocked = event.target.getAttribute("data-status");
-            console.log(categoryId, isBlocked);
-            toggleStatus(categoryId, isBlocked, event.target);
+      $(document).ready(function () {
+        $("#categoryTable").DataTable({
+          responsive: true,
+          pageLength: 10,
+          lengthMenu: [5, 10, 25, 50],
+          order: [[0, "asc"]],
+          language: {
+            search: "Search categories:",
+            emptyTable: "No categories found",
+          },
+        });
+      });
+
+      // Toggle Status with SweetAlert
+      document.querySelectorAll(".toggle-status-btn").forEach((btn) => {
+        btn.addEventListener("click", async function () {
+          const categoryId = this.dataset.id;
+          const currentStatus = this.dataset.status === "true";
+          const action = currentStatus ? "activate" : "deactivate";
+
+          const result = await Swal.fire({
+            title: `Are you sure?`,
+            text: `This will ${action} the category and ${action} all products in it!`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: currentStatus ? "#28a745" : "#d33",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: `Yes, ${action.toUpperCase()} it!`,
+          });
+
+          if (result.isConfirmed) {
+            try {
+              const res = await fetch(`/admin/categoryList/toggleStatus/${categoryId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isBlocked: !currentStatus }),
+              });
+
+              if (!res.ok) {
+                const text = await res.text();
+                console.error("Server responded with non-OK status:", res.status, text);
+                throw new Error(`Server error: ${res.status} - ${text}`);
+              }
+
+              let data;
+              try {
+                data = await res.json();
+              } catch (jsonErr) {
+                console.warn("JSON parse failed, but status updated anyway:", jsonErr);
+                data = { success: true, isBlocked: !currentStatus };
+              }
+
+              if (data.success) {
+                const statusBadge = document.querySelector(`#status-${categoryId}`);
+                const toggleBtn = this;
+
+                if (data.isBlocked) {
+                  statusBadge.textContent = "INACTIVE";
+                  statusBadge.classList.remove("bg-success");
+                  statusBadge.classList.add("bg-danger");
+                  toggleBtn.textContent = "ACTIVATE";
+                  toggleBtn.classList.remove("btn-danger");
+                  toggleBtn.classList.add("btn-success");
+                  toggleBtn.dataset.status = "true";
+                } else {
+                  statusBadge.textContent = "ACTIVE";
+                  statusBadge.classList.remove("bg-danger");
+                  statusBadge.classList.add("bg-success");
+                  toggleBtn.textContent = "DEACTIVATE";
+                  toggleBtn.classList.remove("btn-success");
+                  toggleBtn.classList.add("btn-danger");
+                  toggleBtn.dataset.status = "false";
+                }
+
+                Swal.fire({
+                  icon: "success",
+                  title: "Updated!",
+                  text: `Category ${data.isBlocked ? "deactivated" : "activated"} successfully.`,
+                  timer: 1800,
+                  showConfirmButton: false,
+                });
+              } else {
+                Swal.fire("Error!", data.message || "Failed to update status.", "error");
+              }
+            } catch (err) {
+              console.error("Toggle error:", err);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong, but status may have changed. Please refresh.",
+              });
+            }
           }
         });
       });
-      function toggleStatus(categoryId, currentStatus, toggleButton) {
-        fetch(`/admin/categoryList/toggleStatus/${categoryId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ isBlocked: !currentStatus }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              const statusSpan = document.getElementById(`status-${categoryId}`);
-              if (data.isBlocked) {
-                statusSpan.textContent = "INACTIVE";
-                statusSpan.classList.remove("text-success");
-                statusSpan.classList.add("text-danger");
-                toggleButton.textContent = "ACTIVATE";
-                toggleButton.classList.remove("btn-danger");
-                toggleButton.classList.add("btn-success");
-              } else {
-                statusSpan.textContent = "ACTIVE";
-                statusSpan.classList.remove("text-danger");
-                statusSpan.classList.add("text-success");
-                toggleButton.textContent = "DEACTIVATE";
-                toggleButton.classList.remove("btn-success");
-                toggleButton.classList.add("btn-danger");
-              }
-
-              toggleButton.onclick = () => toggleStatus(categoryId, data.isBlocked);
-              location.reload();
-            } else {
-              alert("Failed to update category status");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            alert("An error occurred while updating category status");
-          });
-      }
     </script>
   </body>
 </html>
