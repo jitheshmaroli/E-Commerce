@@ -103,30 +103,29 @@ const orderDetails = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   const { orderId, productId } = req.params;
   const status = req.query.status;
+
   try {
     const order = await Order.findById(orderId);
 
-    if (!order) {
-      return res.status(404).send("Order not found");
+    if (!order) return res.status(404).json({ error: "Order not found" });
+
+    const item = order.items.find((i) => i.productId.toString() === productId);
+
+    if (!item) return res.status(404).json({ error: "Item not found" });
+
+    item.status = status;
+
+    if (status === "Shipped") {
+      item.shippedAt = item.shippedAt || new Date();
+    } else if (status === "Delivered") {
+      item.deliveredAt = item.deliveredAt || new Date();
     }
 
-    order.items.forEach((item) => {
-      if (item.productId.toString() === productId) {
-        if (status === "Cancelled") {
-          item.status = "Cancelled";
-        } else if (status === "Shipped") {
-          item.status = "Shipped";
-        } else if (status === "Delivered") {
-          item.status = "Delivered";
-        }
-      }
-    });
-
     await order.save();
-
-    res.json();
-  } catch (error) {
-    res.status(500).send(error.message);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 

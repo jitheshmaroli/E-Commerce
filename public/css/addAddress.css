@@ -32,6 +32,64 @@
   margin: 0;
 }
 
+/* Validation styles */
+.form-group {
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.field-error {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Checkbox Styling - Black Theme */
+.form-check-input {
+  accent-color: #000000 !important;          /* Black when checked */
+  border-color: #000000 !important;          /* Black border unchecked */
+  background-color: #ffffff !important;      /* White bg unchecked */
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.2rem;                        /* Better vertical alignment */
+}
+
+.form-check-input:checked {
+  background-color: #000000 !important;      /* Black fill when checked */
+  border-color: #000000 !important;
+}
+
+.form-check-label {
+  color: #000000;
+  font-weight: 500;
+  margin-left: 0.5rem;                       /* Space between checkbox and text */
+  cursor: pointer;
+}
+
+/* Make checkbox + label inline properly */
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.5rem;                               /* Better spacing */
+}
+
+/* Fix if checkbox takes full line */
+.form-check-input + .form-check-label {
+  flex: 1;
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 576px) {
   .address-form {

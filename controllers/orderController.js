@@ -81,20 +81,56 @@ const placeOrder = async (req, res) => {
         return res.json({ online: true, orderId, razorpayOrder });
       }
     } else if (paymentMode === "wallet") {
-      order.paymentMethod = "wallet";
-      order.paymentStatus = "confirmed";
-      await Order.create(order);
-
-      if (!user.wallet >= totalCost) {
-        return res.status(400).json({ wallet: false, error: "insufficient balance" });
+      if (user.wallet < totalCost) {
+        return res.status(400).json({
+          success: false,
+          error: "Insufficient wallet balance",
+          currentBalance: user.wallet,
+          required: totalCost,
+        });
       }
-      //user.wallet -= totalCost;
+
+      order.paymentMethod = "wallet";
+      order.paymentStatus = "pending";
+
+      const createdOrder = await Order.create(order);
+
       const type = "debit";
-      await userController.updateWallet(order.userId, totalCost, order._id, type);
-      //await user.save();
+      const walletResult = await userController.updateUserWallet(
+        user._id,
+        totalCost,
+        createdOrder._id,
+        type
+      );
+
+      if (!walletResult || walletResult.success === false) {
+        await Order.findByIdAndDelete(createdOrder._id);
+        return res.status(400).json({
+          success: false,
+          error: walletResult?.error || "Failed to deduct wallet balance",
+        });
+      }
+
+      const confirmedOrder = await Order.findByIdAndUpdate(
+        createdOrder._id,
+        { $set: { paymentStatus: "confirmed" } },
+        { new: true }
+      );
+
+      if (!confirmedOrder) {
+        return res.status(500).json({
+          success: false,
+          error: "Failed to confirm order status",
+        });
+      }
 
       await cartController.updateProductStock(validatedOrderItems);
-      return res.status(200).json({ cod: true, order });
+
+      return res.status(200).json({
+        success: true,
+        wallet: true,
+        order: confirmedOrder,
+      });
     }
   } catch (error) {
     console.error("Error placing order:", error);
@@ -402,6 +438,124 @@ const approveReturn = async (req, res) => {
   }
 };
 
+const cancelSingleItem = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+
+    const user = await User.findOne({
+      email: req.session.userId || req.session.passport?.user?.userId,
+    });
+
+    if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const order = await Order.findById(orderId).populate("items.productId");
+
+    if (!order) return res.status(404).json({ success: false, error: "Order not found" });
+
+    const itemIndex = order.items.findIndex((i) => i.productId._id.toString() === itemId);
+
+    if (itemIndex === -1) return res.status(404).json({ success: false, error: "Item not found" });
+
+    const item = order.items[itemIndex];
+
+    if (item.status !== "Pending") {
+      return res.status(400).json({ success: false, error: "Only pending items can be cancelled" });
+    }
+
+    const product = await Product.findById(item.productId._id);
+    if (product) {
+      product.stock += Number(item.quantity);
+      await product.save();
+    }
+
+    const productPrice = Number(item.productId.price || 0);
+    const quantity = Number(item.quantity || 0);
+
+    const itemBasePrice = productPrice * quantity;
+
+    let discountPortion = 0;
+    const originalSubTotal = Number(order.priceDetails?.subTotal || 0);
+
+    if (
+      order.couponCode &&
+      Number(order.priceDetails?.discountAmount) > 0 &&
+      originalSubTotal > 0
+    ) {
+      const itemContribution = itemBasePrice / originalSubTotal;
+      discountPortion = Number(order.priceDetails.discountAmount) * itemContribution;
+    }
+
+    const itemPriceAfterDiscount = itemBasePrice - discountPortion;
+
+    let itemTax = 0;
+    const originalTotalBeforeTax =
+      originalSubTotal - Number(order.priceDetails?.discountAmount || 0);
+
+    if (originalTotalBeforeTax > 0) {
+      const taxRate = Number(order.priceDetails?.salesTax || 0) / originalTotalBeforeTax;
+      itemTax = itemPriceAfterDiscount * taxRate;
+    }
+
+    let refundAmount = itemPriceAfterDiscount + itemTax;
+
+    refundAmount = Math.max(0, Number(refundAmount.toFixed(2)));
+
+    if (isNaN(refundAmount) || refundAmount <= 0) {
+      console.error(" Refund calculation error:", {
+        itemBasePrice,
+        discountPortion,
+        itemTax,
+        refundAmount,
+      });
+      return res.status(500).json({ success: false, error: "Refund calculation failed" });
+    }
+
+    order.totalCost = Math.max(0, Number(order.totalCost || 0) - refundAmount);
+    order.priceDetails.subTotal = Math.max(0, originalSubTotal - itemBasePrice);
+    order.priceDetails.discountAmount = Math.max(
+      0,
+      Number(order.priceDetails.discountAmount || 0) - discountPortion
+    );
+    order.priceDetails.salesTax = Math.max(0, Number(order.priceDetails.salesTax || 0) - itemTax);
+
+    item.status = "Cancelled";
+    item.cancelledAt = item.cancelledAt || new Date();
+
+    if (["wallet", "online"].includes(order.paymentMethod)) {
+      const walletResult = await userController.updateUserWallet(
+        user._id,
+        refundAmount,
+        order._id,
+        "credit"
+      );
+
+      if (!walletResult?.success) {
+        console.error("Wallet refund failed:", walletResult?.error);
+      }
+    }
+
+    await order.save();
+
+    if (order.items.every((i) => i.status === "Cancelled")) {
+      order.totalCost = 0;
+      order.priceDetails.subTotal = 0;
+      order.priceDetails.discountAmount = 0;
+      order.priceDetails.salesTax = 0;
+      await order.save();
+    }
+
+    req.session.success_msg = `Item cancelled successfully. ₹${refundAmount.toFixed(
+      2
+    )} refunded to wallet.`;
+
+    res.redirect("/order-history");
+  } catch (err) {
+    console.error("Cancel item error:", err);
+    req.session.error_msg = "Failed to cancel item. Please try again.";
+    res.redirect("/order-history");
+  }
+};
+
 module.exports = {
   placeOrder,
   orderDetails,
@@ -411,4 +565,5 @@ module.exports = {
   returnProductPage,
   initiateReturn,
   approveReturn,
+  cancelSingleItem,
 };

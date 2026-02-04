@@ -90,10 +90,22 @@ const checkoutView = async (req, res) => {
     let checkoutItems = [];
 
     const user = await User.findOne({
-      email: req.session.userId || req.session.passport.user.userId,
+      email: req.session.userId || req.session?.passport?.user?.userId,
     });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: "please log in to continue" });
+    }
+
     const userId = user._id;
     const address = await Address.findOne({ userId });
+
+    const Coupon = require("../models/coupon");
+    const availableCoupons = await Coupon.find({
+      expiryDate: { $gt: new Date() },
+    })
+      .sort({ createdAt: -1 })
+      .limit(5);
 
     if (productId && quantity) {
       const product = await Product.findById(productId);
@@ -164,6 +176,7 @@ const checkoutView = async (req, res) => {
       checkoutItems,
       addresses: address,
       user,
+      availableCoupons,
     });
   } catch (error) {
     console.error("Checkout error:", error);

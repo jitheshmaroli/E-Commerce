@@ -35,6 +35,9 @@ const OrderSchema = new Schema({
       returnReason: {
         type: String,
       },
+      shippedAt: { type: Date },
+      deliveredAt: { type: Date },
+      cancelledAt: { type: Date },
     },
   ],
   totalCost: {

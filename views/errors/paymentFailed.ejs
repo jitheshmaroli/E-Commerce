@@ -1,0 +1,54 @@
+<%- include('../includes/userHead.ejs') %>
+<link rel="stylesheet" href="/css/errorPages.css" />
+
+<main class="main-content d-flex align-items-center min-vh-100 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8 col-11">
+        <div class="card border-0 shadow-sm text-center p-4 p-md-5">
+          <div class="mb-4">
+            <div class="text-danger fs-1">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+          </div>
+
+          <h2 class="fw-bold text-dark mb-3">Payment Failed</h2>
+
+          <p class="text-muted mb-4">
+            <% if (typeof reason !== 'undefined' && reason) { %>
+            <strong>Reason:</strong>
+            <%= reason %>
+            <% } else { %>
+            Sorry, your payment could not be processed.
+            <% } %>
+          </p>
+
+          <div class="alert alert-danger border-0 bg-danger-subtle text-danger small mb-4">
+            <ul class="mb-0 text-start ps-4">
+              <li>Card declined or insufficient balance</li>
+              <li>Network issue or timeout</li>
+              <li>You cancelled the payment</li>
+            </ul>
+          </div>
+
+          <p class="text-muted small mb-4">
+            Order ID:
+            <strong><%= typeof orderId !== 'undefined' && orderId ? orderId : 'N/A' %></strong
+            ><br />
+            <% if (typeof orderId !== 'undefined' && orderId) { %>
+            If money was deducted, it will be refunded within 5–7 business days.
+            <% } %>
+          </p>
+
+          <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="/order-details/<%= orderId %>" class="btn btn-outline-secondary btn-lg px-5">
+              Order Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../includes/userFooter.ejs') %>

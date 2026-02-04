@@ -3,186 +3,291 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="/css/loginregister.css" />
+    <title>Sign Up - ShoeZone</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
+    <link rel="stylesheet" href="/css/auth-shared.css" />
   </head>
   <body>
     <header class="header">
       <div class="brand">
-        <img src="/test.jpg" alt="Brand Logo" />
-        <span class="brand-name">ShoeZone</span>
+        <a class="navbar-brand nav-link" style="color: aliceblue" href="/">
+          <img src="/test.jpg" alt="Brand Logo" />
+          <span class="brand-name">ShoeZone</span>
+        </a>
       </div>
     </header>
-    <div class="container mt-5">
-      <div class="form-container row">
-        <div class="signup-form col">
+
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+      <div class="form-container card shadow">
+        <div class="card-body p-4">
+          <h3 class="text-center mb-4">Create Account</h3>
+
           <% if (message) { %>
-          <h4 style="color: red; text-align: center"><%= message %></h4>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
           <% } %>
-          <h2>Create an account</h2>
-          <form action="/signup" id="signup-form" method="post">
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Name"
-              autocomplete="name"
-              required
-              maxlength="50"
-            />
-            <span id="name-error" class="error-message"></span>
 
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="Email"
-              required
-              autocomplete="email"
-              maxlength="50"
-            />
-            <span id="email-error" class="error-message"></span>
+          <form action="/signup" method="POST" id="signupForm" novalidate>
+            <div class="mb-4">
+              <label for="name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="name" name="name" required />
+              <div class="invalid-feedback">Name is required (min 3 characters)</div>
+            </div>
 
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Password"
-              autocomplete="on"
-              required
-              maxlength="20"
-            />
-            <span id="password-error" class="error-message"></span>
+            <div class="mb-4">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                required
+                autocomplete="email"
+              />
+              <div class="invalid-feedback">Please enter a valid email</div>
+            </div>
 
-            <input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              autocomplete="on"
-              value=""
-              placeholder="Confirm Password"
-              required
-              maxlength="20"
-            />
-            <span id="confirm-error" class="error-message"></span>
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  required
+                  minlength="8"
+                />
+                <span class="input-group-text toggle-password" id="togglePassword">
+                  <i class="bi bi-eye-slash"></i>
+                </span>
+              </div>
+              <small id="passwordHint" class="form-text text-muted d-block mt-1"></small>
+            </div>
 
-            <button type="submit" id="submit-btn" class="submit-btn mb-2 mt-2" disabled>
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  required
+                />
+                <span class="input-group-text toggle-password" id="toggleConfirm">
+                  <i class="bi bi-eye-slash"></i>
+                </span>
+              </div>
+              <div class="invalid-feedback" id="matchFeedback">Passwords do not match</div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-dark w-100 py-2" disabled>
               Create Account
             </button>
-            <a
-              href="/auth/google"
-              class="google-btn"
-              style="display: block; text-decoration: none; text-align: center"
-              >Sign in with Google</a
-            >
+
+            <a href="/auth/google" class="btn btn-outline-dark w-100 mt-3">
+              <i class="bi bi-google me-2"></i> Sign up with Google
+            </a>
+
+            <div class="text-center mt-4">
+              <a href="/login" class="text-muted">Already have an account? Log in</a>
+            </div>
           </form>
-          <div class="signup-link">
-            <a href="/login">click Here</a><span> to login if you are already registered</span>
-          </div>
         </div>
       </div>
     </div>
+
     <footer class="footer">
-      <p class="copyright">© 2024 ShoesZone.</p>
+      <p class="copyright">© 2026 ShoeZone</p>
     </footer>
 
-    <!-- Include Google Sign-In JavaScript SDK -->
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-
-    <script>
-      if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
-        window.location.href = "/signup";
-      }
-      (function () {
-        window.onpageshow = function (event) {
-          if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            window.location.reload();
-          }
-        };
-      })();
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       const nameInput = document.getElementById("name");
       const emailInput = document.getElementById("email");
-      const passwordInput = document.getElementById("password");
-      const confirmPasswordInput = document.getElementById("confirmPassword");
-      const submitButton = document.getElementById("submit-btn");
+      const pw = document.getElementById("password");
+      const cpw = document.getElementById("confirmPassword");
+      const submitBtn = document.getElementById("submitBtn");
+      const passwordHint = document.getElementById("passwordHint");
+      const matchFb = document.getElementById("matchFeedback");
 
-      const nameError = document.getElementById("name-error");
-      const emailError = document.getElementById("email-error");
-      const passwordError = document.getElementById("password-error");
-      const confirmError = document.getElementById("confirm-error");
+      const togglePw = document.getElementById("togglePassword");
+      const toggleCpw = document.getElementById("toggleConfirm");
 
-      nameInput.addEventListener("keyup", function () {
-        const name = nameInput.value;
-        const regex = /^[a-zA-Z]+$/;
-        if (!regex.test(name)) {
-          nameError.textContent = "Name can only contain letters.";
-          submitButton.disabled = true;
-        } else {
-          nameError.textContent = "";
-          validateForm();
+      function validateName() {
+        let value = nameInput.value.trim();
+
+        // Auto-clean multiple spaces
+        const cleaned = value.replace(/\s+/g, " ");
+        if (nameInput.value !== cleaned) {
+          nameInput.value = cleaned;
+          value = cleaned;
         }
-      });
 
-      // Email validation
-      emailInput.addEventListener("keyup", function () {
-        const email = emailInput.value;
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regex.test(email)) {
-          emailError.textContent = "Please enter a valid email address.";
-          submitButton.disabled = true;
-        } else {
-          emailError.textContent = "";
-          validateForm();
-        }
-      });
+        const hasContent = value.length > 0;
+        const hasMinLength = value.length >= 3;
+        const startsWithLetter = /^[a-zA-Z]/.test(value);
+        const onlyValidChars = /^[a-zA-Z][a-zA-Z\s]*[a-zA-Z]$/.test(value);
 
-      // Password validation - minimum 8 characters with uppercase, lowercase, number, and symbol
-      passwordInput.addEventListener("keyup", function () {
-        const password = passwordInput.value;
-        const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\da-zA-Z]).{8,}$/;
-        if (!regex.test(password)) {
-          passwordError.textContent =
-            "Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number, and 1 symbol.";
-          submitButton.disabled = true;
-        } else {
-          passwordError.textContent = "";
-          validateForm();
+        let errorMessage = "";
+        if (!hasContent) {
+          errorMessage = "Name is required";
+        } else if (!startsWithLetter) {
+          errorMessage = "Name must start with a letter";
+        } else if (!hasMinLength) {
+          errorMessage = "Name must be at least 3 characters";
+        } else if (!onlyValidChars) {
+          errorMessage = "Name can only contain letters and single spaces";
         }
-      });
 
-      // Confirm password validation
-      confirmPasswordInput.addEventListener("keyup", function () {
-        const confirmPassword = confirmPasswordInput.value;
-        const password = passwordInput.value;
-        if (confirmPassword !== password) {
-          confirmError.textContent = "Passwords do not match.";
-          submitButton.disabled = true;
-        } else {
-          confirmError.textContent = "";
-          validateForm();
-        }
-      });
+        // Update Bootstrap classes
+        const isInvalid = hasContent && errorMessage !== "";
+        nameInput.classList.toggle("is-invalid", isInvalid);
+        nameInput.classList.toggle("is-valid", hasContent && errorMessage === "");
 
-      // Function to check overall form validity and enable/disable submit button
-      function validateForm() {
-        if (
-          nameError.textContent === "" &&
-          emailError.textContent === "" &&
-          passwordError.textContent === "" &&
-          confirmError.textContent === ""
-        ) {
-          submitButton.disabled = false;
-        } else {
-          submitButton.disabled = true;
+        // Show custom message
+        const feedbackElement = nameInput.nextElementSibling;
+        if (feedbackElement) {
+          feedbackElement.textContent = errorMessage;
         }
+
+        return errorMessage === "";
       }
+
+      function validateEmail() {
+        const value = emailInput.value.trim();
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+        emailInput.classList.toggle("is-invalid", value.length > 0 && !isValid);
+        emailInput.classList.toggle("is-valid", isValid && value.length > 0);
+        return isValid;
+      }
+
+      function validatePassword() {
+        const value = pw.value;
+
+        if (value.length === 0) {
+          passwordHint.textContent = "";
+          passwordHint.className = "form-text text-muted";
+          pw.classList.remove("is-valid", "is-invalid");
+          return false;
+        }
+
+        const rules = [
+          { test: value.length >= 8, msg: "At least 8 characters required" },
+          { test: /[A-Z]/.test(value), msg: "At least one uppercase letter" },
+          { test: /[a-z]/.test(value), msg: "At least one lowercase letter" },
+          { test: /\d/.test(value), msg: "At least one number" },
+          {
+            test: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value),
+            msg: "At least one special character",
+          },
+        ];
+
+        const firstError = rules.find((rule) => !rule.test);
+
+        if (firstError) {
+          passwordHint.textContent = firstError.msg;
+          passwordHint.className = "form-text text-danger";
+          pw.classList.remove("is-valid");
+          pw.classList.add("is-invalid");
+          return false;
+        }
+
+        passwordHint.textContent = "Strong password ✓";
+        passwordHint.className = "form-text text-success";
+        pw.classList.remove("is-invalid");
+        pw.classList.add("is-valid");
+        return true;
+      }
+
+      function validateConfirmPassword() {
+        const passwordValue = pw.value;
+        const confirmValue = cpw.value;
+
+        if (confirmValue.length === 0) {
+          matchFb.style.display = "none";
+          cpw.classList.remove("is-invalid", "is-valid");
+          return false;
+        }
+
+        const isMatch = passwordValue === confirmValue;
+
+        matchFb.style.display = isMatch ? "none" : "block";
+        cpw.classList.toggle("is-invalid", !isMatch);
+        cpw.classList.toggle("is-valid", isMatch);
+
+        return isMatch;
+      }
+
+      function updateSubmitButton() {
+        const isNameValid = validateName();
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
+        const isConfirmValid = validateConfirmPassword();
+
+        submitBtn.disabled = !(
+          isNameValid &&
+          isEmailValid &&
+          isPasswordValid &&
+          (pw.value.length === 0 || isConfirmValid)
+        );
+      }
+
+      nameInput.addEventListener("input", () => {
+        validateName();
+        updateSubmitButton();
+      });
+
+      emailInput.addEventListener("input", () => {
+        validateEmail();
+        updateSubmitButton();
+      });
+
+      pw.addEventListener("input", () => {
+        validatePassword();
+        validateConfirmPassword();
+        updateSubmitButton();
+      });
+
+      cpw.addEventListener("input", () => {
+        validateConfirmPassword();
+        updateSubmitButton();
+      });
+
+      [nameInput, emailInput, pw, cpw].forEach((field) => {
+        field.addEventListener("blur", () => {
+          if (field.value.trim().length > 0) {
+            field.classList.add("was-validated");
+          }
+        });
+      });
+
+      // Toggle password visibility
+      togglePw.addEventListener("click", () => {
+        const isPassword = pw.type === "password";
+        pw.type = isPassword ? "text" : "password";
+        togglePw.innerHTML = `<i class="bi bi-eye${isPassword ? "-slash" : ""}"></i>`;
+      });
+
+      toggleCpw.addEventListener("click", () => {
+        const isPassword = cpw.type === "password";
+        cpw.type = isPassword ? "text" : "password";
+        toggleCpw.innerHTML = `<i class="bi bi-eye${isPassword ? "-slash" : ""}"></i>`;
+      });
+
+      // Initial check + disable submit by default
+      updateSubmitButton();
     </script>
   </body>
 </html>

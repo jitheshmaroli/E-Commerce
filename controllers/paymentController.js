@@ -67,7 +67,17 @@ const retryPayment = async (req, res) => {
   }
 };
 
+const paymentFailed = (req, res) => {
+  try {
+    const { orderId, reason } = req.query;
+    res.render("errors/paymentFailed", { orderId, reason });
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to load." });
+  }
+};
+
 module.exports = {
   verifyPayment,
   retryPayment,
+  paymentFailed,
 };

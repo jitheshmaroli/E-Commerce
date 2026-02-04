@@ -22,32 +22,45 @@ const addOfferView = async (req, res) => {
 };
 
 const addOffer = async (req, res) => {
-  const offerData = req.body;
-
   try {
+    let offerData = { ...req.body };
+
+    if (!offerData.product || offerData.product === "" || offerData.product === "None") {
+      delete offerData.product;
+    }
+    if (!offerData.category || offerData.category === "" || offerData.category === "None") {
+      delete offerData.category;
+    }
+
+    if (offerData.product === "all") {
+      offerData.product = null;
+      offerData.applyToAllProducts = true;
+    } else {
+      offerData.applyToAllProducts = false;
+    }
+    if (offerData.category === "all") {
+      offerData.category = null;
+      offerData.applyToAllCategories = true;
+    } else {
+      offerData.applyToAllCategories = false;
+    }
+
     const existingOffer = await Offer.findOne({
       name: offerData.name,
       offerType: offerData.offerType,
     });
 
     if (existingOffer) {
-      return res.status(400).send("Duplicate offer already exists.");
-    }
-
-    if (offerData.product === "all") {
-      offerData.product = null;
-      offerData.applyToAllProducts = true;
-    }
-    if (offerData.category === "all") {
-      offerData.category = null;
-      offerData.applyToAllCategories = true;
+      return res.status(400).json({ success: false, message: "Duplicate offer already exists." });
     }
 
     const newOffer = new Offer(offerData);
     await newOffer.save();
-    res.redirect("/admin/offers");
+
+    res.json({ success: true, message: "Offer created successfully" });
   } catch (error) {
-    res.status(400).send(error);
+    console.error("Add offer error:", error);
+    res.status(400).json({ success: false, message: error.message || "Failed to create offer" });
   }
 };
 
@@ -57,13 +70,11 @@ const applyOffers = async function () {
     endDate: { $gte: new Date() },
   });
 
-  // Apply category offers first
   const categoryOffers = activeOffers.filter((offer) => offer.offerType === "category");
   for (const offer of categoryOffers) {
     await applyCategoryOffer(offer);
   }
 
-  // Then apply product offers, which will override category offers if better
   const productOffers = activeOffers.filter((offer) => offer.offerType === "product");
   for (const offer of productOffers) {
     await applyProductOffer(offer);
@@ -173,7 +184,14 @@ const editOfferView = async (req, res) => {
 const updateOffer = async (req, res) => {
   try {
     const offerId = req.params.id;
-    const updateData = req.body;
+    let updateData = { ...req.body };
+
+    if (updateData.category === "" || updateData.category === "None") {
+      delete updateData.category;
+    }
+    if (updateData.product === "" || updateData.product === "None") {
+      delete updateData.product;
+    }
 
     if (updateData.product === "all") {
       updateData.product = null;
@@ -192,13 +210,17 @@ const updateOffer = async (req, res) => {
 
     const updatedOffer = await Offer.findByIdAndUpdate(offerId, updateData, {
       new: true,
+      runValidators: true,
     });
+
     if (!updatedOffer) {
-      return res.status(404).send("Offer not found");
+      return res.status(404).json({ success: false, message: "Offer not found" });
     }
-    res.redirect("/admin/offers");
+
+    res.json({ success: true, message: "Offer updated successfully" });
   } catch (error) {
-    res.status(400).send(error);
+    console.error("Update offer error:", error);
+    res.status(400).json({ success: false, message: error.message || "Failed to update offer" });
   }
 };
 
@@ -209,9 +231,9 @@ const deleteOffer = async (req, res) => {
     if (!deletedOffer) {
       return res.status(404).send("Offer not found");
     }
-    res.redirect("/admin/offers");
+    res.json({ success: true, message: "Offer deleted successfully" });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(400).json({ success: false, message: error.message || "Failed to delete offer" });
   }
 };
 

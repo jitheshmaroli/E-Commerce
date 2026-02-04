@@ -31,7 +31,7 @@ router.post(
   productController.updateProduct
 );
 router.post("/allProducts/removeImage", productController.removeImage);
-router.get(
+router.post(
   "/allProducts/delete/:productId",
   authentication.isAdminAuthenticated,
   productController.deleteProduct
@@ -49,7 +49,7 @@ router.get("/couponlist", authentication.isAdminAuthenticated, couponController.
 router.delete("/removecoupon/:couponId", couponController.deleteCoupon);
 router.get("/addcoupon", authentication.isAdminAuthenticated, couponController.addCouponView);
 router.post("/addcoupon", couponController.addCoupon);
-router.put("/editCoupon/:couponId", couponController.updateCoupon);
+router.post("/editCoupon/:couponId", couponController.updateCoupon);
 
 //offers
 router.get("/offers", offerController.listOffers);

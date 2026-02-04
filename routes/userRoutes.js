@@ -29,10 +29,16 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    req.session.isUserAuthenticated = true;
+    req.session.userId = req.user.email;
+
+    req.session.save((err) => {
+      if (err) console.error("Session save error:", err);
+      res.redirect("/");
+    });
+  }
 );
 
 // login, logout, signup routes
@@ -45,7 +51,7 @@ router.get("/logout", authController.logoutViewUser);
 //otp
 router.get("/verify-otp", authentication.otpAuthentication, otpController.verifyOtpView);
 router.post("/verify-otp", otpController.verifyOtpSignup);
-router.post("/resend-otp", otpController.resendSignupOtp);
+router.post("/resend-otp", otpController.resendOtp);
 
 //home
 router.get("/", shopController.shoppingHomeView);
@@ -58,14 +64,13 @@ router.post("/update-profile", userController.profilePhotoUpload, userController
 router.get("/address", authentication.isUserAuthenticated, addressController.addressesView);
 router.get("/addresses/add", authentication.isUserAuthenticated, addressController.addAddressView);
 router.post("/addresses/add", addressController.addAddress);
-router.post("/set-default-address/:addressId", addressController.setDefaultAddress);
 router.get(
   "/address/edit/:addressId",
   authentication.isUserAuthenticated,
   addressController.editAddressView
 );
 router.post("/address/edit", addressController.updateAddress);
-router.get(
+router.post(
   "/address/delete/:addressId",
   authentication.isUserAuthenticated,
   addressController.deleteAddress
@@ -130,6 +135,11 @@ router.get(
   orderController.orderDetails
 );
 router.post("/cancel-order/:orderId/:itemId", orderController.cancelOrder);
+router.post(
+  "/cancel-item/:orderId/:itemId",
+  authentication.isUserAuthenticated,
+  orderController.cancelSingleItem
+);
 router.get(
   "/review/:orderId/:productId",
   authentication.isUserAuthenticated,
@@ -140,6 +150,7 @@ router.get("/invoice", authentication.isUserAuthenticated, cartController.invoic
 router.post("/retry-payment", paymentController.retryPayment);
 router.get("/return-product/:orderId/:itemId", orderController.returnProductPage);
 router.post("/return-product/:orderId/:itemId", orderController.initiateReturn);
+router.get("/payment-failed", authentication.isUserAuthenticated, paymentController.paymentFailed);
 
 //product search
 router.get("/products", shopController.productSearchView);

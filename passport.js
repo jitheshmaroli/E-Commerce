@@ -1,12 +1,12 @@
 const passport = require("passport");
 const User = require("./models/user");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
+const bcrypt = require("bcrypt");
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
-
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
       passReqToCallback: true,
@@ -17,16 +17,16 @@ passport.use(
         let user = await User.findOne({ email: profile.email });
 
         if (!user) {
-          user = new User({
+          user = await new User({
             name: profile.displayName,
-            email: profile.email,
-          });
-          await user.save();
+            email: profile.emails[0].value,
+            password: await bcrypt.hash(Math.random().toString(36), 12), // random pw
+            isVerified: true,
+          }).save();
         }
 
         return done(null, user);
       } catch (error) {
-        console.error("Error during Google authentication:", error);
         return done(error);
       }
     }
@@ -34,15 +34,14 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, { userId: user.email, isUserAuthenticated: true });
+  done(null, user.email);
 });
 
-passport.deserializeUser(async (serializeUser, done) => {
+passport.deserializeUser(async (email, done) => {
   try {
-    const user = await User.findOne(serializeUser.email);
+    const user = await User.findOne({ email });
     done(null, user);
   } catch (error) {
-    console.error("Error deserializing user:", error);
     done(error);
   }
 });

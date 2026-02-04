@@ -69,6 +69,25 @@ return 'Pending'; }; %>
                             <%= item.status %>
                           </span>
 
+                          <!-- Simple Timeline -->
+                          <div class="mt-2 small text-muted">
+                            <p class="mb-0">
+                              Shipped: <%= item.shippedAt ? new
+                              Date(item.shippedAt).toLocaleString('en-IN', {dateStyle: 'short',
+                              timeStyle: 'short'}) : 'N/A' %>
+                            </p>
+                            <p class="mb-0">
+                              Delivered: <%= item.deliveredAt ? new
+                              Date(item.deliveredAt).toLocaleString('en-IN', {dateStyle: 'short',
+                              timeStyle: 'short'}) : 'N/A' %>
+                            </p>
+                            <p class="mb-0">
+                              Cancelled: <%= item.cancelledAt ? new
+                              Date(item.cancelledAt).toLocaleString('en-IN', {dateStyle: 'short',
+                              timeStyle: 'short'}) : 'N/A' %>
+                            </p>
+                          </div>
+
                           <!-- RETURN BUTTON -->
                           <% if (item.status === 'Delivered' && item.returnStatus === 'None') { %>
                           <a
@@ -105,17 +124,6 @@ return 'Pending'; }; %>
                   >
                     View Details
                   </a>
-
-                  <% if (order.items.some(i => i.status === 'Pending')) { %>
-                  <form action="/cancel-order/<%= order._id %>" method="POST">
-                    <button
-                      class="btn btn-danger btn-sm w-100"
-                      onclick="return confirm('Cancel entire order?');"
-                    >
-                      Cancel Order
-                    </button>
-                  </form>
-                  <% } %>
                 </div>
               </div>
 
