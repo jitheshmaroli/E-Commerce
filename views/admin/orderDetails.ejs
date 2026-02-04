@@ -132,6 +132,10 @@
                         <th>Item</th>
                         <th>Qty</th>
                         <th>Price</th>
+                        <th>Ordered</th>
+                        <th>Shipped</th>
+                        <th>Delivered</th>
+                        <th>Cancelled</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
@@ -157,6 +161,18 @@
                         </td>
                         <td><%= item.quantity %></td>
                         <td>₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                        <td>
+                          <%= new Date(order.createdAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) %>
+                        </td>
+                        <td>
+                          <%= item.shippedAt ? new Date(item.shippedAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
+                        </td>
+                        <td>
+                          <%= item.deliveredAt ? new Date(item.deliveredAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
+                        </td>
+                        <td>
+                          <%= item.cancelledAt ? new Date(item.cancelledAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
+                        </td>
                         <% 
                           function getStatusClass(status) {
                             switch (status) {
@@ -178,18 +194,6 @@
                         </td>
                         <td id="action-buttons-<%= item.productId._id %>">
                           <% if (item.status === 'Pending') { %>
-                          <!-- <button
-                            class="btn btn-sm btn-danger me-1"
-                            onclick="
-                              updateOrderStatus(
-                                '<%= order._id %>',
-                                '<%= item.productId._id %>',
-                                'Cancelled'
-                              )
-                            "
-                          >
-                            Cancel
-                          </button> -->
                           <button
                             class="btn btn-sm btn-primary"
                             onclick="
@@ -225,12 +229,12 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colspan="3" class="text-end fw-bold">Subtotal</td>
+                        <td colspan="7" class="text-end fw-bold">Subtotal</td>
                         <td colspan="2">₹<%= order.priceDetails.subTotal.toFixed(2) %></td>
                       </tr>
                       <% if (order.couponCode) { %>
                       <tr>
-                        <td colspan="3" class="text-end text-danger fw-bold">
+                        <td colspan="7" class="text-end text-danger fw-bold">
                           Discount (<%= order.couponCode %>)
                         </td>
                         <td colspan="2" class="text-danger">
@@ -239,15 +243,15 @@
                       </tr>
                       <% } %>
                       <tr>
-                        <td colspan="3" class="text-end fw-bold">Delivery Charge</td>
+                        <td colspan="7" class="text-end fw-bold">Delivery Charge</td>
                         <td colspan="2">₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
                       </tr>
                       <tr>
-                        <td colspan="3" class="text-end fw-bold">Sales Tax</td>
+                        <td colspan="7" class="text-end fw-bold">Sales Tax</td>
                         <td colspan="2"><%= order.priceDetails.salesTax %></td>
                       </tr>
                       <tr class="table-active">
-                        <td colspan="3" class="text-end fw-bold fs-5">TOTAL</td>
+                        <td colspan="7" class="text-end fw-bold fs-5">TOTAL</td>
                         <td colspan="2" class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
                       </tr>
                     </tfoot>
@@ -299,13 +303,18 @@
                   </div>
                 </div>
 
+                <!-- Invoice Button – only show if at least one item is delivered -->
+                <% const hasDeliveredItem = order.items.some(item => item.status === 'Delivered');
+                %>
+                <% if (hasDeliveredItem) { %>
                 <button
-                  class="btn btn-dark w-100"
+                  class="btn btn-dark w-100 mb-3"
                   data-bs-toggle="modal"
                   data-bs-target="#invoiceModal"
                 >
-                  <i class="fas fa-file-invoice me-2"></i> View Invoice
+                  <i class="fas fa-file-invoice me-2"></i> View/Download Invoice
                 </button>
+                <% } %>
               </div>
             </div>
           </div>

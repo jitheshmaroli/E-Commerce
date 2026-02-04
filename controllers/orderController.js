@@ -473,8 +473,6 @@ const cancelSingleItem = async (req, res) => {
 
     const itemBasePrice = productPrice * quantity;
 
-    console.log("DEBUG PRICE:", { productPrice, quantity, itemBasePrice });
-
     let discountPortion = 0;
     const originalSubTotal = Number(order.priceDetails?.subTotal || 0);
 
@@ -521,10 +519,9 @@ const cancelSingleItem = async (req, res) => {
     order.priceDetails.salesTax = Math.max(0, Number(order.priceDetails.salesTax || 0) - itemTax);
 
     item.status = "Cancelled";
+    item.cancelledAt = item.cancelledAt || new Date();
 
     if (["wallet", "online"].includes(order.paymentMethod)) {
-      console.log("💰 Refund Amount:", refundAmount);
-
       const walletResult = await userController.updateUserWallet(
         user._id,
         refundAmount,

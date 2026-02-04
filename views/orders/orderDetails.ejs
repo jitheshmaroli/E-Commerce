@@ -54,6 +54,19 @@
               </div>
               <div class="table-responsive">
                 <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                      <th>Ordered</th>
+                      <th>Shipped</th>
+                      <th>Delivered</th>
+                      <th>Cancelled</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     <% order.items.forEach(item => { %>
                     <tr>
@@ -81,6 +94,18 @@
                       <td><%= item.quantity %></td>
                       <td class="text-end">
                         ₹<%= item.productId.currentPrice || item.productId.price %>
+                      </td>
+                      <td>
+                        <%= new Date(order.createdAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) %>
+                      </td>
+                      <td>
+                        <%= item.shippedAt ? new Date(item.shippedAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
+                      </td>
+                      <td>
+                        <%= item.deliveredAt ? new Date(item.deliveredAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
+                      </td>
+                      <td>
+                        <%= item.cancelledAt ? new Date(item.cancelledAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
                       </td>
                       <td>
                         <span class="badge bg-info rounded-pill"><%= item.status %></span>
@@ -113,7 +138,7 @@
                   </tbody>
                   <tfoot class="table-light">
                     <tr>
-                      <td colspan="3" class="text-end">
+                      <td colspan="6" class="text-end">
                         <strong>Discount (<%= order.couponCode || 'N/A' %>)</strong>
                       </td>
                       <td class="text-end text-danger">
@@ -121,25 +146,25 @@
                       </td>
                     </tr>
                     <tr>
-                      <td colspan="3" class="text-end">
+                      <td colspan="6" class="text-end">
                         <strong>Subtotal</strong>
                       </td>
                       <td class="text-end">₹<%= order.priceDetails.subTotal %></td>
                     </tr>
                     <tr>
-                      <td colspan="3" class="text-end">
+                      <td colspan="6" class="text-end">
                         <strong>Delivery Charge</strong>
                       </td>
                       <td class="text-end">₹<%= order.priceDetails.deliveryCharge %></td>
                     </tr>
                     <tr>
-                      <td colspan="3" class="text-end">
+                      <td colspan="6" class="text-end">
                         <strong>Sales Tax</strong>
                       </td>
                       <td class="text-end">₹<%= order.priceDetails.salesTax %></td>
                     </tr>
                     <tr class="fw-bold">
-                      <td colspan="3" class="text-end">
+                      <td colspan="6" class="text-end">
                         <strong>Total</strong>
                       </td>
                       <td class="text-end">₹<%= order.totalCost %></td>
