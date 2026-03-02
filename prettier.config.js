@@ -7,6 +7,4 @@ module.exports = {
   tabWidth: 2,
   useTabs: false,
   bracketSpacing: true,
-
-  plugins: ["prettier-plugin-ejs"],
 };

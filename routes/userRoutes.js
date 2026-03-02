@@ -15,6 +15,7 @@ const wishlistController = require("../controllers/wishlistController");
 const orderController = require("../controllers/orderController");
 const paymentController = require("../controllers/paymentController");
 const reviewController = require("../controllers/reviewController");
+const cartWishlistCount = require("../middlewares/cartWishlistCount");
 
 // passport
 require("../passport");
@@ -24,6 +25,9 @@ router.use(passport.session());
 //bodyparser
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
+
+//cart wishlist count
+router.use(cartWishlistCount);
 
 //google routes
 router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));

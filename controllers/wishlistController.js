@@ -2,6 +2,7 @@ const Wishlist = require("../models/wishList");
 const User = require("../models/user");
 const Category = require("../models/category");
 const mongoose = require("mongoose");
+const Cart = require("../models/cart");
 
 const toggleWishList = async (req, res) => {
   const { productId } = req.body;
@@ -32,7 +33,10 @@ const toggleWishList = async (req, res) => {
     }
 
     await wishlist.save();
-    res.json({ success: true, isInWishlist: productIndex === -1 });
+    const cart = await Cart.findOne({ userId });
+    const cartCount = cart ? cart.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+    const wishlistCount = wishlist.products.length;
+    res.json({ success: true, isInWishlist: productIndex === -1, cartCount, wishlistCount });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: "Error toggling wishlist item" });

@@ -349,13 +349,16 @@
         }
 
         const data = await res.json();
+        if (data.success) {
+          updateCounts(data.cartCount, data.wishlistCount);
+        }
         Swal.fire("Added!", `${productName} added to cart!`, "success");
       } catch (err) {
         console.error(err);
       }
     });
   });
-  // Wishlist Toggle
+
   async function toggleWishlist(btn) {
     const icon = btn.querySelector("i");
     const productCard = btn.closest(".product-card");
@@ -393,6 +396,7 @@
         } else {
           icon.className = "fa fa-heart text-muted far fs-6";
         }
+        updateCounts(data.cartCount, data.wishlistCount);
       } else {
         Swal.fire("Error!", data.message || "Something went wrong", "error");
       }

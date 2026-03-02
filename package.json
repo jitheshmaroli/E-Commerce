@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{js,json,css,html,ejs}\" --config prettier.config.js",
-    "format:check": "prettier --check \"**/*.{js,json,css,html}\""
+    "format:check": "prettier --check \"**/*.{js,json,css,html,ejs}\""
   },
   "author": "JITHESH",
   "license": "ISC",
@@ -45,10 +45,10 @@
   "devDependencies": {
     "@eslint/js": "^9.1.1",
     "eslint": "^9.1.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "globals": "^15.1.0",
-    "prettier": "^3.7.4",
+    "prettier": "^2.8.8",
     "prettier-plugin-ejs": "^1.0.3"
   }
 }

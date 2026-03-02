@@ -302,9 +302,10 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.btn-add-cart:hover {
-  background: black;
-  color: white;
+.btn-add-cart:hover,
+.btn-add-cart:hover i {
+  background: black !important;
+  color: white !important;
 }
 .btn-buy-now {
   flex: 1;
