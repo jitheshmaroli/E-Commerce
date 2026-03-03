@@ -68,43 +68,6 @@ return 'Pending'; }; %>
                           >
                             <%= item.status %>
                           </span>
-
-                          <!-- Simple Timeline -->
-                          <div class="mt-2 small text-muted">
-                            <p class="mb-0">
-                              Shipped: <%= item.shippedAt ? new
-                              Date(item.shippedAt).toLocaleString('en-IN', {dateStyle: 'short',
-                              timeStyle: 'short'}) : 'N/A' %>
-                            </p>
-                            <p class="mb-0">
-                              Delivered: <%= item.deliveredAt ? new
-                              Date(item.deliveredAt).toLocaleString('en-IN', {dateStyle: 'short',
-                              timeStyle: 'short'}) : 'N/A' %>
-                            </p>
-                            <p class="mb-0">
-                              Cancelled: <%= item.cancelledAt ? new
-                              Date(item.cancelledAt).toLocaleString('en-IN', {dateStyle: 'short',
-                              timeStyle: 'short'}) : 'N/A' %>
-                            </p>
-                          </div>
-
-                          <!-- RETURN BUTTON -->
-                          <% if (item.status === 'Delivered' && item.returnStatus === 'None') { %>
-                          <a
-                            href="/return-product/<%= order._id %>/<%= item.productId._id %>"
-                            class="btn btn-outline-dark btn-sm mt-2 w-100"
-                          >
-                            Return
-                          </a>
-                          <% } %>
-
-                          <% if (item.returnStatus === 'Requested') { %>
-                          <span class="badge bg-warning mt-2 w-100">Return Requested</span>
-                          <% } %>
-
-                          <% if (item.returnStatus === 'Approved') { %>
-                          <span class="badge bg-success mt-2 w-100">Returned</span>
-                          <% } %>
                         </div>
                       </div>
                     </div>
@@ -126,22 +89,6 @@ return 'Pending'; }; %>
                   </a>
                 </div>
               </div>
-
-              <!-- PROGRESS BAR -->
-              <div class="progress mb-2">
-                <div class="progress-bar" data-progress="<%= getProgress(order.items) %>"></div>
-              </div>
-
-              <div class="d-flex justify-content-between small text-muted">
-                <span>Pending</span>
-                <span>Shipped</span>
-                <span>Delivered</span>
-              </div>
-
-              <p class="small text-end mt-1">
-                <strong>Status:</strong>
-                <%= getOverallStatus(order.items) %>
-              </p>
             </div>
           </div>
         </div>

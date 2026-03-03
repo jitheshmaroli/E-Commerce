@@ -94,7 +94,9 @@ const orderDetails = async (req, res) => {
       .populate("userId", "name email photo isVerified isAdmin isBlocked")
       .populate({ path: "items.productId", model: "products" })
       .populate("deliveryAddress");
-    res.render("admin/orderDetails", { order });
+    const invoiceData = calculateInvoice(order);
+
+    res.render("admin/orderDetails", { order, invoiceData });
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -534,6 +536,40 @@ async function getRecentOrders() {
       },
     },
   ]);
+}
+
+function calculateInvoice(order) {
+  const deliveredItems = order.items.filter((item) => item.status === "Delivered");
+  if (deliveredItems.length === 0) return null;
+
+  // Subtotal of delivered items using stored price
+  const deliveredSubtotal = deliveredItems.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
+
+  // Original subtotal (from order.priceDetails)
+  const originalSubtotal = order.priceDetails.subTotal;
+
+  // If original subtotal is zero (should not happen), avoid division by zero
+  if (originalSubtotal === 0) return null;
+
+  const proportion = deliveredSubtotal / originalSubtotal;
+
+  // Apportion discount and tax proportionally, delivery charge remains full
+  const discountAmount = order.priceDetails.discountAmount * proportion;
+  const taxAmount = order.priceDetails.salesTax * proportion;
+  const deliveryCharge = order.priceDetails.deliveryCharge;
+
+  const total = deliveredSubtotal - discountAmount + taxAmount + deliveryCharge;
+
+  return {
+    deliveredItems,
+    deliveredSubtotal,
+    discountAmount,
+    taxAmount,
+    deliveryCharge,
+    total,
+  };
 }
 
 module.exports = {

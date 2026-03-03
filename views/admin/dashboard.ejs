@@ -304,7 +304,9 @@
               <span>${new Date(o.createdAt).toLocaleDateString("en-IN")}</span>
             </div>
             <div>Total: ₹${o.totalCost.toFixed(2)}</div>
-            <small class="text-muted">Items: ${o.itemStatuses.map((i) => `${i.productName} (${i.status})`).join(", ")}</small>
+            <small class="text-muted">Items: ${o.itemStatuses
+              .map((i) => `${i.productName} (${i.status})`)
+              .join(", ")}</small>
           </li>
         `
           )
@@ -396,7 +398,9 @@
 
       // Download Buttons
       document.getElementById("downloadPdfBtn")?.addEventListener("click", () => {
-        let url = `/admin/sales-report/download?format=pdf&type=${document.getElementById("reportType").value}`;
+        let url = `/admin/sales-report/download?format=pdf&type=${
+          document.getElementById("reportType").value
+        }`;
         if (document.getElementById("reportType").value === "custom") {
           const s = document.getElementById("startDate").value;
           const e = document.getElementById("endDate").value;
@@ -406,7 +410,9 @@
       });
 
       document.getElementById("downloadExcelBtn")?.addEventListener("click", () => {
-        let url = `/admin/sales-report/download?format=excel&type=${document.getElementById("reportType").value}`;
+        let url = `/admin/sales-report/download?format=excel&type=${
+          document.getElementById("reportType").value
+        }`;
         if (document.getElementById("reportType").value === "custom") {
           const s = document.getElementById("startDate").value;
           const e = document.getElementById("endDate").value;

@@ -29,7 +29,7 @@
         <h2 class="page-title">Order #<%= order.uniqueOrderId %></h2>
       </div>
       <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-12">
           <div class="card mb-4">
             <div class="card-body">
               <div class="mb-3 d-flex justify-content-between">
@@ -107,30 +107,76 @@
                       <td>
                         <%= item.cancelledAt ? new Date(item.cancelledAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) : '-' %>
                       </td>
+                      <% 
+                          function getStatusClass(status) {
+                            switch (status) {
+                              case 'Pending':   return 'bg-warning';
+                              case 'Shipped':   return 'bg-info';
+                              case 'Delivered': return 'bg-success';
+                              case 'Cancelled': return 'bg-danger';
+                              default:          return 'bg-secondary';
+                            }
+                          }
+                        %>
                       <td>
-                        <span class="badge bg-info rounded-pill"><%= item.status %></span>
-                        <% if (item.status === 'Delivered') { %>
-                        <a
-                          href="/review/<%= order._id %>/<%= item.productId._id %>"
-                          class="btn btn-sm review-btn ms-1"
-                          >Review</a
+                        <span
+                          id="item-status-<%= item.productId._id %>"
+                          class="badge <%= getStatusClass(item.status) %>"
                         >
-                        <% } %>
+                          <%= item.status %>
+                        </span>
                       </td>
                       <td>
                         <% if (item.status === 'Pending') { %>
                         <form
                           action="/cancel-item/<%= order._id %>/<%= item.productId._id %>"
                           method="POST"
-                          class="cancel-item-form"
-                          style="display: inline"
+                          class="cancel-item-form d-inline"
                         >
                           <button type="button" class="btn btn-danger btn-sm cancel-item-btn">
                             Cancel Item
                           </button>
                         </form>
+                        <% } %>
+
+                        <% if (item.status === 'Delivered') { %>
+
+                        <!-- Review -->
+                        <% if (!item.reviewed) { %>
+                        <a
+                          href="/review/<%= order._id %>/<%= item.productId._id %>"
+                          class="btn btn-outline-primary btn-sm mb-2 ms-1"
+                        >
+                          Review item
+                        </a>
                         <% } else { %>
-                        <span class="text-muted"><%= item.status %></span>
+                        <span class="badge bg-success ms-1">Reviewed</span>
+                        <% } %>
+
+                        <!-- Return -->
+                        <% if (item.returnStatus === 'None' && canReturnItem(item.deliveredAt)) { %>
+                        <a
+                          href="/return-product/<%= order._id %>/<%= item.productId._id %>"
+                          class="btn btn-outline-warning btn-sm ms-1"
+                        >
+                          Return item
+                        </a>
+                        <% } else if (item.returnStatus === 'Requested') { %>
+                        <span class="badge bg-warning ms-1">Return Requested</span>
+                        <% } else if (item.returnStatus === 'Approved' || item.returnStatus === 'Refunded') { %>
+                        <span class="badge bg-success ms-1">Returned</span>
+                        <% } else if (item.returnStatus === 'Rejected') { %>
+                        <span class="badge bg-danger ms-1">Return Rejected</span>
+                        <% } %>
+
+                        <% } %>
+
+                        <% if (item.status === 'Cancelled') { %>
+                        <span class="badge bg-secondary">Cancelled</span>
+                        <% } %>
+
+                        <% if (item.status === 'Returned') { %>
+                        <span class="badge bg-info">Returned</span>
                         <% } %>
                       </td>
                     </tr>
@@ -175,7 +221,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-4">
               <div class="card">
                 <div class="card-body">
                   <h6 class="card-title">Payment Method</h6>
@@ -201,7 +247,27 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
+
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-title">Shipping Address</h6>
+                  <address>
+                    <strong><%= order.deliveryAddress.address.name %></strong><br />
+                    <%= order.deliveryAddress.address.houseName %><br />
+                    <%= order.deliveryAddress.address.street %>,
+                    <%=
+                order.deliveryAddress.address.city %><br />
+                    <%= order.deliveryAddress.address.district %>,
+                    <%=
+                order.deliveryAddress.address.state %>
+                    <%=
+                order.deliveryAddress.address.pinCode %>
+                  </address>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
               <div class="card">
                 <div class="card-body">
                   <h6 class="card-title">Billing Address</h6>
@@ -222,25 +288,6 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4">
-          <div class="card">
-            <div class="card-body">
-              <h6 class="card-title">Shipping Address</h6>
-              <address>
-                <strong><%= order.deliveryAddress.address.name %></strong><br />
-                <%= order.deliveryAddress.address.houseName %><br />
-                <%= order.deliveryAddress.address.street %>,
-                <%=
-                order.deliveryAddress.address.city %><br />
-                <%= order.deliveryAddress.address.district %>,
-                <%=
-                order.deliveryAddress.address.state %>
-                <%=
-                order.deliveryAddress.address.pinCode %>
-              </address>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <% } else { %>
@@ -254,6 +301,7 @@
 </main>
 
 <!-- Invoice Modal -->
+<% if (invoiceData) { %>
 <div
   class="modal fade"
   id="invoiceModal"
@@ -310,7 +358,7 @@
           </div>
         </div>
 
-        <!-- Items Table – only delivered -->
+        <!-- Items Table – only delivered items with correct prices -->
         <div class="table-responsive">
           <table class="table table-bordered">
             <thead class="table-dark">
@@ -323,44 +371,40 @@
               </tr>
             </thead>
             <tbody>
-              <% let invoiceSubtotal = 0; let index = 1; order.items.forEach(item => { if
-              (item.status === 'Delivered') { const price = item.productId.currentPrice ||
-              item.productId.price; const amount = price * item.quantity; invoiceSubtotal += amount;
-              %>
+              <% invoiceData.deliveredItems.forEach((item, idx) => { %>
               <tr>
-                <td><%= index++ %></td>
+                <td><%= idx + 1 %></td>
                 <td><%= item.productId.name %></td>
                 <td><%= item.quantity %></td>
-                <td>₹<%= price.toFixed(2) %></td>
-                <td>₹<%= amount.toFixed(2) %></td>
+                <td>₹<%= item.price.toFixed(2) %></td>
+                <td>₹<%= (item.price * item.quantity).toFixed(2) %></td>
               </tr>
-              <% }
-                }); %>
+              <% }) %>
             </tbody>
             <tfoot>
               <tr>
                 <td colspan="4" class="text-end fw-bold">Subtotal (Delivered Items)</td>
-                <td class="fw-bold">₹<%= invoiceSubtotal.toFixed(2) %></td>
+                <td class="fw-bold">₹<%= invoiceData.deliveredSubtotal.toFixed(2) %></td>
               </tr>
-              <% if (order.couponCode && order.priceDetails.discountAmount > 0) { %>
+              <% if (invoiceData.discountAmount > 0) { %>
               <tr>
                 <td colspan="4" class="text-end text-danger fw-bold">
-                  Coupon Discount (<%= order.couponCode %>)
+                  Coupon Discount (<%= order.couponCode || 'Applied' %>)
                 </td>
-                <td class="text-danger">-₹<%= order.priceDetails.discountAmount.toFixed(2) %></td>
+                <td class="text-danger">-₹<%= invoiceData.discountAmount.toFixed(2) %></td>
               </tr>
               <% } %>
               <tr>
                 <td colspan="4" class="text-end fw-bold">Delivery Charge</td>
-                <td>₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
+                <td>₹<%= invoiceData.deliveryCharge.toFixed(2) %></td>
               </tr>
               <tr>
                 <td colspan="4" class="text-end fw-bold">Sales Tax</td>
-                <td>₹<%= order.priceDetails.salesTax.toFixed(2) %></td>
+                <td>₹<%= invoiceData.taxAmount.toFixed(2) %></td>
               </tr>
               <tr class="table-active">
-                <td colspan="4" class="text-end fw-bold fs-5">Grand Total (Paid at Checkout)</td>
-                <td class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
+                <td colspan="4" class="text-end fw-bold fs-5">Total</td>
+                <td class="fw-bold fs-5">₹<%= invoiceData.total.toFixed(2) %></td>
               </tr>
             </tfoot>
           </table>
@@ -369,8 +413,11 @@
         <!-- Footer Note -->
         <div class="mt-4 text-muted small">
           <p>
-            <strong>Note:</strong> This invoice shows only delivered items. Full order amount was
-            charged at checkout.
+            <strong>Note:</strong> This invoice shows only delivered items. <% if
+            (order.items.some(i => i.status !== 'Delivered')) { %> Cancelled/returned items are
+            excluded.
+            <% } %>
+            Full order amount was charged at checkout.
           </p>
           <p>
             Payment Method: <%= order.paymentMethod.toUpperCase() %> | Status: <%=
@@ -387,6 +434,9 @@
     </div>
   </div>
 </div>
+<% } else { %>
+<!-- No delivered items – optionally hide invoice button or show message -->
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
 <%-

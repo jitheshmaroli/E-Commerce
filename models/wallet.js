@@ -25,6 +25,7 @@ const walletSchema = new mongoose.Schema(
       ref: "Order",
       required: false,
     },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "products" },
   },
   { timestamps: true }
 );

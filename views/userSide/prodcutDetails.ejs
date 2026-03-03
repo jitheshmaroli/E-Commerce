@@ -226,13 +226,14 @@
           <% if (isInWishlist) { %>
           <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
           <% } else { %>
-          <button
+          <a
+            href="#"
             class="btn btn-add-to-wishlist"
             id="wishlist-btn"
             data-product-id="<%= product._id %>"
           >
             Add to Wishlist
-          </button>
+          </a>
           <% } %>
         </div>
         <% } %>
@@ -328,6 +329,8 @@
   const addToCartBtn = document.getElementById("add-to-cart-btn");
   const productName = document.getElementById("product-name").textContent;
 
+  const productId = document.getElementById("product-id").value;
+
   function updateTotalPrice() {
     const quantity = parseInt(quantityInput.value);
     const totalPrice = currentPrice * quantity;
@@ -415,47 +418,65 @@
     updateTotalPrice();
   });
 
-  if (addToCartBtn && !addToCartBtn.disabled) {
-    addToCartBtn.addEventListener("click", (e) => {
+  // Add to Cart action
+  if (addToCartBtn && !addToCartBtn.disabled && addToCartBtn.id === "add-to-cart-btn") {
+    addToCartBtn.addEventListener("click", async (e) => {
       e.preventDefault();
       const quantity = parseInt(quantityInput.value);
-      const productId = document.getElementById("product-id").value;
 
-      fetch("/add-to-cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, quantity }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.json().then((data) => {
-              if (data.error === "Not enough stock available") {
-                Swal.fire(
-                  "Oops!",
-                  `Only ${data.availableStock} items are available in stock for this product.`,
-                  "warning"
-                );
-              } else {
-                throw new Error("Network response was not ok");
-              }
-            });
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data) {
-            addToCartBtn.textContent = "View Cart";
-            addToCartBtn.classList.remove("btn-add-to-cart");
-            addToCartBtn.classList.add("btn-view-cart");
-            addToCartBtn.setAttribute("href", "/cart");
-            Swal.fire("Success!", `${quantity} x ${productName} added to cart!`, "success");
-          } else {
-            console.error("Error adding product to cart:", data.error);
-          }
-        })
-        .catch((error) => {
-          console.error("Error adding product to cart:", error);
+      try {
+        const response = await fetch("/add-to-cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, quantity }),
         });
+
+        if (response.status === 401) {
+          Swal.fire({
+            title: "Please Log In",
+            text: "You need to be logged in to add items to cart",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Go to Login",
+            cancelButtonText: "Cancel",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const returnTo = encodeURIComponent(
+                window.location.pathname + window.location.search
+              );
+              window.location.href = `/login?redirect=${returnTo}`;
+            }
+          });
+          return;
+        }
+
+        if (!response.ok) {
+          const data = await response.json();
+          if (data.error === "Not enough stock available") {
+            Swal.fire("Oops!", `Only ${data.availableStock} items available.`, "warning");
+            return;
+          }
+          throw new Error(data.message || "Something went wrong");
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          if (typeof updateCounts === "function") {
+            updateCounts(data.cartCount, data.wishlistCount);
+          }
+
+          addToCartBtn.textContent = "View Cart";
+          addToCartBtn.classList.remove("btn-add-to-cart");
+          addToCartBtn.classList.add("btn-view-cart");
+          addToCartBtn.setAttribute("href", "/cart");
+
+          Swal.fire("Success!", `${quantity} x ${productName} added to cart!`, "success");
+        }
+      } catch (error) {
+        console.error("Add to cart error:", error);
+        Swal.fire("Error", "Failed to add product to cart", "error");
+      }
     });
   }
 </script>
@@ -463,54 +484,68 @@
   document.addEventListener("DOMContentLoaded", function () {
     const wishlistBtn = document.getElementById("wishlist-btn");
 
-    if (wishlistBtn && wishlistBtn.classList.contains("add-to-wishlist")) {
-      const toggleHandler = function (e) {
-        e.preventDefault();
-        const productId = document.getElementById("product-id").value;
+    if (!wishlistBtn) return;
 
-        fetch("/toggle-wishlist", {
+    wishlistBtn.addEventListener("click", async function (e) {
+      if (wishlistBtn.classList.contains("btn-view-wishlist")) {
+        return;
+      }
+
+      e.preventDefault();
+
+      const productId = document.getElementById("product-id").value;
+
+      try {
+        const response = await fetch("/toggle-wishlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              if (data.isInWishlist) {
-                wishlistBtn.textContent = "View Wishlist";
-                wishlistBtn.classList.remove("btn-add-to-wishlist");
-                wishlistBtn.classList.add("btn-view-wishlist");
-                wishlistBtn.href = "/wishlist";
-                wishlistBtn.removeEventListener("click", toggleHandler);
-                wishlistBtn.addEventListener("click", function () {
-                  window.location.href = "/wishlist";
-                });
-              } else {
-                wishlistBtn.textContent = "Add to Wishlist";
-                wishlistBtn.classList.remove("btn-view-wishlist");
-                wishlistBtn.classList.add("btn-add-to-wishlist");
-                wishlistBtn.removeAttribute("href");
-              }
-              Swal.fire({
-                icon: "success",
-                title: data.isInWishlist ? "Added to Wishlist" : "Removed from Wishlist",
-                text: data.isInWishlist
-                  ? "The item has been added to your wishlist."
-                  : "The item has been removed from your wishlist.",
-                confirmButtonText: "OK",
-              });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: data.message,
-                confirmButtonText: "OK",
-              });
+        });
+
+        if (response.status === 401) {
+          Swal.fire({
+            title: "Please Log In",
+            text: "You need to be logged in to manage your wishlist",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Go to Login",
+            cancelButtonText: "Cancel",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const returnTo = encodeURIComponent(
+                window.location.pathname + window.location.search
+              );
+              window.location.href = `/login?redirect=${returnTo}`;
             }
           });
-      };
-      wishlistBtn.addEventListener("click", toggleHandler);
-    }
+          return;
+        }
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || "Failed to update wishlist");
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          if (typeof updateCounts === "function") {
+            updateCounts(data.cartCount, data.wishlistCount);
+          }
+
+          // Convert button to View Wishlist
+          wishlistBtn.textContent = "View Wishlist";
+          wishlistBtn.classList.remove("btn-add-to-wishlist");
+          wishlistBtn.classList.add("btn-view-wishlist");
+          wishlistBtn.setAttribute("href", "/wishlist");
+
+          Swal.fire("Success!", "Item added to Wishlist!", "success");
+        }
+      } catch (error) {
+        console.error("Wishlist toggle error:", error);
+        Swal.fire("Error", error.message, "error");
+      }
+    });
   });
 </script>
 <script>

@@ -3,15 +3,12 @@ import js from "@eslint/js";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 export default [
+  // Global ignores
   {
-    files: ["eslint.config.mjs"],
-    languageOptions: {
-      sourceType: "module",
-    },
+    ignores: ["node_modules/**", "public/**", "dist/**", "uploads/**", ".env"],
   },
-  {
-    ignores: ["node_modules/**", "public/**", "dist/**", "views/**", ".env", "uploads/**"],
-  },
+
+  // JavaScript files (CommonJS)
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -22,24 +19,26 @@ export default [
       },
     },
   },
+
+  // ESLint recommended rules
   js.configs.recommended,
+
+  // Prettier integration (must be last to override other rules)
   {
-    // Spread the recommended config (includes the plugin and base rules)
     ...eslintPluginPrettierRecommended,
-    // Override just the prettier/prettier rule with your custom options
     rules: {
       ...eslintPluginPrettierRecommended.rules,
       "prettier/prettier": [
         "error",
         {
+          // These options should mirror your Prettier config
           semi: true,
           trailingComma: "es5",
-          singleQuote: false, // double quotes
+          singleQuote: false,
           printWidth: 100,
           tabWidth: 2,
           useTabs: false,
           bracketSpacing: true,
-          // Add any other options from your .prettierrc.json here if you add more later
         },
       ],
     },

@@ -173,233 +173,245 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  // DOM Elements
+  const form = document.getElementById("productForm");
+  const photoInput = document.getElementById("photos");
+  const previewArea = document.querySelector(".image-preview-container");
 
-  <script>
-// DOM Elements
-const form        = document.getElementById("productForm");
-const photoInput  = document.getElementById("photos");
-const previewArea = document.querySelector(".image-preview-container");
+  // Error elements
+  const nameError = document.getElementById("nameError");
+  const descError = document.getElementById("descriptionError");
+  const categoryError = document.getElementById("categoryError");
+  const brandError = document.getElementById("brandNameError");
+  const stockError = document.getElementById("stockError");
+  const priceError = document.getElementById("priceError");
+  const photosError = document.getElementById("photosError");
 
-// Error elements
-const nameError     = document.getElementById("nameError");
-const descError     = document.getElementById("descriptionError");
-const categoryError = document.getElementById("categoryError");
-const brandError    = document.getElementById("brandNameError");
-const stockError    = document.getElementById("stockError");
-const priceError    = document.getElementById("priceError");
-const photosError   = document.getElementById("photosError");
+  // Helper: show error + red border
+  function setFieldError(errorEl, message, inputEl = null) {
+    if (!errorEl) return;
+    const targetInput = inputEl || errorEl.previousElementSibling;
+    if (message) {
+      errorEl.textContent = message;
+      if (targetInput && targetInput.classList) {
+        targetInput.classList.add("is-invalid");
+      }
+    } else {
+      errorEl.textContent = "";
+      if (targetInput && targetInput.classList) {
+        targetInput.classList.remove("is-invalid");
+      }
+    }
+  }
 
-// Validation Helpers
-function showError(el, msg) {
-  if (!el) return;
-  el.textContent = msg;
-  const field = el.previousElementSibling;
-  if (field) field.classList.add("is-invalid");
-}
+  // Clear all errors
+  function clearAllErrors() {
+    document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
+    document.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+  }
 
-function clearError(el) {
-  if (!el) return;
-  el.textContent = "";
-  const field = el.previousElementSibling;
-  if (field) field.classList.remove("is-invalid");
-}
+  // Validation functions
+  function validateName(v) {
+    v = v.trim();
+    if (!v) return "Product name is required.";
+    if (v.length < 3) return "Name must be at least 3 characters.";
+    if (v.length > 50) return "Name cannot exceed 50 characters.";
+    return "";
+  }
+  function validateDescription(v) {
+    v = v.trim();
+    if (!v) return "Description is required.";
+    if (v.length < 20) return "Description should be at least 20 characters.";
+    if (v.length > 500) return "Description cannot exceed 500 characters.";
+    return "";
+  }
+  function validateCategory(v) { return v ? "" : "Please select a category."; }
+  function validateStock(v) {
+    if (!v || isNaN(v)) return "Stock quantity is required.";
+    const n = Number(v);
+    if (!Number.isInteger(n)) return "Stock must be a whole number.";
+    if (n < 0) return "Stock cannot be negative.";
+    if (n > 99999) return "Stock seems too large (max 99999).";
+    return "";
+  }
+  function validatePrice(v) {
+    if (!v || isNaN(v)) return "Price is required.";
+    const n = Number(v);
+    if (n <= 0) return "Price must be greater than 0.";
+    if (n < 10) return "Price should be at least ₹10.";
+    if (n > 1000000) return "Price seems unusually high.";
+    return "";
+  }
 
-function validateName(v) {
-  v = v.trim();
-  if (!v) return "Product name is required.";
-  if (v.length < 3) return "Name must be at least 3 characters.";
-  if (v.length > 50) return "Name cannot exceed 50 characters.";
-  return "";
-}
+  // Count total images (existing + new)
+  function getImageCount() {
+    return previewArea.querySelectorAll(".image-wrapper").length;
+  }
+  function validateImages() {
+    const count = getImageCount();
+    if (count < 4) return `At least 4 images required (currently ${count}).`;
+    if (count > 4) return `Only 4 images allowed (currently ${count}).`;
+    return "";
+  }
 
-function validateDescription(v) {
-  v = v.trim();
-  if (!v) return "Description is required.";
-  if (v.length < 20) return "Description should be at least 20 characters.";
-  if (v.length > 500) return "Description cannot exceed 500 characters.";
-  return "";
-}
-
-function validateCategory(v) { return v ? "" : "Please select a category."; }
-
-function validateStock(v) {
-  if (!v || isNaN(v)) return "Stock quantity is required.";
-  const n = Number(v);
-  if (!Number.isInteger(n)) return "Stock must be a whole number.";
-  if (n < 0) return "Stock cannot be negative.";
-  if (n > 99999) return "Stock seems too large (max 99999).";
-  return "";
-}
-
-function validatePrice(v) {
-  if (!v || isNaN(v)) return "Price is required.";
-  const n = Number(v);
-  if (n <= 0) return "Price must be greater than 0.";
-  if (n < 10) return "Price should be at least ₹10.";
-  if (n > 1000000) return "Price seems unusually high.";
-  return "";
-}
-
-function getImageCount() {
-  return previewArea.querySelectorAll(".image-wrapper").length;
-}
-
-function validateImages() {
-  const count = getImageCount();
-  if (count < 4) return `At least 4 images required (currently ${count}).`;
-  if (count > 4) return `Only 4 images allowed (currently ${count}).`;
-  return "";
-}
-
-// Real-time field validation
-function attach(field, validator, errEl) {
-  if (!field) return;
-  ["input", "blur"].forEach(ev => {
-    field.addEventListener(ev, () => {
-      const msg = validator(field.value);
-      msg ? showError(errEl, msg) : clearError(errEl);
+  // Attach real‑time validation
+  function attachValidation(field, validator, errorEl) {
+    if (!field) return;
+    ["input", "blur"].forEach(ev => {
+      field.addEventListener(ev, () => {
+        const msg = validator(field.value);
+        setFieldError(errorEl, msg, field);
+      });
     });
-  });
-}
+  }
+  attachValidation(document.getElementById("name"),        validateName,        nameError);
+  attachValidation(document.getElementById("description"), validateDescription, descError);
+  attachValidation(document.getElementById("category"),    validateCategory,    categoryError);
+  attachValidation(document.getElementById("brandName"),   () => "",            brandError);
+  attachValidation(document.getElementById("stock"),       validateStock,       stockError);
+  attachValidation(document.getElementById("price"),       validatePrice,       priceError);
 
-attach(document.getElementById("name"),        validateName,        nameError);
-attach(document.getElementById("description"), validateDescription, descError);
-attach(document.getElementById("category"),    validateCategory,    categoryError);
-attach(document.getElementById("brandName"),   () => "",            brandError);
-attach(document.getElementById("stock"),       validateStock,       stockError);
-attach(document.getElementById("price"),       validatePrice,       priceError);
+  // Image handling
 
-// Clear error when user types (helps after failed submit)
-form.querySelectorAll("input, textarea, select").forEach(el => {
-  el.addEventListener("input", () => {
-    const err = document.getElementById(`${el.id}Error`);
-    if (err) clearError(err);
-  });
-});
+  // Remove image (works for both existing and new)
+  previewArea.addEventListener("click", e => {
+    if (!e.target.classList.contains("remove-image-btn")) return;
+    const wrapper = e.target.closest(".image-wrapper");
+    if (!wrapper) return;
 
-// Image handling – remove + preview + validation
-// Single delegated click handler for remove buttons (existing + new)
-previewArea.addEventListener("click", e => {
-  if (!e.target.classList.contains("remove-image-btn")) return;
-
-  const wrapper = e.target.closest(".image-wrapper");
-  if (!wrapper) return;
-
-  wrapper.querySelector('input[name="existingPhotos[]"]')?.remove();
-  wrapper.remove();
-
-  const err = validateImages();
-  showError(photosError, err);
-});
-
-// Add new images + create remove button for them too
-photoInput.addEventListener("change", () => {
-  photosError.textContent = "";
-  let hasInvalid = false;
-
-  Array.from(photoInput.files).forEach(file => {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      hasInvalid = true;
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      hasInvalid = true;
-      return;
+    // If it's a new image (has class 'new-image'), also clear the file input
+    if (wrapper.classList.contains("new-image")) {
+      photoInput.value = "";
+    } else {
+      wrapper.querySelector('input[name="existingPhotos[]"]')?.remove();
     }
 
-    const reader = new FileReader();
-    reader.onload = ev => {
+    wrapper.remove();
+
+    // Re‑validate image count and show error if needed
+    const err = validateImages();
+    setFieldError(photosError, err, photoInput);
+  });
+
+  // Add new images
+  photoInput.addEventListener("change", function () {
+    const files = Array.from(this.files);
+    let hasInvalid = false;
+
+    // Remove all previously added new‑image wrappers (they will be replaced)
+    previewArea.querySelectorAll(".image-wrapper.new-image").forEach(w => w.remove());
+
+    files.forEach(file => {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        hasInvalid = true;
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        hasInvalid = true;
+        return;
+      }
+
+      // Create object URL synchronously
+      const imgUrl = URL.createObjectURL(file);
       const wrapper = document.createElement("div");
-      wrapper.className = "image-wrapper m-2 text-center";
+      wrapper.className = "image-wrapper m-2 text-center new-image";
       wrapper.innerHTML = `
-        <img src="${ev.target.result}" class="img-thumbnail" width="120" height="120" alt="New image">
+        <img src="${imgUrl}" class="img-thumbnail" width="120" height="120" alt="New image">
         <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
         <br><small class="text-success">New</small>
       `;
       previewArea.appendChild(wrapper);
+    });
 
-      // Re-validate after adding
-      const err = validateImages();
-      showError(photosError, err);
-    };
-    reader.readAsDataURL(file);
+    if (hasInvalid) {
+      photosError.textContent = "Some files were skipped (invalid type or >5MB).";
+    }
+
+    const err = validateImages();
+    setFieldError(photosError, err, photoInput);
   });
 
-  if (hasInvalid) {
-    photosError.textContent = "Some files skipped (invalid format or >5MB).";
-  }
+  // --- Form submit ---
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  photoInput.value = "";
-});
+    // Clear previous errors
+    clearAllErrors();
 
-// Form Submit
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
+    // Run validations
+    const nameField = document.getElementById("name");
+    const descField = document.getElementById("description");
+    const catField  = document.getElementById("category");
+    const stockField = document.getElementById("stock");
+    const priceField = document.getElementById("price");
 
-  document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
-  document.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+    const nameErr   = validateName(nameField.value);
+    const descErr   = validateDescription(descField.value);
+    const catErr    = validateCategory(catField.value);
+    const stockErr  = validateStock(stockField.value);
+    const priceErr  = validatePrice(priceField.value);
+    const imagesErr = validateImages();
 
-  // validations
-  const nameErr     = validateName(document.getElementById("name").value);
-  const descErr     = validateDescription(document.getElementById("description").value);
-  const catErr      = validateCategory(document.getElementById("category").value);
-  const stockErr    = validateStock(document.getElementById("stock").value);
-  const priceErr    = validatePrice(document.getElementById("price").value);
-  const imagesErr   = validateImages();
+    // Show errors
+    setFieldError(nameError,     nameErr,   nameField);
+    setFieldError(descError,     descErr,   descField);
+    setFieldError(categoryError, catErr,    catField);
+    setFieldError(stockError,    stockErr,  stockField);
+    setFieldError(priceError,    priceErr,  priceField);
+    setFieldError(photosError,   imagesErr, photoInput);
 
-  if (nameErr)     showError(nameError,     nameErr);
-  if (descErr)     showError(descError,     descErr);
-  if (catErr)      showError(categoryError, catErr);
-  if (stockErr)    showError(stockError,    stockErr);
-  if (priceErr)    showError(priceError,    priceErr);
-  if (imagesErr)   showError(photosError,   imagesErr);
+    // Stop if any error
+    if (nameErr || descErr || catErr || stockErr || priceErr || imagesErr) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Please correct the fields marked in red.",
+        confirmButtonColor: "#dc3545"
+      });
+      return;
+    }
 
-  if (nameErr || descErr || catErr || stockErr || priceErr || imagesErr) {
-    Swal.fire({
-      icon: "error",
-      title: "Validation Error",
-      text: "Please correct the fields marked in red.",
-      confirmButtonColor: "#dc3545"
-    });
-    return;
-  }
-
-  try {
-    const formData = new FormData(form);
-    const res = await fetch(form.action, {
-      method: "POST",
-      body: formData
-    });
-
-    let result;
+    // Submit
     try {
-      result = await res.json();
-    } catch (jsonErr) {
-      if (res.ok || res.redirected) {
+      const formData = new FormData(form);
+      const res = await fetch(form.action, {
+        method: "POST",
+        body: formData
+      });
+
+      let result;
+      try {
+        result = await res.json();
+      } catch (jsonErr) {
+        if (res.ok || res.redirected) {
+          await Swal.fire("Success", "Product updated successfully!", "success");
+          window.location.href = "/admin/allproducts";
+          return;
+        }
+        throw jsonErr;
+      }
+
+      if (result?.success || res.ok) {
         await Swal.fire("Success", "Product updated successfully!", "success");
         window.location.href = "/admin/allproducts";
-        return;
+      } else {
+        Swal.fire("Error", result?.message || "Failed to update product.", "error");
       }
-      throw jsonErr;
+    } catch (err) {
+      console.error("Submit error:", err);
+      Swal.fire("Error", "Network error or server is unreachable.", "error");
     }
+  });
 
-    if (result?.success || res.ok) {
-      await Swal.fire("Success", "Product updated successfully!", "success");
-      window.location.href = "/admin/allproducts";
-    } else {
-      Swal.fire("Error", result?.message || "Failed to update product.", "error");
-    }
-  } catch (err) {
-    console.error("Submit error:", err);
-    Swal.fire("Error", "Network error or server is unreachable.", "error");
+  // Clear form (reset)
+  function clearFields() {
+    form.reset();
+    previewArea.querySelectorAll(".image-wrapper.new-image").forEach(w => w.remove());
+    clearAllErrors();
+    const err = validateImages();
+    setFieldError(photosError, err, photoInput);
   }
-});
-
-function clearFields() {
-  form.reset();
-  document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
-  document.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
-}
 </script>
 </body>
 </html>

@@ -223,6 +223,9 @@ include('../includes/userScripts.ejs') %>
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
+          if (typeof updateCounts === "function") {
+            updateCounts(data.cartCount, data.wishlistCount);
+          }
           updateOrderSummary();
         } else {
           Swal.fire({
@@ -299,8 +302,6 @@ include('../includes/userScripts.ejs') %>
         confirmButtonText: "OK",
       });
     } else {
-      console.log("Selected Items:", selectedItems);
-      // Assuming you have an array of cart items `cartItems`
       selectedItems.forEach((item, index) => {
         localStorage.setItem(`cartQuantity_${item.productId}`, item.quantity);
       });
@@ -309,7 +310,7 @@ include('../includes/userScripts.ejs') %>
         const queryString = new URLSearchParams({
           cartItems: JSON.stringify(cartItems),
         });
-        window.location.href = `/checkout?${queryString}`; // Replace with your checkout page URL
+        window.location.href = `/checkout?${queryString}`;
       }
     }
   });
@@ -317,72 +318,72 @@ include('../includes/userScripts.ejs') %>
   updateOrderSummary();
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".move-to-wishlist").forEach((link) => {
-      link.addEventListener("click", function (e) {
+      link.addEventListener("click", async function (e) {
         e.preventDefault();
-        const item = e.target.closest(".cart-item");
+
+        const item = this.closest(".cart-item");
         const productId = item.getAttribute("data-product");
+        const heartIcon = this.querySelector("i");
 
-        fetch("/cart/move-to-wishlist", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ productId: productId }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              fetch("/remove-from-cart", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ productId: productId }),
-              })
-                .then((response) => response.json())
-                .then((removeData) => {
-                  if (removeData.success) {
-                    item.querySelector(".fa-heart").style.color = "black";
-                    Swal.fire({
-                      icon: "success",
-                      title: "Added to Wishlist",
-                      text: "The item has been added to your wishlist and removed from the cart.",
-                      confirmButtonText: "OK",
-                    }).then(() => {
-                      item.remove();
-                      updateOrderSummary();
+        try {
+          const response = await fetch("/cart/move-to-wishlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId }),
+          });
 
-                      // Check if cart is empty
-                      const cartItemsCount = document.querySelectorAll(".cart-item").length;
-                      if (cartItemsCount === 0) {
-                        const cartContainer = document.querySelector(".cart-container");
-                        cartContainer.innerHTML = `
-                                        <div class="empty-cart-message">
-                                            <h2>Your cart is empty</h2>
-                                            <p>Add items to your cart</p>
-                                            <button onclick="window.location.href = '/'" class="btn btn-primary">Go to Home Page</button>
-                                        </div>
-                                    `;
-                      }
-                    });
-                  } else {
-                    Swal.fire({
-                      icon: "error",
-                      title: "Error",
-                      text: "There was an error removing the item from your cart.",
-                      confirmButtonText: "OK",
-                    });
-                  }
-                });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "There was an error adding the item to your wishlist.",
-                confirmButtonText: "OK",
-              });
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error("Wishlist update failed");
+          }
+
+          if (typeof updateCounts === "function") {
+            updateCounts(data.cartCount, data.wishlistCount);
+          }
+
+          heartIcon.classList.add("text-danger");
+
+          const removeResponse = await fetch("/remove-from-cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId }),
+          });
+
+          const removeData = await removeResponse.json();
+
+          if (!removeData.success) {
+            throw new Error("Cart removal failed");
+          }
+
+          if (typeof updateCounts === "function") {
+            updateCounts(removeData.cartCount, removeData.wishlistCount);
+          }
+
+          Swal.fire({
+            icon: "success",
+            title: "Moved to Wishlist",
+            text: "Item moved successfully.",
+          }).then(() => {
+            item.remove();
+            updateOrderSummary();
+
+            if (document.querySelectorAll(".cart-item").length === 0) {
+              document.querySelector(".cart-container").innerHTML = `
+              <div class="empty-cart-message">
+                <h2>Your cart is empty</h2>
+                <p>Add items to your cart</p>
+                <button onclick="window.location.href='/'" class="btn btn-primary">
+                  Go to Home Page
+                </button>
+              </div>
+            `;
             }
           });
+        } catch (error) {
+          console.error(error);
+          Swal.fire("Error", error.message, "error");
+        }
       });
     });
   });
@@ -403,6 +404,9 @@ include('../includes/userScripts.ejs') %>
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
+            if (typeof updateCounts === "function") {
+              updateCounts(data.cartCount, data.wishlistCount);
+            }
             item.remove();
             updateOrderSummary();
 

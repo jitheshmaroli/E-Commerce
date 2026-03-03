@@ -13,3 +13,28 @@
     }
   };
 </script>
+<script>
+  // Function to update badge counts
+  function updateCounts(cartCount, wishlistCount) {
+    const cartBadge = document.getElementById("cart-count-badge");
+    const wishlistBadge = document.getElementById("wishlist-count-badge");
+
+    if (cartBadge) {
+      if (cartCount > 0) {
+        cartBadge.textContent = cartCount;
+        cartBadge.classList.remove("d-none");
+      } else {
+        cartBadge.classList.add("d-none");
+      }
+    }
+
+    if (wishlistBadge) {
+      if (wishlistCount > 0) {
+        wishlistBadge.textContent = wishlistCount;
+        wishlistBadge.classList.remove("d-none");
+      } else {
+        wishlistBadge.classList.add("d-none");
+      }
+    }
+  }
+</script>

@@ -70,10 +70,19 @@ const addToCart = async (req, res) => {
     await cart.save();
     await Wishlist.findOneAndUpdate({ userId: user._id }, { $pull: { items: { productId } } });
 
+    const updatedCart = await Cart.findOne({ userId: user._id });
+    const cartCount = updatedCart
+      ? updatedCart.items.reduce((sum, item) => sum + item.quantity, 0)
+      : 0;
+    const wishlist = await Wishlist.findOne({ userId: user._id });
+    const wishlistCount = wishlist ? wishlist.products.length : 0;
+
     res.json({
       success: true,
       message: "Product added to cart successfully",
       discountPercentage,
+      cartCount,
+      wishlistCount,
     });
   } catch (error) {
     console.error("Error adding product to cart:", error);
@@ -164,8 +173,14 @@ const cartView = async (req, res) => {
         };
       })
     );
+    const updatedCart = await Cart.findOne({ userId: user._id });
+    const cartCount = updatedCart
+      ? updatedCart.items.reduce((sum, item) => sum + item.quantity, 0)
+      : 0;
+    const wishlist = await Wishlist.findOne({ userId: user._id });
+    const wishlistCount = wishlist ? wishlist.products.length : 0;
 
-    res.render("cart/cart", { items, user, message: "", categoryList });
+    res.render("cart/cart", { items, user, message: "", categoryList, cartCount, wishlistCount });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });
@@ -191,10 +206,15 @@ const updateQuantity = async (req, res) => {
       { $set: { "items.$.quantity": quantity } },
       { new: true }
     );
+    const updatedCart = await Cart.findOne({ userId });
+    const cartCount = updatedCart
+      ? updatedCart.items.reduce((sum, item) => sum + item.quantity, 0)
+      : 0;
     res.json({
       success: true,
       quantity,
       message: "Quantity updated successfully",
+      cartCount,
     });
   } catch (error) {
     res.status(500).send({ message: "Error updating quantity", error });
@@ -237,8 +257,14 @@ const removeFromCart = async (req, res) => {
       { $pull: { items: { productId } } },
       { new: true }
     );
+    const updatedCart = await Cart.findOne({ userId: user._id });
+    const cartCount = updatedCart
+      ? updatedCart.items.reduce((sum, item) => sum + item.quantity, 0)
+      : 0;
+    const wishlist = await Wishlist.findOne({ userId: user._id });
+    const wishlistCount = wishlist ? wishlist.products.length : 0;
 
-    res.json({ success: true });
+    res.json({ success: true, cartCount, wishlistCount });
   } catch (error) {
     console.error("Error removing product from cart:", error);
     res.status(500).json({ error: "Internal server error" });

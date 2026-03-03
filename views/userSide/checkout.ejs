@@ -673,10 +673,12 @@
       document.getElementById("base-price").textContent = `Base Price: ₹${basePrice.toFixed(2)}`;
       document.getElementById("sub-total").textContent = `Sub Total: ₹${subTotal.toFixed(2)}`;
       document.getElementById("sales-tax").textContent = `Sales Tax: ₹${salesTax.toFixed(2)}`;
-      document.getElementById("delivery-charge").textContent =
-        `Delivery Charge: ₹${deliveryCharge.toFixed(2)}`;
-      document.getElementById("order-total-price").textContent =
-        `Total Cost: ₹${grandTotal.toFixed(2)}`;
+      document.getElementById(
+        "delivery-charge"
+      ).textContent = `Delivery Charge: ₹${deliveryCharge.toFixed(2)}`;
+      document.getElementById("order-total-price").textContent = `Total Cost: ₹${grandTotal.toFixed(
+        2
+      )}`;
       document.getElementById("total-quantity").textContent = `Total Items: ${totalQuantity}`;
 
       document.getElementById("coupon-discount").textContent =
@@ -909,7 +911,9 @@
           rzp.open();
 
           rzp.on("payment.failed", (response) => {
-            window.location.href = `/payment-failed?orderId=${data.orderId}&reason=${encodeURIComponent(response.error.description)}`;
+            window.location.href = `/payment-failed?orderId=${
+              data.orderId
+            }&reason=${encodeURIComponent(response.error.description)}`;
           });
 
           rzp.on("payment.dismissed", () => {
