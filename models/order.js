@@ -36,6 +36,7 @@ const OrderSchema = new Schema({
       returnReason: {
         type: String,
       },
+      refundedAmount: { type: Number, default: 0 },
       shippedAt: { type: Date },
       deliveredAt: { type: Date },
       cancelledAt: { type: Date },

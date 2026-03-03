@@ -154,14 +154,23 @@
                             />
                             <div>
                               <strong><%= item.productId.name %></strong><br />
-                              <small class="text-muted"
-                                >₹<%= item.productId.price.toFixed(2) %></small
-                              >
+                              <small class="text-muted">₹<%= item.price.toFixed(2) %></small>
                             </div>
                           </div>
                         </td>
                         <td><%= item.quantity %></td>
-                        <td>₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                        <td>
+                          <% if (item.status === 'Returned') { %>
+                          <span class="text-success"
+                            >Refunded: ₹<%= item.refundedAmount.toFixed(2) %></span
+                          >
+                          <br /><small class="text-muted"
+                            ><del>₹<%= (item.price * item.quantity).toFixed(2) %></del></small
+                          >
+                          <% } else { %>
+                          ₹<%= (item.price * item.quantity).toFixed(2) %>
+                          <% } %>
+                        </td>
                         <td>
                           <%= new Date(order.createdAt).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'}) %>
                         </td>
@@ -252,32 +261,43 @@
                       <% }) %>
                     </tbody>
                     <tfoot>
+                      <% const totalRefunded = order.items.reduce((sum, i) => sum +
+                      (i.refundedAmount || 0), 0); const hasRefunds = totalRefunded > 0; %>
+
+                      <% if (!hasRefunds) { %>
                       <tr>
                         <td colspan="7" class="text-end fw-bold">Subtotal</td>
-                        <td colspan="2">₹<%= order.priceDetails.subTotal.toFixed(2) %></td>
+                        <td colspan="3">₹<%= order.priceDetails.subTotal.toFixed(2) %></td>
                       </tr>
-                      <% if (order.couponCode) { %>
+                      <% if (order.couponCode && order.priceDetails.discountAmount !== 0) { %>
                       <tr>
                         <td colspan="7" class="text-end text-danger fw-bold">
                           Discount (<%= order.couponCode %>)
                         </td>
-                        <td colspan="2" class="text-danger">
-                          -₹<%= order.priceDetails.discountAmount.toFixed(2) %>
+                        <td colspan="3" class="text-danger">
+                          -₹<%= Math.abs(order.priceDetails.discountAmount).toFixed(2) %>
                         </td>
                       </tr>
                       <% } %>
                       <tr>
                         <td colspan="7" class="text-end fw-bold">Delivery Charge</td>
-                        <td colspan="2">₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
+                        <td colspan="3">₹<%= order.priceDetails.deliveryCharge.toFixed(2) %></td>
                       </tr>
                       <tr>
                         <td colspan="7" class="text-end fw-bold">Sales Tax</td>
-                        <td colspan="2"><%= order.priceDetails.salesTax %></td>
+                        <td colspan="3">₹<%= order.priceDetails.salesTax.toFixed(2) %></td>
                       </tr>
                       <tr class="table-active">
                         <td colspan="7" class="text-end fw-bold fs-5">TOTAL</td>
-                        <td colspan="2" class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
+                        <td colspan="3" class="fw-bold fs-5">₹<%= order.totalCost.toFixed(2) %></td>
                       </tr>
+                      <% } else { %>
+                      <tr>
+                        <td colspan="7" class="text-end fw-bold">Total Refunded</td>
+                        <td colspan="3" class="text-success">-₹<%= totalRefunded.toFixed(2) %></td>
+                      </tr>
+
+                      <% } %>
                     </tfoot>
                   </table>
                 </div>

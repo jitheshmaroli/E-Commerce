@@ -122,6 +122,12 @@ const updateCoupon = async (req, res) => {
         message: "Coupon code must be 3-5 chars with at least one letter",
       });
     }
+
+    const existCoupon = await Coupon.findOne({ code: code.toUpperCase() });
+    if (existCoupon) {
+      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+    }
+
     if (!discount || isNaN(discount) || discount < 1 || discount > 100) {
       return res
         .status(400)
