@@ -307,6 +307,9 @@ const orderDetails = async (req, res) => {
       .populate({ path: "items.productId", model: "products" })
       .populate("deliveryAddress");
 
+    order.priceDetails.subTotal = order.priceDetails.subTotal.toFixed(2);
+    order.priceDetails.salesTax = order.priceDetails.salesTax.toFixed(2);
+    order.priceDetails.discountAmount = order.priceDetails.discountAmount.toFixed(2);
     const invoiceData = calculateInvoice(order);
 
     const canReturnItem = (deliveredAt) => {
@@ -448,6 +451,7 @@ const approveReturn = async (req, res) => {
     order.priceDetails.discountAmount -= discountPortion;
     order.priceDetails.salesTax -= itemTax;
 
+    item.refundedAmount = refundAmount;
     item.returnStatus = "Refunded";
     item.status = "Returned";
 
@@ -550,6 +554,7 @@ const cancelSingleItem = async (req, res) => {
     );
     order.priceDetails.salesTax = Math.max(0, Number(order.priceDetails.salesTax || 0) - itemTax);
 
+    item.refundedAmount = refundAmount;
     item.status = "Cancelled";
     item.cancelledAt = item.cancelledAt || new Date();
 
