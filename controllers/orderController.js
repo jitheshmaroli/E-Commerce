@@ -558,7 +558,6 @@ const cancelSingleItem = async (req, res) => {
       (order.paymentMethod === "cod" && item.status === "Delivered") ||
       (["online", "wallet"].includes(order.paymentMethod) && order.paymentStatus === "confirmed");
 
-    console.log("should refund", shouldRefund);
     if (shouldRefund) {
       const walletResult = await userController.updateUserWallet(
         user._id,
