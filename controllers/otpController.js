@@ -81,7 +81,8 @@ const forgotPasswordVerifyOtpView = async (req, res) => {
   const maskedEmail = email.replace(/(.{2}).*(@.*)/, "$1***$2");
 
   res.render("auth/resetPasswordVerifyOtp", {
-    userData: maskedEmail,
+    userData: email,
+    maskedEmail,
     message: "",
     remainingTime,
     otp: "",
@@ -143,7 +144,8 @@ const forgotPasswordVerifyOtp = async (req, res) => {
 
   if (!valid) {
     return res.render("auth/resetPasswordVerifyOtp", {
-      userData: maskedEmail,
+      userData: email,
+      maskedEmail,
       message,
       remainingTime: await getRemainingTime(email),
     });
@@ -222,7 +224,8 @@ const resetPasswordVerifyOtp = async (req, res) => {
 
     if (!valid) {
       return res.render("auth/resetPasswordVerifyOtp", {
-        userData: maskedEmail,
+        userData: email,
+        maskedEmail,
         message,
         remainingTime: await getRemainingTime(email),
         otp,

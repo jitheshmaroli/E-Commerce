@@ -232,7 +232,8 @@
           const data = await res.json();
 
           if (data.success) {
-            otpInfoAlert.textContent = `New OTP has been sent to ${email}`;
+            const maskedEmail = "<%= maskedEmail %>";
+            otpInfoAlert.textContent = `New OTP has been sent to ${maskedEmail}`;
             otpInfoAlert.classList.remove("alert-danger");
             otpInfoAlert.classList.add("alert-success");
           } else {
