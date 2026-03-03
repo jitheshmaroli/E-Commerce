@@ -43,6 +43,7 @@ router.get("/orders/:orderId", authentication.isAdminAuthenticated, adminControl
 router.post("/updateOrderStatus/:orderId/:productId", adminController.updateOrderStatus);
 router.post("/cancelOrder/:orderId/:productId", adminController.cancelOrder);
 router.post("/approve-return/:orderId/:itemId", orderController.approveReturn);
+router.post("/reject-return/:orderId/:itemId", orderController.rejectReturn);
 
 //coupons
 router.get("/couponlist", authentication.isAdminAuthenticated, couponController.couponListView);

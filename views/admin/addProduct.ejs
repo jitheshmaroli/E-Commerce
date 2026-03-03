@@ -276,7 +276,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-      //  DOM Elements
+      // DOM Elements
       const form = document.getElementById("productForm");
       const photoInput = document.getElementById("photos");
       const preview = document.getElementById("preview");
@@ -290,19 +290,28 @@
       const priceError = document.getElementById("priceError");
       const photosError = document.getElementById("photosError");
 
-      //  Validation Helper Functions
-      function showError(el, message) {
-        if (!el) return;
-        el.textContent = message;
-        el.previousElementSibling?.classList.add("is-invalid"); // Bootstrap red border
+      function setFieldError(errorEl, message, inputEl = null) {
+        if (!errorEl) return;
+        const targetInput = inputEl || errorEl.previousElementSibling;
+        if (message) {
+          errorEl.textContent = message;
+          if (targetInput && targetInput.classList) {
+            targetInput.classList.add("is-invalid");
+          }
+        } else {
+          errorEl.textContent = "";
+          if (targetInput && targetInput.classList) {
+            targetInput.classList.remove("is-invalid");
+          }
+        }
       }
 
-      function clearError(el) {
-        if (!el) return;
-        el.textContent = "";
-        el.previousElementSibling?.classList.remove("is-invalid");
+      function clearAllErrors() {
+        document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
+        document.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
       }
 
+      // Validation Functions
       function validateName(value) {
         value = value.trim();
         if (!value) return "Product name is required.";
@@ -357,16 +366,12 @@
         return "";
       }
 
-      //  Real-time Validation (input + blur)
+      // Attach real-time validation
       function attachValidation(field, validator, errorEl) {
         ["input", "blur"].forEach((event) => {
           field.addEventListener(event, () => {
             const errMsg = validator(field.value);
-            if (errMsg) {
-              showError(errorEl, errMsg);
-            } else {
-              clearError(errorEl);
-            }
+            setFieldError(errorEl, errMsg, field);
           });
         });
       }
@@ -374,23 +379,25 @@
       attachValidation(document.getElementById("name"), validateName, nameError);
       attachValidation(document.getElementById("description"), validateDescription, descError);
       attachValidation(document.getElementById("category"), validateCategory, categoryError);
-      attachValidation(document.getElementById("brandName"), () => "", brandError); // optional → always clear
+      // Brand is optional – always clear
+      document.getElementById("brandName").addEventListener("input", () => {
+        setFieldError(brandError, "", document.getElementById("brandName"));
+      });
       attachValidation(document.getElementById("stock"), validateStock, stockError);
       attachValidation(document.getElementById("price"), validatePrice, priceError);
 
-      // Photos
+      // Photo preview & validation
       photoInput.addEventListener("change", function () {
         const files = Array.from(this.files);
         const errMsg = validatePhotos(files);
 
         if (errMsg) {
-          photosError.textContent = errMsg;
+          setFieldError(photosError, errMsg, photoInput);
           this.value = "";
           preview.innerHTML = "";
         } else {
-          photosError.textContent = "";
+          setFieldError(photosError, "", photoInput);
           preview.innerHTML = "";
-
           files.forEach((file) => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -407,35 +414,35 @@
         }
       });
 
-      // Clear errors when user starts typing again
-      form.querySelectorAll("input, textarea, select").forEach((el) => {
-        el.addEventListener("input", () => {
-          const errEl = document.getElementById(`${el.id}Error`);
-          if (errEl) clearError(errEl);
-        });
-      });
-
-      //  Form Submit Validation
+      // Form submit validation
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        // Run all validations
-        const nameErr = validateName(document.getElementById("name").value);
-        const descErr = validateDescription(document.getElementById("description").value);
-        const catErr = validateCategory(document.getElementById("category").value);
-        const stockErr = validateStock(document.getElementById("stock").value);
-        const priceErr = validatePrice(document.getElementById("price").value);
+        // Get field values
+        const nameField = document.getElementById("name");
+        const descField = document.getElementById("description");
+        const categoryField = document.getElementById("category");
+        const stockField = document.getElementById("stock");
+        const priceField = document.getElementById("price");
+        const brandField = document.getElementById("brandName");
+
+        const nameErr = validateName(nameField.value);
+        const descErr = validateDescription(descField.value);
+        const catErr = validateCategory(categoryField.value);
+        const stockErr = validateStock(stockField.value);
+        const priceErr = validatePrice(priceField.value);
         const photosErr = validatePhotos(Array.from(photoInput.files));
 
-        // Show errors
-        showError(nameError, nameErr);
-        showError(descError, descErr);
-        showError(categoryError, catErr);
-        showError(stockError, stockErr);
-        showError(priceError, priceErr);
-        showError(photosError, photosErr);
+        // Show/hide errors with proper field association
+        setFieldError(nameError, nameErr, nameField);
+        setFieldError(descError, descErr, descField);
+        setFieldError(categoryError, catErr, categoryField);
+        setFieldError(stockError, stockErr, stockField);
+        setFieldError(priceError, priceErr, priceField);
+        setFieldError(brandError, "", brandField);
+        setFieldError(photosError, photosErr, photoInput);
 
-        // Stop if any error
+        // If any error exists, stop submission
         if (nameErr || descErr || catErr || stockErr || priceErr || photosErr) {
           Swal.fire({
             icon: "error",
@@ -446,7 +453,7 @@
           return;
         }
 
-        // submit
+        // Submit via fetch
         try {
           const formData = new FormData(form);
           const res = await fetch(form.action, {
@@ -467,12 +474,11 @@
         }
       });
 
-      // Clear form
+      // Clear form function
       function clearFields() {
         form.reset();
         preview.innerHTML = "";
-        document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
-        document.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
+        clearAllErrors();
       }
     </script>
   </body>

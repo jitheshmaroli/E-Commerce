@@ -57,6 +57,16 @@ const review = async (req, res) => {
     const userId = user._id;
     const { orderId, productId } = req.params;
 
+    const existingReview = await Review.findOne({
+      userId,
+      productId,
+      orderId,
+    });
+
+    if (existingReview) {
+      return res.status(400).json({ error: "You have already reviewed this product" });
+    }
+
     const review = new Review({
       userId,
       productId,
@@ -67,6 +77,19 @@ const review = async (req, res) => {
 
     await review.save();
     await Product.findByIdAndUpdate(productId, { $push: { reviews: review._id } }, { new: true });
+
+    await Order.findOneAndUpdate(
+      {
+        _id: orderId,
+        "items.productId": productId,
+      },
+      {
+        $set: {
+          "items.$.reviewed": true,
+          "items.$.reviewedAt": new Date(),
+        },
+      }
+    );
 
     res.redirect("/order-history");
   } catch (error) {

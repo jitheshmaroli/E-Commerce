@@ -22,9 +22,10 @@ const OrderSchema = new Schema({
         type: Number,
         required: true,
       },
+      price: { type: Number, required: true },
       status: {
         type: String,
-        enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+        enum: ["Pending", "Shipped", "Delivered", "Cancelled", "Returned"],
         default: "Pending",
       },
       returnStatus: {
@@ -38,6 +39,8 @@ const OrderSchema = new Schema({
       shippedAt: { type: Date },
       deliveredAt: { type: Date },
       cancelledAt: { type: Date },
+      reviewed: { type: Boolean, default: false },
+      reviewedAt: { type: Date },
     },
   ],
   totalCost: {
