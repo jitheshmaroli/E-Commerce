@@ -2,6 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const otpController = require("./otpController");
 const Category = require("../models/category");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const forgotPasswordView = (req, res) => {
   res.render("auth/forgotPassword", { message: "" });
@@ -53,7 +54,7 @@ const changePasswordView = async (req, res) => {
     res.render("users/changePassword", { user, message: "", categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal error");
   }
 };
 
@@ -61,7 +62,9 @@ const changePassword = async (req, res) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
 
   if (newPassword !== confirmPassword) {
-    return res.status(400).json({ message: "New password and confirm password do not match" });
+    return res
+      .status(HTTP_STATUS.BAD_REQUEST)
+      .json({ message: "New password and confirm password do not match" });
   }
 
   try {
@@ -69,7 +72,7 @@ const changePassword = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
 
     const passwordMatch = await bcrypt.compare(currentPassword, user.password);
@@ -92,7 +95,7 @@ const changePassword = async (req, res) => {
     });
   } catch (error) {
     console.error("Error changing password:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }
 };
 

@@ -1,14 +1,11 @@
 const Product = require("../models/product");
 const Category = require("../models/category");
 const Offer = require("../models/offer");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const listOffers = async (req, res) => {
-  try {
-    const offers = await Offer.find();
-    res.render("admin/offers/offersList", { offers });
-  } catch (error) {
-    res.status(500).send(error);
-  }
+  const offers = await Offer.find();
+  res.render("admin/offers/offersList", { offers });
 };
 
 const addOfferView = async (req, res) => {
@@ -17,7 +14,7 @@ const addOfferView = async (req, res) => {
     const categories = await Category.find();
     res.render("admin/offers/addOffer", { products, categories, message: "" });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send(error);
   }
 };
 
@@ -51,16 +48,20 @@ const addOffer = async (req, res) => {
     });
 
     if (existingOffer) {
-      return res.status(400).json({ success: false, message: "Duplicate offer already exists." });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Duplicate offer already exists." });
     }
 
     const newOffer = new Offer(offerData);
     await newOffer.save();
 
-    res.json({ success: true, message: "Offer created successfully" });
+    res.status(HTTP_STATUS.CREATED).json({ success: true, message: "Offer created successfully" });
   } catch (error) {
     console.error("Add offer error:", error);
-    res.status(400).json({ success: false, message: error.message || "Failed to create offer" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: error.message || "Failed to create offer" });
   }
 };
 
@@ -173,11 +174,11 @@ const editOfferView = async (req, res) => {
     const products = await Product.find();
     const categories = await Category.find();
     if (!offer) {
-      return res.status(404).send("Offer not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).send("Offer not found");
     }
     res.render("admin/offers/editOffer", { offer, products, categories });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send(error);
   }
 };
 
@@ -214,13 +215,15 @@ const updateOffer = async (req, res) => {
     });
 
     if (!updatedOffer) {
-      return res.status(404).json({ success: false, message: "Offer not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: "Offer not found" });
     }
 
-    res.json({ success: true, message: "Offer updated successfully" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Offer updated successfully" });
   } catch (error) {
     console.error("Update offer error:", error);
-    res.status(400).json({ success: false, message: error.message || "Failed to update offer" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: error.message || "Failed to update offer" });
   }
 };
 
@@ -229,11 +232,13 @@ const deleteOffer = async (req, res) => {
     const offerId = req.params.id;
     const deletedOffer = await Offer.findByIdAndDelete(offerId);
     if (!deletedOffer) {
-      return res.status(404).send("Offer not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).send("Offer not found");
     }
-    res.json({ success: true, message: "Offer deleted successfully" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Offer deleted successfully" });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message || "Failed to delete offer" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: error.message || "Failed to delete offer" });
   }
 };
 

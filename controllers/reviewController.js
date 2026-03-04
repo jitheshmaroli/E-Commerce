@@ -3,6 +3,7 @@ const Product = require("../models/product");
 const User = require("../models/user");
 const Category = require("../models/category");
 const Review = require("../models/review");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const reviewView = async (req, res) => {
   try {
@@ -14,25 +15,25 @@ const reviewView = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
 
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Order not found" });
     }
 
     const product = order.items.find((item) => item.productId.toString() === productId);
 
     if (!product) {
-      return res.status(404).send("Product not found in the order");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Product not found in the order" });
     }
 
     const productDetails = await Product.findById(productId);
 
     if (!productDetails) {
-      return res.status(404).send("Product details not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Product details not found" });
     }
 
     res.render("orders/review", {
@@ -44,7 +45,7 @@ const reviewView = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error retrieving product details");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Error retrieving product details");
   }
 };
 
@@ -64,7 +65,9 @@ const review = async (req, res) => {
     });
 
     if (existingReview) {
-      return res.status(400).json({ error: "You have already reviewed this product" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ error: "You have already reviewed this product" });
     }
 
     const review = new Review({
@@ -94,7 +97,7 @@ const review = async (req, res) => {
     res.redirect("/order-history");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error submitting review");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Error submitting review");
   }
 };
 

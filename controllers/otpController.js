@@ -1,6 +1,7 @@
 const Otp = require("../models/otp");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -156,13 +157,14 @@ const forgotPasswordVerifyOtp = async (req, res) => {
 
 const resendOtp = async (req, res) => {
   const { email } = req.body;
-  if (!email) return res.json({ success: false, message: "Email required" });
+  if (!email)
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: "Email required" });
 
   try {
     const latestOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
     if (latestOtp && Date.now() < latestOtp.createdAt.getTime() + 60 * 1000) {
       const remaining = Math.ceil((latestOtp.createdAt.getTime() + 60 * 1000 - Date.now()) / 1000);
-      return res.json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: `Please wait ${remaining} seconds before resending`,
       });
@@ -174,10 +176,10 @@ const resendOtp = async (req, res) => {
     await otpEntry.save();
 
     await sendOTP(email, otp);
-    res.json({ success: true });
+    res.status(HTTP_STATUS.OK).json({ success: true });
   } catch (err) {
     console.error(err);
-    res.json({ success: false, message: "Server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -205,7 +207,7 @@ const resetPasswordSendOtp = async (req, res) => {
     res.redirect("/forgot-password-verify-otp");
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }
 };
 
@@ -235,7 +237,7 @@ const resetPasswordVerifyOtp = async (req, res) => {
     res.render("auth/resetPassword", { userData: email, message: "" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 

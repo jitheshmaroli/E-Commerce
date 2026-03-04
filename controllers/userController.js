@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const Category = require("../models/category");
 const Wallet = require("../models/wallet");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -34,7 +35,7 @@ const userProfileView = async (req, res) => {
     res.render("users/userProfile", { user, categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "internal error" });
   }
 };
 
@@ -45,7 +46,7 @@ const updateProfile = async (req, res) => {
       (req.session.isUserAuthenticated ? await User.findOne({ email: req.session.userId }) : null);
 
     if (!user) {
-      return res.status(401).redirect("/login");
+      return res.status(HTTP_STATUS.UNAUTHORIZED).redirect("/login");
     }
 
     const { name, gender } = req.body;
@@ -92,7 +93,7 @@ const updateProfile = async (req, res) => {
     res.redirect("/profile?updated=true");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }
 };
 
@@ -113,7 +114,7 @@ const walletView = async (req, res) => {
     res.render("users/wallet", { user: populatedUser, categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "internal error" });
   }
 };
 

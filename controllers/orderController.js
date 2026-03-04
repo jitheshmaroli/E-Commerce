@@ -8,6 +8,7 @@ const cartController = require("../controllers/cartController");
 const offerController = require("../controllers/offerController");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const generateUniqueOrderId = () => {
   const prefix = "ORD";
@@ -27,7 +28,9 @@ const placeOrder = async (req, res) => {
 
     const validatedOrderItems = await validateOrderItems(orderItems);
     if (validatedOrderItems.length === 0) {
-      return res.status(400).json({ success: false, error: "One or more items are out of stock." });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, error: "One or more items are out of stock." });
     }
 
     const uniqueOrderId = generateUniqueOrderId();
@@ -54,7 +57,7 @@ const placeOrder = async (req, res) => {
       order.paymentStatus = "confirmed";
       await Order.create(order);
       await cartController.updateProductStock(validatedOrderItems);
-      return res.status(200).json({ cod: true, order });
+      return res.status(HTTP_STATUS.OK).json({ cod: true, order });
     } else if (paymentMode === "online") {
       var options = {
         amount: totalCost * 100,
@@ -80,7 +83,7 @@ const placeOrder = async (req, res) => {
           .select({ _id: 1 });
         const orderId = lastOrder ? lastOrder._id : null;
 
-        return res.json({ online: true, orderId, razorpayOrder });
+        return res.status(HTTP_STATUS.OK).json({ online: true, orderId, razorpayOrder });
       }
     } else if (paymentMode === "wallet") {
       if (user.wallet < totalCost) {
@@ -107,7 +110,7 @@ const placeOrder = async (req, res) => {
 
       if (!walletResult || walletResult.success === false) {
         await Order.findByIdAndDelete(createdOrder._id);
-        return res.status(400).json({
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: walletResult?.error || "Failed to deduct wallet balance",
         });
@@ -128,7 +131,7 @@ const placeOrder = async (req, res) => {
 
       await cartController.updateProductStock(validatedOrderItems);
 
-      return res.status(200).json({
+      return res.status(HTTP_STATUS.OK).json({
         success: true,
         wallet: true,
         order: confirmedOrder,
@@ -136,7 +139,7 @@ const placeOrder = async (req, res) => {
     }
   } catch (error) {
     console.error("Error placing order:", error);
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: "An error occurred while placing the order.",
     });
@@ -172,7 +175,7 @@ const orderHistory = async (req, res) => {
     });
     const categoryList = await Category.find({ isBlocked: false });
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
     const userId = user._id;
 
@@ -212,7 +215,7 @@ const orderHistory = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error retrieving order history");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Error retrieving order history");
   }
 };
 
@@ -227,13 +230,13 @@ const cancelOrder = async (req, res) => {
       .populate("deliveryAddress");
 
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Order not found" });
     }
 
     const itemIndex = order.items.findIndex((item) => item.productId._id.toString() === itemId);
 
     if (itemIndex === -1) {
-      return res.status(404).send("Item not found in the order");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Item not found in the order" });
     }
 
     const item = order.items[itemIndex];
@@ -287,7 +290,7 @@ const cancelOrder = async (req, res) => {
     res.redirect("/order-history");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error cancelling order item");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Error cancelling order item" });
   }
 };
 
@@ -299,7 +302,7 @@ const orderDetails = async (req, res) => {
     });
     const categoryList = await Category.find({ isBlocked: false });
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
 
     const order = await Order.findById({ _id: orderId })
@@ -321,7 +324,9 @@ const orderDetails = async (req, res) => {
     res.render("orders/orderDetails", { order, user, categoryList, invoiceData, canReturnItem });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error retrieving order history");
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ message: "Error retrieving order history" });
   }
 };
 
@@ -334,19 +339,21 @@ const returnProductPage = async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Order not found" });
     }
 
     const item = order.items.find((item) => item.productId._id.toString() === itemId);
 
     if (!item) {
-      return res.status(404).send("Item not found in order");
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Item not found in order" });
     }
 
     res.render("orders/returnProduct", { order, item, user });
   } catch (error) {
     console.error("Error rendering return product page:", error);
-    res.status(500).send("An error occurred while loading the return page");
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .send("An error occurred while loading the return page");
   }
 };
 
@@ -357,22 +364,24 @@ const initiateReturn = async (req, res) => {
 
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Order not found" });
     }
 
     const item = order.items.find((item) => item.productId.toString() === itemId);
     if (!item) {
-      return res.status(404).json({ error: "Item not found in order" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Item not found in order" });
     }
 
     if (item.status !== "Delivered") {
-      return res.status(400).json({ error: "Only delivered items can be returned" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ error: "Only delivered items can be returned" });
     }
 
     const RETURN_WINDOW_DAYS = parseInt(process.env.RETURN_WINDOW_DAYS) || 7;
     const deliveredAt = item.deliveredAt;
     if (!deliveredAt) {
-      return res.status(400).json({ error: "Delivery date not recorded" });
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Delivery date not recorded" });
     }
     const daysSinceDelivery = (Date.now() - deliveredAt) / (1000 * 60 * 60 * 24);
     if (daysSinceDelivery > RETURN_WINDOW_DAYS) {
@@ -389,7 +398,9 @@ const initiateReturn = async (req, res) => {
     res.redirect("/order-history");
   } catch (error) {
     console.error("Error initiating return:", error);
-    res.status(500).json({ error: "An error occurred while initiating the return" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ error: "An error occurred while initiating the return" });
   }
 };
 
@@ -399,16 +410,18 @@ const approveReturn = async (req, res) => {
 
     const order = await Order.findById(orderId).populate("items.productId");
     if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Order not found" });
     }
 
     const item = order.items.find((i) => i.productId._id.toString() === itemId);
     if (!item) {
-      return res.status(404).json({ error: "Item not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Item not found" });
     }
 
     if (item.returnStatus !== "Requested") {
-      return res.status(400).json({ error: "Return not requested for this item" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ error: "Return not requested for this item" });
     }
 
     const shouldRefund =
@@ -467,10 +480,12 @@ const approveReturn = async (req, res) => {
 
     await order.save();
 
-    return res.status(200).json({ message: "Return approved and refund processed" });
+    return res.status(HTTP_STATUS.OK).json({ message: "Return approved and refund processed" });
   } catch (error) {
     console.error("Error approving return:", error);
-    return res.status(500).json({ error: "Error processing return approval" });
+    return res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ error: "Error processing return approval" });
   }
 };
 
@@ -482,20 +497,25 @@ const cancelSingleItem = async (req, res) => {
       email: req.session.userId || req.session.passport?.user?.userId,
     });
 
-    if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+    if (!user)
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: "Unauthorized" });
 
     const order = await Order.findById(orderId).populate("items.productId");
 
-    if (!order) return res.status(404).json({ success: false, error: "Order not found" });
+    if (!order)
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, error: "Order not found" });
 
     const itemIndex = order.items.findIndex((i) => i.productId._id.toString() === itemId);
 
-    if (itemIndex === -1) return res.status(404).json({ success: false, error: "Item not found" });
+    if (itemIndex === -1)
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, error: "Item not found" });
 
     const item = order.items[itemIndex];
 
     if (item.status !== "Pending") {
-      return res.status(400).json({ success: false, error: "Only pending items can be cancelled" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, error: "Only pending items can be cancelled" });
     }
 
     const product = await Product.findById(item.productId._id);
@@ -543,7 +563,9 @@ const cancelSingleItem = async (req, res) => {
         itemTax,
         refundAmount,
       });
-      return res.status(500).json({ success: false, error: "Refund calculation failed" });
+      return res
+        .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        .json({ success: false, error: "Refund calculation failed" });
     }
 
     order.totalCost = Math.max(0, Number(order.totalCost || 0) - refundAmount);
@@ -636,20 +658,20 @@ const rejectReturn = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ error: "Order not found" });
+    if (!order) return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Order not found" });
 
     const item = order.items.find((i) => i.productId.toString() === itemId);
-    if (!item) return res.status(404).json({ error: "Item not found" });
+    if (!item) return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Item not found" });
     if (item.returnStatus !== "Requested") {
-      return res.status(400).json({ error: "Return not requested" });
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Return not requested" });
     }
 
     item.returnStatus = "Rejected";
     await order.save();
-    res.json({ message: "Return rejected" });
+    res.status(HTTP_STATUS.OK).json({ message: "Return rejected" });
   } catch (error) {
     console.error("Reject return error:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Server error" });
   }
 };
 

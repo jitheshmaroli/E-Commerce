@@ -1,3 +1,4 @@
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 const Category = require("../models/category");
 const Product = require("../models/product");
 
@@ -8,7 +9,7 @@ const categoryListView = async (req, res) => {
     res.render("admin/categoryList", { categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal server error");
   }
 };
 
@@ -17,7 +18,7 @@ const addCategoryView = async (req, res) => {
     res.render("admin/addcategory", { message: "" });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal server error");
   }
 };
 
@@ -25,7 +26,9 @@ const addCategory = async (req, res) => {
   try {
     const { categoryName, description } = req.body;
     if (!categoryName || !description) {
-      return res.status(400).json({ success: false, message: "Incomplete details" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Incomplete details" });
     }
 
     const existingCategory = await Category.findOne({
@@ -33,7 +36,9 @@ const addCategory = async (req, res) => {
     });
 
     if (existingCategory) {
-      return res.status(400).json({ success: false, message: "Category already exists" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Category already exists" });
     }
 
     const newCategory = new Category({
@@ -43,10 +48,12 @@ const addCategory = async (req, res) => {
     });
 
     await Category.create(newCategory);
-    res.json({ success: true, message: "Category added successfully" });
+    res.status(HTTP_STATUS.CREATED).json({ success: true, message: "Category added successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Failed to add category" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Failed to add category" });
   }
 };
 
@@ -58,7 +65,7 @@ const editCategoryView = async (req, res) => {
     res.render("admin/editCategory", { categoryList, message: "" });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal server error");
   }
 };
 
@@ -72,7 +79,9 @@ const editCategory = async (req, res) => {
     });
 
     if (existingCategory) {
-      return res.status(400).json({ success: false, message: "Category already exists" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Category already exists" });
     }
 
     const updated = await Category.findByIdAndUpdate(
@@ -82,13 +91,17 @@ const editCategory = async (req, res) => {
     );
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Category not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Category not found" });
     }
 
-    res.json({ success: true, message: "Category updated successfully" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Category updated successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Failed to update category" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Failed to update category" });
   }
 };
 
@@ -118,7 +131,9 @@ const toggleCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) {
-      return res.status(404).json({ success: false, message: "Category not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Category not found" });
     }
 
     category.isBlocked = !category.isBlocked;
@@ -129,10 +144,10 @@ const toggleCategory = async (req, res) => {
       { $set: { isDeleted: category.isBlocked } }
     );
 
-    res.json({ success: true, isBlocked: category.isBlocked });
+    res.status(HTTP_STATUS.OK).json({ success: true, isBlocked: category.isBlocked });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
