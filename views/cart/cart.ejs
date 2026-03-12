@@ -1,124 +1,208 @@
 <%- include('../includes/userHead.ejs') %>
 <link rel="stylesheet" href="/css/cart.css" />
-
 <%- include('../includes/userHeader.ejs') %>
 
-<div class="container">
-  <h1 class="page-title">SHOPPING CART</h1>
-  <% if (items.length <= 0) { %>
-  <div class="empty-cart-message">
-    <h2>Your cart is empty</h2>
-    <p>Add items to your cart</p>
-    <a href="/" class="btn product-btn">Go to Home Page</a>
-  </div>
-  <% } else { %>
-  <div class="cart-container">
-    <section class="cart-section">
-      <div class="cart">
-        <% items.forEach(item => { %>
-        <div class="cart-item" data-product="<%= item.productId %>">
-          <span class="close-btn">&times;</span>
-          <div class="item-details">
-            <div class="cart-item-checkbox">
-              <input
-                type="checkbox"
-                class="cart-item-checkbox-input"
-                data-product="<%= item.productId %>"
-                data-quantity="<%= item.quantity %>"
-              />
-            </div>
-            <div class="item-image">
+<div class="cart-page">
+  <div class="container">
+    <div class="cart-page-header">
+      <h1>Shopping Cart</h1>
+      <% if (items.length > 0) { %>
+      <p><%= items.length %> item<%= items.length !== 1 ? 's' : '' %> in your cart</p>
+      <% } %>
+    </div>
+
+    <% if (items.length <= 0) { %>
+
+    <!-- Empty state -->
+    <div class="empty-cart">
+      <i class="fas fa-shopping-bag"></i>
+      <h2>Your Cart is Empty</h2>
+      <p>Looks like you haven't added anything yet.</p>
+      <a href="/" class="btn-shop-empty"><i class="fas fa-arrow-right"></i> Start Shopping</a>
+    </div>
+
+    <% } else { %>
+
+    <div class="cart-layout">
+      <!-- ── Items Column ── -->
+      <div class="cart-items-col">
+        <!-- Toolbar -->
+        <div class="cart-toolbar">
+          <input type="checkbox" class="cart-select-all" id="selectAll" checked />
+          <label for="selectAll">Select All</label>
+          <span class="cart-count-badge"
+            ><span id="selected-count"><%= items.length %></span> selected</span
+          >
+        </div>
+
+        <!-- Items list -->
+        <div class="cart-items-list">
+          <% items.forEach(item => { %>
+          <div class="cart-item" data-product="<%= item.productId %>">
+            <!-- Checkbox -->
+            <input
+              type="checkbox"
+              class="cart-item-checkbox-input"
+              data-product="<%= item.productId %>"
+              data-quantity="<%= item.quantity %>"
+              checked
+            />
+
+            <!-- Image -->
+            <div class="cart-item-img-wrap">
               <a href="/product-details/<%= item.productId %>">
-                <img src="/uploads/<%= item.image %>" alt="Product Image" />
+                <img src="/uploads/<%= item.image %>" alt="<%= item.name %>" />
               </a>
             </div>
-            <div class="item-info">
-              <a href="/product-details/<%= item.productId %>" data-product="<%= item.productId %>">
-                <h3 class="product-name"><%= item.name.toUpperCase() %></h3>
+
+            <!-- Info -->
+            <div class="cart-item-info">
+              <a href="/product-details/<%= item.productId %>" class="cart-item-name">
+                <%= item.name.toUpperCase() %>
               </a>
-              <p class="product-price">
+
+              <div class="cart-item-price">
                 <% if (item.offer) { %>
                 <span class="original-price">₹<%= item.price.toFixed(2) %></span>
                 <span class="current-price">₹<%= item.currentPrice.toFixed(2) %></span>
                 <i
-                  class="fas fa-info-circle offer-icon"
+                  class="fas fa-tag offer-icon"
                   data-bs-toggle="modal"
                   data-bs-target="#offerModal<%= item.productId %>"
+                  title="View offer"
                 ></i>
                 <% } else { %>
-                ₹<%= item.currentPrice.toFixed(2) %>
+                <span class="current-price">₹<%= item.currentPrice.toFixed(2) %></span>
                 <% } %>
-              </p>
-              <div class="quantity-control">
-                <button class="quantity-btn" aria-label="Decrease">-</button>
+              </div>
+
+              <div class="qty-control">
+                <button class="qty-btn quantity-btn" aria-label="Decrease">−</button>
                 <input
+                  class="qty-input"
                   type="number"
                   value="<%= item.quantity %>"
                   min="1"
                   data-stock="<%= item.stock %>"
                 />
-                <button class="quantity-btn" aria-label="Increase">+</button>
+                <button class="qty-btn quantity-btn" aria-label="Increase">+</button>
               </div>
             </div>
-          </div>
-          <div class="item-action">
-            <a href="#" class="move-to-wishlist"><i class="fa fa-heart"></i></a>
-          </div>
-        </div>
-        <% if (item.offer) { %>
-        <div
-          class="modal fade"
-          id="offerModal<%= item.productId %>"
-          tabindex="-1"
-          aria-labelledby="offerModalLabel<%= item.productId %>"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="offerModalLabel<%= item.productId %>">Offer Details</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <%= item.offer.name %>: <%= item.offer.discountType === 'percentage' ?
-                item.offer.discountValue + '% off' : '₹' + item.offer.discountValue + ' off' %>
-              </div>
-            </div>
-          </div>
-        </div>
-        <% } %>
-        <% }) %>
-      </div>
-    </section>
 
-    <section class="order-summary-section">
-      <aside class="order-summary">
-        <h2>Order Summary</h2>
-        <div class="summary-details">
-          <p>Total Items: <span id="total-items">0</span></p>
-          <p>Total Cost: <span id="total-cost">₹0.00</span></p>
+            <!-- Actions -->
+            <div class="cart-item-actions">
+              <button class="cart-remove-btn close-btn" title="Remove item">
+                <i class="fas fa-times"></i>
+              </button>
+              <a href="#" class="cart-wishlist-btn move-to-wishlist" title="Move to wishlist">
+                <i class="far fa-heart"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Offer modal -->
+          <% if (item.offer) { %>
+          <div
+            class="modal fade"
+            id="offerModal<%= item.productId %>"
+            tabindex="-1"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+              <div class="modal-content border-0 rounded-4 overflow-hidden">
+                <div
+                  class="modal-header"
+                  style="
+                    background: var(--black);
+                    color: var(--white);
+                    border: none;
+                    padding: 0.9rem 1.25rem;
+                  "
+                >
+                  <h6
+                    class="modal-title"
+                    style="
+                      font-family: 'Bebas Neue', sans-serif;
+                      font-size: 1.1rem;
+                      letter-spacing: 0.04em;
+                      margin: 0;
+                    "
+                  >
+                    <i class="fas fa-tag me-2"></i>Offer Details
+                  </h6>
+                  <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                  ></button>
+                </div>
+                <div class="modal-body" style="font-size: 0.88rem; padding: 1.25rem">
+                  <strong><%= item.offer.name %></strong>:
+                  <%= item.offer.discountType === 'percentage'
+                    ? item.offer.discountValue + '% off'
+                    : '₹' + item.offer.discountValue + ' off' %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+
+          <% }) %>
         </div>
-        <button id="checkout-btn" class="btn product-btn">Proceed to Checkout</button>
-      </aside>
-    </section>
+      </div>
+
+      <!-- ── Summary Column ── -->
+      <div class="cart-summary-col">
+        <div class="cart-summary-card">
+          <div class="cart-summary-header">
+            <div class="cart-summary-icon"><i class="fas fa-receipt"></i></div>
+            <h2>Order Summary</h2>
+          </div>
+          <div class="cart-summary-body">
+            <div class="summary-row">
+              <span>Items</span>
+              <span id="total-items">0</span>
+            </div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="total-cost">₹0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery</span>
+              <span>Free</span>
+            </div>
+
+            <div class="summary-total">
+              <span class="summary-total-label">Total</span>
+              <span class="summary-total-amount" id="summary-total-display">₹0.00</span>
+            </div>
+
+            <button id="checkout-btn" class="btn-checkout">
+              <i class="fas fa-lock"></i> Checkout
+            </button>
+
+            <div class="cart-trust-strip">
+              <i class="fas fa-shield-alt"></i> Secure & encrypted checkout
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /cart-layout -->
+    <% } %>
   </div>
-  <% } %>
+  <!-- /container -->
 </div>
+<!-- /cart-page -->
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   (function () {
-    window.onpageshow = function (event) {
-      if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+    window.onpageshow = function (e) {
+      if (e.persisted || (window.performance && window.performance.navigation.type === 2)) {
         window.location.reload();
       }
     };
@@ -129,332 +213,267 @@ include('../includes/userScripts.ejs') %>
   document.addEventListener("DOMContentLoaded", function () {
     const maxQtyPerUser = 5;
 
+    // ── Qty buttons ──────────────────────────────────────────
     document.querySelectorAll(".quantity-btn").forEach((btn) => {
       btn.addEventListener("click", function (e) {
-        const input = e.target.closest(".quantity-control").querySelector("input");
-        let currentQty = parseInt(input.value);
-        const stockQty = parseInt(input.getAttribute("data-stock"));
+        const control = e.target.closest(".qty-control");
+        const input = control.querySelector("input");
+        let qty = parseInt(input.value);
+        const stock = parseInt(input.getAttribute("data-stock"));
         const item = e.target.closest(".cart-item");
         const productId = item.getAttribute("data-product");
+        const isPlus = e.target.textContent.trim() === "+";
 
-        if (e.target.textContent === "+") {
-          if (currentQty < maxQtyPerUser) {
-            if (currentQty < stockQty) {
-              input.value = currentQty + 1;
-            } else {
-              Swal.fire({
-                icon: "warning",
-                title: "Stock Alert",
-                text: "Stock is less!",
-                confirmButtonText: "OK",
-              });
-            }
-          } else {
+        if (isPlus) {
+          if (qty >= maxQtyPerUser) {
             Swal.fire({
               icon: "warning",
               title: "Limit Exceeded",
-              text: "You can only buy up to 5 units of this item.",
+              text: "Max 5 units per item.",
               confirmButtonText: "OK",
             });
+            return;
           }
-        } else if (e.target.textContent === "-") {
-          if (currentQty > 1) {
-            input.value = currentQty - 1;
-          } else {
+          if (qty >= stock) {
             Swal.fire({
               icon: "warning",
-              title: "Minimum Order",
-              text: "The minimum order is 1 item.",
+              title: "Stock Alert",
+              text: "Not enough stock!",
               confirmButtonText: "OK",
             });
+            return;
           }
+          input.value = qty + 1;
+        } else {
+          if (qty <= 1) {
+            Swal.fire({
+              icon: "warning",
+              title: "Minimum 1",
+              text: "Minimum order is 1 item.",
+              confirmButtonText: "OK",
+            });
+            return;
+          }
+          input.value = qty - 1;
         }
-        currentQty = input.value;
-        updateQuantityOnServer(productId, currentQty);
+        updateQuantityOnServer(productId, input.value);
         updateOrderSummary();
       });
     });
 
-    document.querySelectorAll(".quantity-control input").forEach((input) => {
+    // ── Direct input change ──────────────────────────────────
+    document.querySelectorAll(".qty-input").forEach((input) => {
       input.addEventListener("change", function (e) {
-        const stockQty = parseInt(e.target.getAttribute("data-stock"));
-        let newQty = parseInt(e.target.value);
-        const item = e.target.closest(".cart-item");
-        const productId = item.getAttribute("data-product");
+        const stock = parseInt(e.target.getAttribute("data-stock"));
+        let qty = parseInt(e.target.value);
+        const productId = e.target.closest(".cart-item").getAttribute("data-product");
 
-        if (newQty > maxQtyPerUser) {
-          newQty = maxQtyPerUser;
+        if (qty > maxQtyPerUser) {
+          qty = maxQtyPerUser;
           Swal.fire({
             icon: "warning",
             title: "Limit Exceeded",
-            text: "You can only buy up to 5 units of this item.",
+            text: "Max 5 units.",
             confirmButtonText: "OK",
           });
-        } else if (newQty > stockQty) {
-          newQty = stockQty;
+        } else if (qty > stock) {
+          qty = stock;
           Swal.fire({
             icon: "warning",
             title: "Stock Alert",
-            text: "Stock is less!",
+            text: "Not enough stock!",
             confirmButtonText: "OK",
           });
-        } else if (newQty < 1) {
-          newQty = 1;
-          Swal.fire({
-            icon: "warning",
-            title: "Minimum Order",
-            text: "The minimum order is 1 item.",
-            confirmButtonText: "OK",
-          });
+        } else if (qty < 1) {
+          qty = 1;
         }
-        updateQuantityOnServer(productId, newQty);
+        e.target.value = qty;
+        updateQuantityOnServer(productId, qty);
+        updateOrderSummary();
       });
     });
-  });
 
-  function updateQuantityOnServer(productId, quantity) {
-    fetch("/update-quantity", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ productId: productId, quantity: quantity }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          if (typeof updateCounts === "function") {
-            updateCounts(data.cartCount, data.wishlistCount);
-          }
-          updateOrderSummary();
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error updating the quantity.",
-            confirmButtonText: "OK",
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "There was an error updating the quantity.",
-          confirmButtonText: "OK",
+    // ── Select all checkbox ──────────────────────────────────
+    const selectAll = document.getElementById("selectAll");
+    if (selectAll) {
+      selectAll.addEventListener("change", () => {
+        document.querySelectorAll(".cart-item-checkbox-input").forEach((cb) => {
+          cb.checked = selectAll.checked;
         });
+        updateOrderSummary();
       });
-  }
-
-  function checkAllItems() {
-    document.querySelectorAll(".cart-item-checkbox-input").forEach((checkbox) => {
-      checkbox.checked = true;
-    });
-    updateOrderSummary();
-  }
-  checkAllItems();
-  function updateOrderSummary() {
-    let totalItems = 0;
-    let totalCost = 0.0;
-
-    document.querySelectorAll(".cart-item").forEach((item) => {
-      const checkbox = item.querySelector(".cart-item-checkbox-input");
-      if (checkbox.checked) {
-        const qty = parseInt(item.querySelector(".quantity-control input").value);
-        let price;
-        const currentPriceElement = item.querySelector(".current-price");
-        if (currentPriceElement) {
-          price = parseFloat(currentPriceElement.textContent.replace("₹", ""));
-        } else {
-          price = parseFloat(item.querySelector(".product-price").textContent.replace("₹", ""));
-        }
-
-        totalItems += qty;
-        totalCost += qty * price;
-      }
-    });
-
-    document.getElementById("total-items").textContent = totalItems;
-    document.getElementById("total-cost").textContent = `₹${totalCost.toFixed(2)}`;
-  }
-
-  document.querySelectorAll(".cart-item-checkbox-input").forEach((checkbox) => {
-    checkbox.addEventListener("change", updateOrderSummary);
-  });
-
-  const checkoutBtn = document.getElementById("checkout-btn");
-  checkoutBtn.addEventListener("click", () => {
-    const selectedItems = Array.from(
-      document.querySelectorAll(".cart-item-checkbox-input:checked")
-    ).map((checkbox) => {
-      const item = checkbox.closest(".cart-item");
-      return {
-        productId: checkbox.getAttribute("data-product"),
-        quantity: parseInt(item.querySelector(".quantity-control input").value),
-      };
-    });
-    if (selectedItems.length === 0) {
-      Swal.fire({
-        icon: "warning",
-        title: "No Items Selected",
-        text: "Please select at least one item to proceed to checkout.",
-        confirmButtonText: "OK",
-      });
-    } else {
-      selectedItems.forEach((item, index) => {
-        localStorage.setItem(`cartQuantity_${item.productId}`, item.quantity);
-      });
-      redirectToCheckout(selectedItems);
-      function redirectToCheckout(cartItems) {
-        const queryString = new URLSearchParams({
-          cartItems: JSON.stringify(cartItems),
-        });
-        window.location.href = `/checkout?${queryString}`;
-      }
     }
   });
 
+  // ── Helpers ────────────────────────────────────────────────
+  function updateQuantityOnServer(productId, quantity) {
+    fetch("/update-quantity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, quantity }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          if (typeof updateCounts === "function") updateCounts(data.cartCount, data.wishlistCount);
+          updateOrderSummary();
+        } else {
+          Swal.fire({ icon: "error", title: "Error", text: "Could not update quantity." });
+        }
+      })
+      .catch(() => Swal.fire({ icon: "error", title: "Error", text: "Network error." }));
+  }
+
+  function updateOrderSummary() {
+    let totalItems = 0,
+      totalCost = 0;
+    let selectedCount = 0;
+
+    document.querySelectorAll(".cart-item").forEach((item) => {
+      const cb = item.querySelector(".cart-item-checkbox-input");
+      if (cb && cb.checked) {
+        const qty = parseInt(item.querySelector(".qty-input").value);
+        const priceEl = item.querySelector(".current-price");
+        const price = priceEl
+          ? parseFloat(priceEl.textContent.replace("₹", ""))
+          : parseFloat(item.querySelector(".cart-item-price").textContent.replace("₹", ""));
+        totalItems += qty;
+        totalCost += qty * price;
+        selectedCount++;
+      }
+    });
+
+    const ti = document.getElementById("total-items");
+    const tc = document.getElementById("total-cost");
+    const td = document.getElementById("summary-total-display");
+    const sc = document.getElementById("selected-count");
+    if (ti) ti.textContent = totalItems;
+    if (tc) tc.textContent = `₹${totalCost.toFixed(2)}`;
+    if (td) td.textContent = `₹${totalCost.toFixed(2)}`;
+    if (sc) sc.textContent = selectedCount;
+  }
+
+  // Check all on load
+  document.querySelectorAll(".cart-item-checkbox-input").forEach((cb) => {
+    cb.checked = true;
+    cb.addEventListener("change", updateOrderSummary);
+  });
   updateOrderSummary();
-  document.addEventListener("DOMContentLoaded", function () {
+
+  // ── Checkout ───────────────────────────────────────────────
+  document.getElementById("checkout-btn")?.addEventListener("click", () => {
+    const selected = Array.from(document.querySelectorAll(".cart-item-checkbox-input:checked")).map(
+      (cb) => ({
+        productId: cb.getAttribute("data-product"),
+        quantity: parseInt(cb.closest(".cart-item").querySelector(".qty-input").value),
+      })
+    );
+    if (!selected.length) {
+      Swal.fire({
+        icon: "warning",
+        title: "Nothing Selected",
+        text: "Please select at least one item.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+    selected.forEach((item) =>
+      localStorage.setItem(`cartQuantity_${item.productId}`, item.quantity)
+    );
+    window.location.href = `/checkout?${new URLSearchParams({
+      cartItems: JSON.stringify(selected),
+    })}`;
+  });
+
+  // ── Move to wishlist ───────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".move-to-wishlist").forEach((link) => {
-      link.addEventListener("click", async function (e) {
+      link.addEventListener("click", async (e) => {
         e.preventDefault();
-
-        const item = this.closest(".cart-item");
+        const item = link.closest(".cart-item");
         const productId = item.getAttribute("data-product");
-        const heartIcon = this.querySelector("i");
-
+        const heartIcon = link.querySelector("i");
         try {
-          const response = await fetch("/cart/move-to-wishlist", {
+          const res1 = await fetch("/cart/move-to-wishlist", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ productId }),
           });
+          const data1 = await res1.json();
+          if (!data1.success) throw new Error("Wishlist update failed");
+          if (typeof updateCounts === "function")
+            updateCounts(data1.cartCount, data1.wishlistCount);
+          heartIcon.className = "fas fa-heart";
 
-          const data = await response.json();
-
-          if (!data.success) {
-            throw new Error("Wishlist update failed");
-          }
-
-          if (typeof updateCounts === "function") {
-            updateCounts(data.cartCount, data.wishlistCount);
-          }
-
-          heartIcon.classList.add("text-danger");
-
-          const removeResponse = await fetch("/remove-from-cart", {
+          const res2 = await fetch("/remove-from-cart", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ productId }),
           });
+          const data2 = await res2.json();
+          if (!data2.success) throw new Error("Cart removal failed");
+          if (typeof updateCounts === "function")
+            updateCounts(data2.cartCount, data2.wishlistCount);
 
-          const removeData = await removeResponse.json();
-
-          if (!removeData.success) {
-            throw new Error("Cart removal failed");
-          }
-
-          if (typeof updateCounts === "function") {
-            updateCounts(removeData.cartCount, removeData.wishlistCount);
-          }
-
-          Swal.fire({
+          await Swal.fire({
             icon: "success",
             title: "Moved to Wishlist",
-            text: "Item moved successfully.",
-          }).then(() => {
-            item.remove();
-            updateOrderSummary();
-
-            if (document.querySelectorAll(".cart-item").length === 0) {
-              document.querySelector(".cart-container").innerHTML = `
-              <div class="empty-cart-message">
-                <h2>Your cart is empty</h2>
-                <p>Add items to your cart</p>
-                <button onclick="window.location.href='/'" class="btn btn-primary">
-                  Go to Home Page
-                </button>
-              </div>
-            `;
-            }
+            text: "Item saved to your wishlist.",
+            timer: 1500,
+            showConfirmButton: false,
           });
-        } catch (error) {
-          console.error(error);
-          Swal.fire("Error", error.message, "error");
+          item.remove();
+          updateOrderSummary();
+          if (!document.querySelectorAll(".cart-item").length) location.reload();
+        } catch (err) {
+          Swal.fire("Error", err.message, "error");
         }
       });
     });
   });
 
-  // Remove from cart functionality
+  // ── Remove from cart ───────────────────────────────────────
   document.querySelectorAll(".close-btn").forEach((btn) => {
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", () => {
       const item = btn.closest(".cart-item");
       const productId = item.getAttribute("data-product");
-
-      fetch("/remove-from-cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ productId: productId }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            if (typeof updateCounts === "function") {
-              updateCounts(data.cartCount, data.wishlistCount);
-            }
-            item.remove();
-            updateOrderSummary();
-
-            Swal.fire({
-              icon: "success",
-              title: "Removed From Cart",
-              text: "The item has been removed from your cart.",
-              confirmButtonText: "OK",
-            });
-
-            // Check if cart is empty
-            const cartItemsCount = document.querySelectorAll(".cart-item").length;
-            if (cartItemsCount === 0) {
-              const cartContainer = document.querySelector(".cart-container");
-              cartContainer.innerHTML = `
-                            <div class="empty-cart-message">
-                                <h2>Your cart is empty</h2>
-                                <p>Add items to your cart</p>
-                                <button onclick="window.location.href = '/'" class="btn btn-primary">Go to Home Page</button>
-                            </div>
-                        `;
-            }
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "There was an error removing the item from your cart.",
-              confirmButtonText: "OK",
-            });
-          }
+      Swal.fire({
+        title: "Remove item?",
+        text: "This will remove the item from your cart.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc2626",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Remove",
+        cancelButtonText: "Keep",
+      }).then((result) => {
+        if (!result.isConfirmed) return;
+        fetch("/remove-from-cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
         })
-        .catch((error) => {
-          console.error("Error:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error removing the item from your cart.",
-            confirmButtonText: "OK",
-          });
-        });
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.success) {
+              if (typeof updateCounts === "function")
+                updateCounts(data.cartCount, data.wishlistCount);
+              item.remove();
+              updateOrderSummary();
+              if (!document.querySelectorAll(".cart-item").length) location.reload();
+            } else {
+              Swal.fire({ icon: "error", title: "Error", text: "Could not remove item." });
+            }
+          })
+          .catch(() => Swal.fire({ icon: "error", title: "Error", text: "Network error." }));
+      });
     });
   });
-</script>
 
-<script>
   function setCategory(category) {
-    document.getElementById("selectedCategory").value = category;
-    document.getElementById("categoryDropdown").querySelector(".dropdown-toggle-text").textContent =
-      category.charAt(0).toUpperCase() + category.slice(1);
+    const el = document.getElementById("selectedCategory");
+    if (el) el.value = category;
+    const dt = document.querySelector(".dropdown-toggle-text");
+    if (dt) dt.textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

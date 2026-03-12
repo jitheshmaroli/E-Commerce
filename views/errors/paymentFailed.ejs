@@ -1,54 +1,255 @@
 <%- include('../includes/userHead.ejs') %>
-<link rel="stylesheet" href="/css/errorPages.css" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+<style>
+  .payment-fail-page {
+    min-height: calc(100vh - var(--nav-height, 64px));
+    background: var(--off-white, #f7f6f3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+  }
+  .payment-fail-card {
+    background: var(--white, #fff);
+    border: 1px solid var(--grey-100, #e8e8e6);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .payment-fail-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #dc2626;
+    border-radius: 24px 24px 0 0;
+  }
+  .pf-icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #fee2e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .pf-icon-wrap i {
+    font-size: 1.8rem;
+    color: #dc2626;
+  }
+  .pf-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+    color: var(--black, #0a0a0a);
+    margin-bottom: 0.5rem;
+  }
+  .pf-subtitle {
+    font-size: 0.88rem;
+    color: var(--grey-600, #6b6b68);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .pf-reason-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  .pf-reason-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #dc2626;
+    margin-bottom: 0.5rem;
+  }
+  .pf-reason-text {
+    font-size: 0.85rem;
+    color: #7f1d1d;
+    font-weight: 600;
+  }
+  .pf-causes {
+    background: var(--off-white, #f7f6f3);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  .pf-causes-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-400, #9a9a96);
+    margin-bottom: 0.65rem;
+  }
+  .pf-causes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .pf-causes li {
+    font-size: 0.82rem;
+    color: var(--grey-600, #6b6b68);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    line-height: 1.4;
+  }
+  .pf-causes li i {
+    font-size: 0.7rem;
+    color: var(--grey-400);
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+  }
+  .pf-order-meta {
+    font-size: 0.78rem;
+    color: var(--grey-400, #9a9a96);
+    margin-bottom: 1.75rem;
+    line-height: 1.7;
+  }
+  .pf-order-meta strong {
+    color: var(--black, #0a0a0a);
+  }
+  .pf-refund-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.76rem;
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 1.75rem;
+    text-align: left;
+  }
+  .pf-refund-note i {
+    flex-shrink: 0;
+  }
+  .pf-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn-pf-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.8rem 1.75rem;
+    background: var(--black, #0a0a0a);
+    color: var(--white, #fff);
+    border: none;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    font-family: "DM Sans", sans-serif;
+  }
+  .btn-pf-primary:hover {
+    background: #2b2b28;
+    transform: translateY(-1px);
+    color: var(--white);
+  }
+  .btn-pf-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.8rem 1.75rem;
+    background: transparent;
+    color: var(--black, #0a0a0a);
+    border: 2px solid var(--grey-100, #e8e8e6);
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    font-family: "DM Sans", sans-serif;
+  }
+  .btn-pf-ghost:hover {
+    border-color: var(--black);
+    color: var(--black);
+  }
+</style>
 
-<main class="main-content d-flex align-items-center min-vh-100 bg-light">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-6 col-md-8 col-11">
-        <div class="card border-0 shadow-sm text-center p-4 p-md-5">
-          <div class="mb-4">
-            <div class="text-danger fs-1">
-              <i class="fas fa-exclamation-circle"></i>
-            </div>
-          </div>
+<%- include('../includes/userHeader.ejs') %>
 
-          <h2 class="fw-bold text-dark mb-3">Payment Failed</h2>
+<div class="payment-fail-page">
+  <div class="payment-fail-card">
+    <div class="pf-icon-wrap">
+      <i class="fas fa-times"></i>
+    </div>
 
-          <p class="text-muted mb-4">
-            <% if (typeof reason !== 'undefined' && reason) { %>
-            <strong>Reason:</strong>
-            <%= reason %>
-            <% } else { %>
-            Sorry, your payment could not be processed.
-            <% } %>
-          </p>
+    <div class="pf-title">Payment Failed</div>
+    <p class="pf-subtitle">
+      We couldn't process your payment. Don't worry — no money has been charged unless noted below.
+    </p>
 
-          <div class="alert alert-danger border-0 bg-danger-subtle text-danger small mb-4">
-            <ul class="mb-0 text-start ps-4">
-              <li>Card declined or insufficient balance</li>
-              <li>Network issue or timeout</li>
-              <li>You cancelled the payment</li>
-            </ul>
-          </div>
+    <% if (typeof reason !== 'undefined' && reason) { %>
+    <div class="pf-reason-box">
+      <div class="pf-reason-label">Reason</div>
+      <div class="pf-reason-text"><%= reason %></div>
+    </div>
+    <% } %>
 
-          <p class="text-muted small mb-4">
-            Order ID:
-            <strong><%= typeof orderId !== 'undefined' && orderId ? orderId : 'N/A' %></strong
-            ><br />
-            <% if (typeof orderId !== 'undefined' && orderId) { %>
-            If money was deducted, it will be refunded within 5–7 business days.
-            <% } %>
-          </p>
+    <div class="pf-causes">
+      <div class="pf-causes-label">Common causes</div>
+      <ul>
+        <li><i class="fas fa-circle"></i>Card declined or insufficient balance</li>
+        <li><i class="fas fa-circle"></i>Network issue or connection timeout</li>
+        <li><i class="fas fa-circle"></i>Payment was cancelled by you</li>
+        <li><i class="fas fa-circle"></i>Bank verification failed</li>
+      </ul>
+    </div>
 
-          <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-            <a href="/order-details/<%= orderId %>" class="btn btn-outline-secondary btn-lg px-5">
-              Order Details
-            </a>
-          </div>
-        </div>
-      </div>
+    <div class="pf-order-meta">
+      Order ID: <strong><%= typeof orderId !== 'undefined' && orderId ? orderId : 'N/A' %></strong>
+    </div>
+
+    <% if (typeof orderId !== 'undefined' && orderId) { %>
+    <div class="pf-refund-note">
+      <i class="fas fa-info-circle"></i>
+      <span
+        >If any amount was deducted, it will be automatically refunded within
+        <strong>5–7 business days</strong>.</span
+      >
+    </div>
+    <% } %>
+
+    <div class="pf-actions">
+      <% if (typeof orderId !== 'undefined' && orderId) { %>
+      <a href="/order-details/<%= orderId %>" class="btn-pf-primary">
+        <i class="fas fa-arrow-right"></i> View Order
+      </a>
+      <% } %>
+      <a href="/" class="btn-pf-ghost"> <i class="fas fa-home"></i> Go Home </a>
     </div>
   </div>
-</main>
+</div>
 
 <%- include('../includes/userFooter.ejs') %>

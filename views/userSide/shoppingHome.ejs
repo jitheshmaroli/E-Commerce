@@ -1,48 +1,137 @@
 <%- include('../includes/userHead.ejs') %>
 <link rel="stylesheet" href="/css/shoppingHome.css" />
 <%- include('../includes/userHeader.ejs') %>
-<!-- Hero section -->
-<section class="hero-section text-dark py-5" style="background-color: var(--grey-050)">
-  <div class="container py-5">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <p class="text-uppercase fw-bold text-primary mb-2">New Season | Unmatched Comfort</p>
-        <h1 class="display-3 fw-bolder mb-3">
-          **Step Into <span class="text-primary">Your Next Level</span>**
+
+<!-- ===== TRUST STRIP ===== -->
+<div class="trust-strip">
+  <div class="trust-strip-inner container-fluid">
+    <div class="trust-item"><i class="fas fa-undo"></i> 7-Day Easy Returns</div>
+    <div class="trust-item"><i class="fas fa-shield-alt"></i> 100% Authentic Products</div>
+    <div class="trust-item"><i class="fas fa-headset"></i> 24/7 Customer Support</div>
+    <div class="trust-item"><i class="fas fa-lock"></i> Secure Payments</div>
+  </div>
+</div>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section">
+  <div class="container py-4">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-6">
+        <div class="hero-eyebrow">New Season 2026</div>
+        <h1 class="hero-headline">
+          Step Into<br />
+          <span class="outline-text">Your Next</span><br />
+          Level
         </h1>
-        <p class="lead mb-4 text-dark-50">
-          Explore the latest collection of premium, performance-driven footwear. Style meets
-          ultimate comfort.
+        <p class="hero-lead">
+          Premium performance footwear crafted for every stride. Style meets unmatched comfort —
+          built to last.
         </p>
-        <a
-          href="/products?sortby=newArrivals"
-          class="btn btn-dark btn-lg me-3 px-5 rounded-pill shadow-lg"
-        >
-          Shop New Arrivals
-        </a>
+        <div class="hero-cta-group">
+          <a href="/products?sortby=newArrivals" class="btn-hero-primary">
+            <i class="fas fa-arrow-right"></i> Shop New Arrivals
+          </a>
+          <a href="/products" class="btn-hero-ghost">
+            Browse All <i class="fas fa-chevron-right" style="font-size: 0.7em"></i>
+          </a>
+        </div>
+        <div class="hero-social-proof">
+          <div class="hero-avatars">
+            <span>AK</span><span>RJ</span><span>MS</span><span>PV</span>
+          </div>
+          <div class="hero-proof-text">
+            <strong>4.9 ★ Rating</strong>
+            Trusted by 12,000+ happy customers
+          </div>
+        </div>
       </div>
-      <div class="col-lg-6 text-center">
-        <img
-          src="/banner-shoes.png"
-          alt="A pair of stylish, modern athletic shoes for running and training"
-          class="img-fluid rounded-4 shadow-xl hero-main-img"
-        />
+      <div class="col-lg-6">
+        <div class="hero-img-wrap">
+          <img src="/banner-shoes.png" alt="Premium athletic shoes" class="hero-main-img" />
+          <div class="hero-badge hero-badge-1">
+            <span class="badge-icon">🔥</span>
+            <div>
+              <div style="font-size: 0.65rem; color: var(--grey-600); font-weight: 500">
+                This Week
+              </div>
+              <div>500+ Sold</div>
+            </div>
+          </div>
+          <div class="hero-badge hero-badge-2">
+            <span class="badge-icon">✦</span>
+            <div>
+              <div style="font-size: 0.65rem; color: var(--grey-600); font-weight: 500">
+                New Drop
+              </div>
+              <div>Just Landed</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-<!-- Featured Sections -->
-<div class="featured-sections py-5">
-  <!-- Most Selling Products -->
-  <section class="featured-section section-rail mb-5">
+
+<!-- ===== MARQUEE ===== -->
+<div class="offer-marquee">
+  <div class="offer-marquee-track">
+    <span>New arrivals every <em>Friday</em></span>
+    <span>✦</span>
+    <span>7-day hassle-free <em>returns</em></span>
+    <span>✦</span>
+    <span>New arrivals every <em>Friday</em></span>
+    <span>✦</span>
+    <span>7-day hassle-free <em>returns</em></span>
+    <span>✦</span>
+    <span>New arrivals every <em>Friday</em></span>
+    <span>✦</span>
+    <span>7-day hassle-free <em>returns</em></span>
+    <span>✦</span>
+  </div>
+</div>
+
+<!-- ===== CATEGORY STRIP ===== -->
+<div class="category-strip">
+  <div class="container text-center">
+    <h6>Shop by Category</h6>
+    <div class="category-pills">
+      <a href="/products?category=MEN" class="category-pill"> <i class="fas fa-male"></i> Men </a>
+      <a href="/products?category=WOMEN" class="category-pill">
+        <i class="fas fa-female"></i> Women
+      </a>
+      <a href="/products?category=KIDS" class="category-pill">
+        <i class="fas fa-child"></i> Kids
+      </a>
+      <a href="/products?sortby=newArrivals" class="category-pill">
+        <i class="fas fa-star"></i> New Arrivals
+      </a>
+      <a href="/products?sortby=popularity" class="category-pill">
+        <i class="fas fa-fire"></i> Bestsellers
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FEATURED RAILS ===== -->
+<div class="featured-sections py-4">
+  <!-- Most Selling -->
+  <section class="featured-section section-rail mb-4">
     <div class="container">
       <div class="section-header d-flex justify-content-between align-items-center mb-4">
-        <h2 class="h3 fw-bold">Most Selling Products</h2>
-        <a href="/products" class="text-decoration-none fw-medium text-dark">View All →</a>
+        <div>
+          <div class="section-label mb-1">Trending Now</div>
+          <h2
+            class="h3 fw-bold mb-0"
+            style="font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 0.02em"
+          >
+            Most Selling Products
+          </h2>
+        </div>
+        <a href="/products" class="section-view-all">View All →</a>
       </div>
       <div class="products-slider-container position-relative">
         <button
-          class="rail-prev-btn position-absolute top-50 start-0 translate-middle-y me-3 bg-white rounded-circle shadow-sm border-0 p-2"
+          class="rail-prev-btn position-absolute top-50 start-0 translate-middle-y bg-white rounded-circle shadow-sm border-0 p-2"
           type="button"
           data-target="most-selling-rail"
         >
@@ -51,15 +140,15 @@
         <div class="products-row d-flex gap-3 rail-scroll" id="most-selling-rail">
           <% const mostSelling = (products || []).slice().sort((a,b) => (b.totalSold||0) -
           (a.totalSold||0)).slice(0,6) %> <% mostSelling.forEach(product => { %>
-          <div class="product-slide flex-shrink-0 h-100" style="width: 220px">
+          <div class="product-slide flex-shrink-0" style="width: 200px">
             <div
-              class="product-card glass-card h-100 shadow-sm border-0 rounded-3 overflow-hidden modern-product-card <%= product.stock === 0 ? 'opacity-50' : '' %>"
+              class="product-card glass-card shadow-sm border-0 rounded-3 overflow-hidden modern-product-card <%= product.stock === 0 ? 'opacity-50' : '' %>"
               data-product="<%= product._id %>"
               data-stock="<%= product.stock %>"
             >
               <div
                 class="product-image-container position-relative overflow-hidden"
-                style="height: 180px"
+                style="height: 165px"
               >
                 <a href="/product-details/<%= product._id %>">
                   <img
@@ -71,12 +160,12 @@
                 <div
                   class="category-badge position-absolute top-2 start-2 bg-black text-white px-2 py-1 rounded-pill small fw-bold"
                 >
-                  Top
+                  🔥 Top
                 </div>
                 <button
                   class="wishlist-btn position-absolute top-2 end-2 p-0 border-0 bg-white rounded-circle d-flex align-items-center justify-content-center"
                   onclick="toggleWishlist(this)"
-                  style="width: 32px; height: 32px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)"
+                  style="width: 28px; height: 28px"
                 >
                   <% const isInWishlist = wishlistProducts.find(item => item._id.toString() ===
                   product._id.toString()); %>
@@ -96,37 +185,29 @@
               </div>
               <div class="product-details p-2 d-flex flex-column flex-grow-1">
                 <div class="flex-grow-1">
-                  <h3 class="product-name small fw-medium mb-1"><%= product.name %></h3>
-                  <div class="rating-container d-flex align-items-center gap-1 mb-1">
-                    <div class="stars small">
-                      <% for (let i = 1; i <= 5; i++) { %>
-                      <i
-                        class="fa<%= i <= product.averageRating ? 's' : 'r' %> fa-star text-warning"
-                      ></i>
-                      <% } %>
-                    </div>
+                  <h3 class="product-name small fw-semibold mb-1"><%= product.name %></h3>
+                  <div class="stars small mb-1">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                    <i
+                      class="fa<%= i <= product.averageRating ? 's' : 'r' %> fa-star text-warning"
+                    ></i>
+                    <% } %>
                   </div>
                   <div class="price-container mb-2">
                     <% if (product.offer && product.price !== product.currentPrice) { %>
-                    <div class="price-row d-flex align-items-center gap-1 mb-1">
-                      <span class="original-price small text-muted text-decoration-line-through"
+                    <div class="d-flex align-items-center gap-1 mb-1">
+                      <span class="small text-muted text-decoration-line-through"
                         >₹<%= product.price.toFixed(2) %></span
                       >
-                      <span class="offer-price fw-bold"
-                        >₹<%= product.currentPrice.toFixed(2) %></span
-                      >
+                      <span class="fw-bold">₹<%= product.currentPrice.toFixed(2) %></span>
                     </div>
-                    <% if (product.offer) { %>
                     <div class="offer-info bg-black text-white px-2 py-1 rounded small">
-                      🎉 <%= product.offer.name || 'Special Offer' %> - Save <%=
+                      🎉 <%= product.offer.name || 'Special Offer' %> — Save <%=
                       Math.round(((product.price - product.currentPrice) / product.price) * 100)
                       %>%!
                     </div>
-                    <% } %>
                     <% } else { %>
-                    <div class="price-row d-flex align-items-center gap-1 mb-1">
-                      <span class="regular-price fw-bold">₹<%= product.price.toFixed(2) %></span>
-                    </div>
+                    <span class="fw-bold">₹<%= product.price.toFixed(2) %></span>
                     <% } %>
                   </div>
                 </div>
@@ -135,13 +216,13 @@
                     class="btn-add-cart flex-fill btn btn-outline-dark btn-sm p-1 fw-bold text-uppercase small"
                     data-product-id="<%= product._id %>"
                   >
-                    <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                    <i class="fas fa-cart-plus me-1"></i>Cart
                   </button>
                   <button
                     class="btn-buy-now flex-fill btn btn-dark btn-sm p-1 fw-bold text-uppercase small"
                     data-product-id="<%= product._id %>"
                   >
-                    Buy Now
+                    Buy
                   </button>
                 </div>
               </div>
@@ -150,7 +231,7 @@
           <% }) %>
         </div>
         <button
-          class="rail-next-btn position-absolute top-50 end-0 translate-middle-y ms-3 bg-white rounded-circle shadow-sm border-0 p-2"
+          class="rail-next-btn position-absolute top-50 end-0 translate-middle-y bg-white rounded-circle shadow-sm border-0 p-2"
           type="button"
           data-target="most-selling-rail"
         >
@@ -159,18 +240,25 @@
       </div>
     </div>
   </section>
+
   <!-- Latest Arrivals -->
   <section class="featured-section section-rail">
     <div class="container">
       <div class="section-header d-flex justify-content-between align-items-center mb-4">
-        <h2 class="h3 fw-bold">Latest Arrivals</h2>
-        <a href="/products?sortby=newArrivals" class="text-decoration-none fw-medium text-dark"
-          >View All →</a
-        >
+        <div>
+          <div class="section-label mb-1">Fresh Stock</div>
+          <h2
+            class="h3 fw-bold mb-0"
+            style="font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 0.02em"
+          >
+            Latest Arrivals
+          </h2>
+        </div>
+        <a href="/products?sortby=newArrivals" class="section-view-all">View All →</a>
       </div>
       <div class="products-slider-container position-relative">
         <button
-          class="rail-prev-btn position-absolute top-50 start-0 translate-middle-y me-3 bg-white rounded-circle shadow-sm border-0 p-2"
+          class="rail-prev-btn position-absolute top-50 start-0 translate-middle-y bg-white rounded-circle shadow-sm border-0 p-2"
           type="button"
           data-target="latest-rail"
         >
@@ -179,14 +267,15 @@
         <div class="products-row d-flex gap-3 rail-scroll" id="latest-rail">
           <% const latestProducts = (products || []).slice().sort((a,b) => new Date(b.createdAt||0)
           - new Date(a.createdAt||0)).slice(0,6) %> <% latestProducts.forEach(product => { %>
-          <div class="product-slide flex-shrink-0 h-100" style="width: 220px">
+          <div class="product-slide flex-shrink-0" style="width: 200px">
             <div
-              class="product-card glass-card h-100 shadow-sm border-0 rounded-3 overflow-hidden modern-product-card <%= product.stock === 0 ? 'opacity-50' : '' %>"
+              class="product-card glass-card shadow-sm border-0 rounded-3 overflow-hidden modern-product-card <%= product.stock === 0 ? 'opacity-50' : '' %>"
               data-product="<%= product._id %>"
+              data-stock="<%= product.stock %>"
             >
               <div
                 class="product-image-container position-relative overflow-hidden"
-                style="height: 180px"
+                style="height: 165px"
               >
                 <a href="/product-details/<%= product._id %>">
                   <img
@@ -198,17 +287,17 @@
                 <div
                   class="category-badge position-absolute top-2 start-2 bg-black text-white px-2 py-1 rounded-pill small fw-bold"
                 >
-                  <%= product.category.categoryName %>
+                  New
                 </div>
                 <button
                   class="wishlist-btn position-absolute top-2 end-2 p-0 border-0 bg-white rounded-circle d-flex align-items-center justify-content-center"
                   onclick="toggleWishlist(this)"
-                  style="width: 32px; height: 32px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)"
+                  style="width: 28px; height: 28px"
                 >
-                  <% const isInWishlist = wishlistProducts.find(item => item._id.toString() ===
-                  product._id.toString()); %>
+                  <% const isLatestInWishlist = wishlistProducts.find(item => item._id.toString()
+                  === product._id.toString()); %>
                   <i
-                    class="fa fa-heart <%= isInWishlist ? 'text-danger fas' : 'text-muted far' %> fs-6"
+                    class="fa fa-heart <%= isLatestInWishlist ? 'text-danger fas' : 'text-muted far' %> fs-6"
                   ></i>
                 </button>
                 <div
@@ -223,37 +312,29 @@
               </div>
               <div class="product-details p-2 d-flex flex-column flex-grow-1">
                 <div class="flex-grow-1">
-                  <h3 class="product-name small fw-medium mb-1"><%= product.name %></h3>
-                  <div class="rating-container d-flex align-items-center gap-1 mb-1">
-                    <div class="stars small">
-                      <% for (let i = 1; i <= 5; i++) { %>
-                      <i
-                        class="fa<%= i <= product.averageRating ? 's' : 'r' %> fa-star text-warning"
-                      ></i>
-                      <% } %>
-                    </div>
+                  <h3 class="product-name small fw-semibold mb-1"><%= product.name %></h3>
+                  <div class="stars small mb-1">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                    <i
+                      class="fa<%= i <= product.averageRating ? 's' : 'r' %> fa-star text-warning"
+                    ></i>
+                    <% } %>
                   </div>
                   <div class="price-container mb-2">
                     <% if (product.offer && product.price !== product.currentPrice) { %>
-                    <div class="price-row d-flex align-items-center gap-1 mb-1">
-                      <span class="original-price small text-muted text-decoration-line-through"
-                        >₹<%= product.price.toFixed(2) %>
-                      </span>
-                      <span class="offer-price fw-bold"
-                        >₹<%= product.currentPrice.toFixed(2) %></span
+                    <div class="d-flex align-items-center gap-1 mb-1">
+                      <span class="small text-muted text-decoration-line-through"
+                        >₹<%= product.price.toFixed(2) %></span
                       >
+                      <span class="fw-bold">₹<%= product.currentPrice.toFixed(2) %></span>
                     </div>
-                    <% if (product.offer) { %>
                     <div class="offer-info bg-black text-white px-2 py-1 rounded small">
-                      🎉 <%= product.offer.name || 'Special Offer' %> - Save <%=
+                      🎉 <%= product.offer.name || 'Special Offer' %> — Save <%=
                       Math.round(((product.price - product.currentPrice) / product.price) * 100)
                       %>%!
                     </div>
-                    <% } %>
                     <% } else { %>
-                    <div class="price-row d-flex align-items-center gap-1 mb-1">
-                      <span class="regular-price fw-bold">₹<%= product.price.toFixed(2) %></span>
-                    </div>
+                    <span class="fw-bold">₹<%= product.price.toFixed(2) %></span>
                     <% } %>
                   </div>
                 </div>
@@ -262,13 +343,13 @@
                     class="btn-add-cart flex-fill btn btn-outline-dark btn-sm p-1 fw-bold text-uppercase small"
                     data-product-id="<%= product._id %>"
                   >
-                    <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                    <i class="fas fa-cart-plus me-1"></i>Cart
                   </button>
                   <button
                     class="btn-buy-now flex-fill btn btn-dark btn-sm p-1 fw-bold text-uppercase small"
                     data-product-id="<%= product._id %>"
                   >
-                    Buy Now
+                    Buy
                   </button>
                 </div>
               </div>
@@ -277,7 +358,7 @@
           <% }) %>
         </div>
         <button
-          class="rail-next-btn position-absolute top-50 end-0 translate-middle-y ms-3 bg-white rounded-circle shadow-sm border-0 p-2"
+          class="rail-next-btn position-absolute top-50 end-0 translate-middle-y bg-white rounded-circle shadow-sm border-0 p-2"
           type="button"
           data-target="latest-rail"
         >
@@ -287,23 +368,91 @@
     </div>
   </section>
 </div>
-<section class="py-5">
+
+<!-- ===== FEATURES / WHY US ===== -->
+<section class="features-section">
   <div class="container">
-    <div class="glass-card p-5 rounded-4 text-center glow-shadow">
-      <h2 class="fw-bold mb-3">Start Shopping</h2>
-      <p class="text-muted-600 mb-4">Browse all products and find your style.</p>
-      <a href="/products" class="btn btn-dark btn-lg px-5 rounded-pill">View All Products</a>
+    <div class="text-center mb-4">
+      <div class="section-eyebrow">Why ShoeZone</div>
+      <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 0.02em">
+        Built Around You
+      </h2>
+    </div>
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shipping-fast"></i></div>
+          <div class="feature-title">Fast Delivery</div>
+          <p class="feature-desc">
+            Same-day dispatch available.
+          </p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-undo-alt"></i></div>
+          <div class="feature-title">Easy Returns</div>
+          <p class="feature-desc">Changed your mind? Return within 7 days, no questions asked.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-award"></i></div>
+          <div class="feature-title">100% Authentic</div>
+          <p class="feature-desc">
+            Every product is sourced directly from official brand partners.
+          </p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-headset"></i></div>
+          <div class="feature-title">24/7 Support</div>
+          <p class="feature-desc">
+            Our team is here around the clock to help with anything you need.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- ===== CTA SECTION ===== -->
+<section class="cta-section">
+  <div class="container text-center">
+    <p
+      class="cta-sub text-uppercase"
+      style="letter-spacing: 0.12em; font-size: 0.75rem; font-weight: 700"
+    >
+      The Full Collection
+    </p>
+    <h2 class="cta-headline">Find Your<br />Perfect Pair</h2>
+    <p class="cta-sub">Hundreds of styles. Every budget. One destination.</p>
+    <a href="/products" class="btn-cta"> <i class="fas fa-store"></i> View All Products </a>
+  </div>
+</section>
+
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
 <script>
+  // Rail scroll arrow buttons
+  document.querySelectorAll(".rail-prev-btn, .rail-next-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.target;
+      const rail = document.getElementById(targetId);
+      if (!rail) return;
+      const scrollAmt = 220;
+      rail.scrollBy({
+        left: btn.classList.contains("rail-prev-btn") ? -scrollAmt : scrollAmt,
+        behavior: "smooth",
+      });
+    });
+  });
+
   // Add to Cart
   document.querySelectorAll(".btn-add-cart").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
-
       const productId = btn.dataset.productId;
       const productName = btn
         .closest(".product-card")
@@ -311,7 +460,6 @@
         .textContent.trim();
       const card = btn.closest(".product-card");
       const stock = Number(card.dataset.stock);
-
       if (stock <= 0) {
         Swal.fire("Out of Stock!", "This product is unavailable.", "warning");
         return;
@@ -322,141 +470,118 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId, quantity: 1 }),
         });
-
         if (res.status === 401) {
           Swal.fire({
             title: "Please Log In",
-            text: "You need to be logged in to add items to cart",
+            text: "Login to add items to cart",
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Go to Login",
-            cancelButtonText: "Cancel",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              const returnTo = encodeURIComponent(
-                window.location.pathname + window.location.search
-              );
-              window.location.href = `/login?redirect=${returnTo}`;
-            }
+          }).then((r) => {
+            if (r.isConfirmed)
+              window.location.href = `/login?redirect=${encodeURIComponent(
+                window.location.pathname
+              )}`;
           });
           return;
         }
-
+        const data = await res.json();
+        if (data.success) updateCounts(data.cartCount, data.wishlistCount);
         if (!res.ok) {
-          const data = await res.json();
           Swal.fire("Error", data.message || "Something went wrong", "error");
           return;
         }
-
-        const data = await res.json();
-        if (data.success) {
-          updateCounts(data.cartCount, data.wishlistCount);
-        }
-        Swal.fire("Added!", `${productName} added to cart!`, "success");
+        Swal.fire({
+          icon: "success",
+          title: "Added!",
+          text: `${productName} added to cart!`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
       } catch (err) {
         console.error(err);
       }
     });
   });
 
+  // Wishlist
   async function toggleWishlist(btn) {
     const icon = btn.querySelector("i");
     const productCard = btn.closest(".product-card");
     const productId = productCard.dataset.product;
-
     try {
       const res = await fetch("/toggle-wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
-
       const data = await res.json();
-
       if (res.status === 401) {
         Swal.fire({
           title: "Please Log In",
-          text: "You need to be logged in to add items to your wishlist",
+          text: "Login to add to wishlist",
           icon: "info",
           showCancelButton: true,
           confirmButtonText: "Go to Login",
-          cancelButtonText: "Cancel",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/login?redirect=${returnTo}`;
-          }
+        }).then((r) => {
+          if (r.isConfirmed)
+            window.location.href = `/login?redirect=${encodeURIComponent(
+              window.location.pathname
+            )}`;
         });
         return;
       }
-
       if (data.success) {
-        if (data.isInWishlist) {
-          icon.className = "fa fa-heart text-danger fas fs-6";
-        } else {
-          icon.className = "fa fa-heart text-muted far fs-6";
-        }
+        icon.className = data.isInWishlist
+          ? "fa fa-heart text-danger fas fs-6"
+          : "fa fa-heart text-muted far fs-6";
         updateCounts(data.cartCount, data.wishlistCount);
-      } else {
-        Swal.fire("Error!", data.message || "Something went wrong", "error");
       }
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Failed to update wishlist", "error");
     }
   }
 
+  // Buy Now
   document.querySelectorAll(".btn-buy-now").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
-
       const productId = btn.dataset.productId;
       const card = btn.closest(".product-card");
       const stock = Number(card.dataset.stock);
-
-      if (stock && stock <= 0) {
+      if (stock <= 0) {
         Swal.fire("Out of Stock!", "This product is currently unavailable.", "warning");
         return;
       }
-
       try {
         const res = await fetch(`/checkout/${productId}/1`, { method: "GET" });
-
         if (res.status === 401 || (res.redirected && res.url.includes("/login"))) {
           Swal.fire({
             title: "Please Log In",
-            text: "You need to login to proceed with checkout",
+            text: "Login to proceed with checkout",
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Login Now",
-            cancelButtonText: "Cancel",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              const returnTo = encodeURIComponent(`/checkout/${productId}/1`);
-              window.location.href = `/login?redirect=${returnTo}`;
-            }
+          }).then((r) => {
+            if (r.isConfirmed)
+              window.location.href = `/login?redirect=${encodeURIComponent(
+                `/checkout/${productId}/1`
+              )}`;
           });
           return;
         }
-
-        if (!res.ok) {
-          Swal.fire("Error", "Something went wrong", "error");
-          return;
-        }
-
         window.location.href = `/checkout/${productId}/1`;
       } catch (err) {
         console.error(err);
-        Swal.fire("Error", "Failed to process request", "error");
       }
     });
   });
 
-  //  Drag-to-scroll rails (mouse/touch)
+  // Drag-to-scroll rails
   document.querySelectorAll(".products-row.rail-scroll").forEach((row) => {
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
+    let isDown = false,
+      startX = 0,
+      scrollLeft = 0;
     const onDown = (e) => {
       isDown = true;
       startX = (e.touches ? e.touches[0].pageX : e.pageX) - row.offsetLeft;
@@ -466,8 +591,7 @@
       if (!isDown) return;
       e.preventDefault();
       const x = (e.touches ? e.touches[0].pageX : e.pageX) - row.offsetLeft;
-      const walk = x - startX;
-      row.scrollLeft = scrollLeft - walk;
+      row.scrollLeft = scrollLeft - (x - startX);
     };
     const onUp = () => {
       isDown = false;
@@ -479,15 +603,5 @@
     row.addEventListener("touchstart", onDown, { passive: true });
     row.addEventListener("touchmove", onMove, { passive: false });
     row.addEventListener("touchend", onUp);
-    // Shift+wheel for horizontal scroll
-    row.addEventListener(
-      "wheel",
-      (e) => {
-        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-          row.scrollBy({ left: e.deltaY, behavior: "auto" });
-        }
-      },
-      { passive: true }
-    );
   });
 </script>

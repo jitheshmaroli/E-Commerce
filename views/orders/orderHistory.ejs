@@ -1,127 +1,111 @@
 <%- include('../includes/userHead.ejs') %>
-<link rel="stylesheet" href="/css/orderHistory.css" />
+<link rel="stylesheet" href="/css/profile-shared.css" />
 <%- include('../includes/userHeader.ejs') %>
 
-<% const getProgress = (items) => { if (items.every(i => i.status === 'Delivered')) return 100; if
-(items.some(i => i.status === 'Shipped')) return 60; if (items.some(i => i.status === 'Pending'))
-return 30; return 0; }; const getOverallStatus = (items) => { if (items.every(i => i.status ===
-'Delivered')) return 'Delivered'; if (items.some(i => i.status === 'Shipped')) return 'Shipped';
-return 'Pending'; }; %>
+<% const getOverallStatus = (items) => { if (items.every(i => i.status === 'Delivered')) return
+'Delivered'; if (items.every(i => i.status === 'Cancelled')) return 'Cancelled'; if (items.some(i =>
+i.status === 'Shipped')) return 'Shipped'; if (items.some(i => i.status === 'Pending')) return
+'Pending'; return 'Mixed'; }; const statusPillClass = s => ({ Delivered: 'pill-delivered', Shipped:
+'pill-shipped', Pending: 'pill-pending', Cancelled: 'pill-cancelled', }[s] || 'pill-mixed'); const
+statusIcon = s => ({ Delivered: 'fa-check-circle', Shipped: 'fa-truck', Pending: 'fa-clock',
+Cancelled: 'fa-times-circle', }[s] || 'fa-box'); %>
 
-<main class="main">
-  <% if (user) { %>
-  <aside class="sidebar">
-    <div class="profile-section">
-      <div class="avatar">
-        <img
-          src="<%= user.photo && user.photo.length ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar"
-        />
+<% if (user) { %>
+<div class="account-shell">
+  <%- include('../includes/accountNav.ejs', { activePage: 'orders' }) %>
+
+  <div class="account-content">
+    <div class="account-card">
+      <div class="account-card-header">
+        <div class="account-card-icon"><i class="fas fa-box"></i></div>
+        <h2>Order History</h2>
       </div>
-      <ul class="profile-links">
-        <li><a href="/profile">User Profile</a></li>
-        <li><a href="/address">Address</a></li>
-        <li><a href="/order-history" class="active">Order History</a></li>
-        <li><a href="/change-password">Change Password</a></li>
-        <li><a href="/wallet">Wallet</a></li>
-      </ul>
-    </div>
-  </aside>
+      <div class="account-card-body">
+        <% if (orders && orders.length > 0) { %>
 
-  <section class="content">
-    <div class="container py-5">
-      <% if (orders.length > 0) { %>
-      <div class="row">
-        <% orders.forEach(order => { %>
-        <div class="col-12 mb-4">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <!-- ORDER HEADER -->
-              <div class="row align-items-center mb-3">
-                <div class="col-md-3">
-                  <p>
-                    <strong>Date:</strong>
-                    <%= new Date(order.createdAt).toDateString() %>
-                  </p>
-                  <p><strong>ID:</strong> #<%= order.uniqueOrderId %></p>
-                  <p><strong>Total:</strong> ₹<%= order.totalCost %></p>
-                </div>
-
-                <!-- PRODUCTS -->
-                <div class="col-md-6">
-                  <div class="row">
-                    <% order.items.slice(0,3).forEach(item => { %>
-                    <div class="col-4">
-                      <div class="card border-0">
-                        <img
-                          src="/uploads/<%= item.productId.photos[0].filename %>"
-                          class="card-img-top"
-                          style="height: 100px; object-fit: cover"
-                        />
-                        <div class="card-body p-2">
-                          <p class="small mb-1"><%= item.productId.name %></p>
-                          <p class="small mb-0">Qty: <%= item.quantity %></p>
-                          <p class="small mb-0">₹<%= item.productId.price %></p>
-
-                          <span
-                            class="badge bg-<%= item.status === 'Delivered' ? 'success' : item.status === 'Shipped' ? 'info' : item.status === 'Pending' ? 'warning' : 'danger' %>"
-                          >
-                            <%= item.status %>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <% }) %>
-
-                    <% if (order.items.length > 3) { %>
-                    <p class="small text-muted mt-2">+ <%= order.items.length - 3 %> more items</p>
-                    <% } %>
-                  </div>
-                </div>
-
-                <!-- ACTIONS -->
-                <div class="col-md-3 text-end">
-                  <a
-                    href="/order-details/<%= order._id %>"
-                    class="btn btn-primary btn-sm w-100 mb-2"
-                  >
-                    View Details
-                  </a>
-                </div>
+        <div class="orders-grid">
+          <% orders.forEach(order => { %>
+          <%
+            const overallStatus = getOverallStatus(order.items);
+            const pillClass     = statusPillClass(overallStatus);
+            const icon          = statusIcon(overallStatus);
+          %>
+          <div class="order-row-card">
+            <!-- Meta -->
+            <div class="order-meta">
+              <div class="order-id">#<%= order.uniqueOrderId %></div>
+              <div class="order-date">
+                <i class="far fa-calendar-alt me-1"></i
+                ><%= new Date(order.createdAt).toDateString() %>
+              </div>
+              <div class="order-total">
+                ₹<%= order.totalCost.toFixed ? order.totalCost.toFixed(2) : order.totalCost %>
               </div>
             </div>
+
+            <!-- Thumbnails -->
+            <div class="order-thumbs">
+              <% order.items.slice(0, 3).forEach(item => { %>
+              <img
+                src="/uploads/<%= item.productId.photos[0].filename %>"
+                alt="<%= item.productId.name %>"
+                class="order-thumb"
+                title="<%= item.productId.name %>"
+              />
+              <% }) %>
+              <% if (order.items.length > 3) { %>
+              <div class="order-thumb-more">+<%= order.items.length - 3 %></div>
+              <% } %>
+            </div>
+
+            <!-- Status -->
+            <div class="order-status-cell">
+              <span class="order-status-pill <%= pillClass %>">
+                <i class="fas <%= icon %>"></i>
+                <%= overallStatus %>
+              </span>
+              <span style="font-size: 0.72rem; color: var(--grey-400)"
+                ><%= order.items.length %> item<%= order.items.length !== 1 ? 's' : '' %></span
+              >
+            </div>
+
+            <!-- Action -->
+            <div class="order-actions">
+              <a href="/order-details/<%= order._id %>" class="btn-order-detail">
+                <i class="fas fa-arrow-right"></i> Details
+              </a>
+            </div>
           </div>
+          <% }) %>
         </div>
-        <% }) %>
-      </div>
 
-      <!-- PAGINATION -->
-      <nav>
-        <ul class="pagination justify-content-end">
-          <% for(let i=1;i<=totalPages;i++){ %>
-          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-            <a class="page-link" href="/order-history?page=<%= i %>"><%= i %></a>
-          </li>
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+        <div class="pagination mt-4">
+          <% for (let i = 1; i <= totalPages; i++) { %>
+          <a
+            href="/order-history?page=<%= i %>"
+            class="page-link <%= i === currentPage ? 'current-page' : '' %>"
+          >
+            <%= i %>
+          </a>
           <% } %>
-        </ul>
-      </nav>
+        </div>
+        <% } %>
 
-      <% } else { %>
-      <div class="text-center py-5">
-        <h3>No Orders Found</h3>
-        <a href="/products" class="btn btn-dark mt-3">Shop Now</a>
+        <% } else { %>
+        <div class="orders-empty">
+          <i class="fas fa-shopping-bag"></i>
+          <h3>No Orders Yet</h3>
+          <p>You haven't placed any orders. Start shopping!</p>
+          <a href="/products" class="btn-shop-now"><i class="fas fa-arrow-right"></i> Shop Now</a>
+        </div>
+        <% } %>
       </div>
-      <% } %>
     </div>
-  </section>
-  <% } %>
-</main>
+  </div>
+</div>
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
-<script>
-  document.querySelectorAll(".progress-bar").forEach((bar) => {
-    const value = bar.dataset.progress;
-    bar.style.width = value + "%";
-  });
-</script>

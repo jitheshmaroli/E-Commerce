@@ -1,3 +1,5 @@
+const User = require("../models/user");
+
 const isAdminAuthenticated = (req, res, next) => {
   if (req.session.isAdminAuthenticated) {
     next();
@@ -6,8 +8,15 @@ const isAdminAuthenticated = (req, res, next) => {
   }
 };
 
-const isUserAuthenticated = (req, res, next) => {
+const isUserAuthenticated = async (req, res, next) => {
   if (req.session.isUserAuthenticated || req.isAuthenticated()) {
+    const user = await User.findOne({ email: req.session.userId });
+
+    if (user?.isBlocked) {
+      req.session.destroy();
+      return res.redirect("/login?message=Your account has been blocked by admin");
+    }
+
     return next();
   }
   req.session.returnTo = req.originalUrl;

@@ -76,11 +76,12 @@ const editCategory = async (req, res) => {
 
     const existingCategory = await Category.findOne({
       categoryName: categoryName,
+      _id: { $ne: categoryId },
     });
 
     if (existingCategory) {
       return res
-        .status(HTTP_STATUS.BAD_REQUEST)
+        .status(HTTP_STATUS.CONFLICT)
         .json({ success: false, message: "Category already exists" });
     }
 

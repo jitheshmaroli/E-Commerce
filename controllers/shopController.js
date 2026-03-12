@@ -9,7 +9,7 @@ const Address = require("../models/address");
 const offerController = require("../controllers/offerController");
 const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
-const shoppingHomeView = async (req, res) => {
+const shoppingHomeView = async (req, res, next) => {
   try {
     await offerController.applyOffers();
     let wishlistProducts = [];
@@ -42,7 +42,10 @@ const shoppingHomeView = async (req, res) => {
     })
       .populate("offer")
       .populate("category")
-      .populate("reviews")
+      .populate({
+        path: "reviews",
+        select: "rating",
+      })
       .skip(skip)
       .limit(productsPerPage);
 
@@ -64,7 +67,7 @@ const shoppingHomeView = async (req, res) => {
         };
       })
     );
-
+    console.log("prdscrating:", productsWithRating);
     res.render("userSide/shoppingHome", {
       products: productsWithRating,
       wishlistProducts: wishlistProducts,
@@ -78,11 +81,12 @@ const shoppingHomeView = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+    next(error);
+    // res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
   }
 };
 
-const checkoutView = async (req, res) => {
+const checkoutView = async (req, res, next) => {
   try {
     offerController.applyOffers();
     const productId = req.params.productId;
@@ -183,7 +187,8 @@ const checkoutView = async (req, res) => {
     });
   } catch (error) {
     console.error("Checkout error:", error);
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("An error occurred during checkout");
+    // return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("An error occurred during checkout");
+    next(error);
   }
 };
 
@@ -270,6 +275,11 @@ const productSearchView = async (req, res) => {
 
     const products = await Product.find(query)
       .populate("category")
+      .populate({
+        path: "reviews",
+        select: "rating",
+      })
+      .populate("offer")
       .sort(sort)
       .collation(collation)
       .skip(skip)
@@ -303,6 +313,7 @@ const productSearchView = async (req, res) => {
       urlParams.delete("page");
       return "&" + urlParams.toString();
     };
+    console.log("productsrating:", productsWithRating);
 
     res.render("userSide/productSearch", {
       products: productsWithRating,

@@ -1,0 +1,55 @@
+<%
+const _navActive = locals.activePage || '';
+%>
+<div class="account-banner">
+  <div class="account-banner-inner">
+    <!-- Avatar (clickable only on profile page, display-only elsewhere) -->
+    <% if (_navActive === 'profile') { %>
+    <div class="account-avatar-wrap" id="avatarEditWrap">
+      <img
+        id="profileImg"
+        class="account-avatar"
+        src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
+        alt="<%= user.name %>"
+      />
+      <label for="profile-pic-input">
+        <i
+          class="fas fa-camera"
+          style="font-size: 0.9rem; display: block; margin-bottom: 0.2rem"
+        ></i>
+        Change
+      </label>
+    </div>
+    <% } else { %>
+    <img
+      class="account-avatar"
+      src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
+      alt="<%= user.name %>"
+    />
+    <% } %>
+
+    <div class="account-banner-info">
+      <div class="account-banner-name"><%= user.name %></div>
+      <div class="account-banner-email"><%= user.email %></div>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <nav class="account-tabs" aria-label="Account navigation">
+    <a href="/profile" class="account-tab <%= _navActive === 'profile' ? 'active' : '' %>">
+      <i class="fas fa-user"></i> Profile
+    </a>
+    <a href="/address" class="account-tab <%= _navActive === 'address' ? 'active' : '' %>">
+      <i class="fas fa-map-marker-alt"></i> Addresses
+    </a>
+    <a href="/order-history" class="account-tab <%= _navActive === 'orders' ? 'active' : '' %>">
+      <i class="fas fa-box"></i> Orders
+    </a>
+    <a href="/change-password" class="account-tab <%= _navActive === 'password' ? 'active' : '' %>">
+      <i class="fas fa-lock"></i> Password
+    </a>
+    <a href="/wallet" class="account-tab <%= _navActive === 'wallet' ? 'active' : '' %>">
+      <i class="fas fa-wallet"></i> Wallet
+    </a>
+  </nav>
+</div>

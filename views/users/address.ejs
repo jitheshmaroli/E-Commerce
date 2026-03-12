@@ -1,69 +1,79 @@
 <%- include('../includes/userHead.ejs') %>
-<link rel="stylesheet" href="/css/address.css" />
+<link rel="stylesheet" href="/css/profile-shared.css" />
 
 <%- include('../includes/userHeader.ejs') %>
 
-<main class="main">
-  <% if (user) { %>
-  <aside class="sidebar">
-    <div class="profile-section">
-      <div class="avatar">
-        <img
-          src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar"
-        />
+<% if (user) { %>
+<div class="account-shell">
+  <%- include('../includes/accountNav.ejs', { activePage: 'address' }) %>
+
+  <div class="account-content">
+    <div class="account-card">
+      <div class="account-card-header">
+        <div class="account-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <h2>My Addresses</h2>
       </div>
-      <ul class="profile-links">
-        <li><a href="/profile">User Profile</a></li>
-        <li><a href="/address">Address</a></li>
-        <li><a href="/order-history">Order History</a></li>
-        <li><a href="/change-password">Change Password</a></li>
-        <li><a href="/wallet">Wallet</a></li>
-      </ul>
-    </div>
-  </aside>
-  <section class="content">
-    <% if (addresses.address && addresses.address.length > 0) { %>
-    <h2 class="page-title">Address List</h2>
-    <div class="address-message">
-      <a href="/addresses/add" class="btn product-btn">Add New Address</a>
-    </div>
-    <div class="address-list">
-      <% addresses.address.forEach(address => { %>
-      <div
-        class="address-card"
-        data-address-id="<%= address._id %>"
-        data-is-default="<%= address.isDefault ? 'true' : 'false' %>"
-      >
-        <h3><%= address.name %></h3>
-        <p>
-          <%= address.houseName %>, <%= address.street %>, <%= address.district %>, <%=
-          address.state %>, <%= address.country %>
-        </p>
-        <p>PIN: <%= address.pinCode %></p>
-        <% if (address.isDefault) { %>
-        <span class="default-address-tag">Default Address</span>
+      <div class="account-card-body">
+        <% if (addresses.address && addresses.address.length > 0) { %>
+
+        <div class="address-grid">
+          <% addresses.address.forEach(address => { %>
+          <div
+            class="addr-card <%= address.isDefault ? 'is-default' : '' %>"
+            data-address-id="<%= address._id %>"
+          >
+            <% if (address.isDefault) { %>
+            <div class="addr-default-tag"><i class="fas fa-home me-1"></i>Default</div>
+            <% } %>
+
+            <p class="addr-name"><%= address.name %></p>
+            <p class="addr-text">
+              <%= address.houseName %>, <%= address.street %>,<br />
+              <%= address.district %>,
+              <%= address.state %>,
+              <%= address.country %>
+            </p>
+            <div class="addr-pin">
+              <i class="fas fa-map-pin"></i> PIN:
+              <%= address.pinCode %>
+            </div>
+
+            <div class="addr-actions">
+              <a href="/address/edit/<%= address._id %>" class="btn-addr-sm">
+                <i class="fas fa-pencil-alt"></i> Edit
+              </a>
+              <% if (!address.isDefault) { %>
+              <button
+                class="btn-addr-sm primary set-default-btn"
+                data-address-id="<%= address._id %>"
+              >
+                <i class="fas fa-check"></i> Set Default
+              </button>
+              <% } %>
+              <button class="btn-addr-sm danger delete-btn" data-address-id="<%= address._id %>">
+                <i class="fas fa-trash-alt"></i> Delete
+              </button>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
         <% } else { %>
-        <button class="btn product-btn btn-sm set-default-btn" data-address-id="<%= address._id %>">
-          Set as Default
-        </button>
+        <div class="addr-empty">
+          <i class="fas fa-map-marker-alt"></i>
+          <p>No saved addresses yet</p>
+        </div>
         <% } %>
-        <a href="/address/edit/<%= address._id %>" class="btn product-btn btn-sm">Edit</a>
-        <button class="btn product-btn btn-sm delete-btn" data-address-id="<%= address._id %>">
-          Delete
-        </button>
+
+        <!-- Add address -->
+        <a href="/addresses/add" class="btn-add-addr">
+          <i class="fas fa-plus"></i> Add New Address
+        </a>
       </div>
-      <% }) %>
     </div>
-    <% } else { %>
-    <div class="empty-state">
-      <h2>No addresses saved</h2>
-      <a href="/addresses/add" class="btn product-btn">Add Address</a>
-    </div>
-    <% } %>
-  </section>
-  <% } %>
-</main>
+  </div>
+</div>
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
@@ -72,21 +82,18 @@
   document.querySelectorAll(".set-default-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const addressId = btn.dataset.addressId;
-
       try {
         const res = await fetch("/set-default", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ addressId }),
         });
-
         const data = await res.json();
-
         if (data.success) {
           Swal.fire({
             icon: "success",
-            title: "Success",
-            text: "Default address updated",
+            title: "Updated!",
+            text: "Default address set.",
             timer: 1500,
             showConfirmButton: false,
           }).then(() => location.reload());
@@ -94,15 +101,11 @@
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: data.message || "Failed to set default",
+            text: data.message || "Failed to set default.",
           });
         }
       } catch (err) {
-        Swal.fire({
-          icon: "error",
-          title: "Network Error",
-          text: "Something went wrong",
-        });
+        Swal.fire({ icon: "error", title: "Network Error", text: "Something went wrong." });
       }
     });
   });
@@ -110,42 +113,41 @@
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const addressId = btn.dataset.addressId;
-
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+      const result = await Swal.fire({
+        title: "Delete this address?",
+        text: "This action cannot be undone.",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const res = await fetch(`/address/delete/${addressId}`, { method: "POST" });
-            const data = await res.json();
-
-            if (data.success) {
-              Swal.fire("Deleted!", "Address has been deleted.", "success").then(() =>
-                location.reload()
-              );
-            } else {
-              Swal.fire("Error!", data.message || "Failed to delete.", "error");
-            }
-          } catch (err) {
-            Swal.fire("Error!", "Network error occurred.", "error");
-          }
-        }
+        confirmButtonColor: "#dc2626",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete",
+        cancelButtonText: "Cancel",
       });
+      if (!result.isConfirmed) return;
+      try {
+        const res = await fetch(`/address/delete/${addressId}`, { method: "POST" });
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Address removed.",
+            timer: 1500,
+            showConfirmButton: false,
+          }).then(() => location.reload());
+        } else {
+          Swal.fire({ icon: "error", title: "Error", text: data.message || "Failed to delete." });
+        }
+      } catch (err) {
+        Swal.fire({ icon: "error", title: "Network Error", text: "Something went wrong." });
+      }
     });
   });
-</script>
-<script>
-  function setCategory(category) {
-    const selectedCategory = document.getElementById("selectedCategory");
-    if (selectedCategory) selectedCategory.value = category;
-    const dropdownText = document.querySelector(".dropdown-toggle-text");
-    if (dropdownText)
-      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+
+  function setCategory(c) {
+    const el = document.getElementById("selectedCategory");
+    if (el) el.value = c;
+    const dt = document.querySelector(".dropdown-toggle-text");
+    if (dt) dt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
   }
 </script>

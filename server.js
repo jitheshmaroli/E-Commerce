@@ -68,6 +68,24 @@ const adminRoutes = require("./routes/adminRoutes.js");
 app.use("/admin", adminRoutes);
 app.use("/", userRoutes);
 
+//404
+// eslint-disable-next-line no-unused-vars
+app.use((req, res, next) => {
+  res.status(404).render("errors/404");
+});
+
+// // eslint-disable-next-line no-unused-vars
+// app.use((err, req, res, next) => {
+//   console.error(`[${new Date().toISOString()}] Error on ${req.method} ${req.url}:`, err);
+
+//   const status = err.status || err.statusCode || 500;
+
+//   // Only expose error details in development
+//   const errorMessage = process.env.NODE_ENV === "development" ? err.message : null;
+
+//   res.status(status).render("errors/500", { errorMessage });
+// });
+
 app.listen(port, () => {
   console.log(`server is running at ${port}`);
 });

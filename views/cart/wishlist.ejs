@@ -1,75 +1,80 @@
 <%- include('../includes/userHead.ejs') %>
 <link rel="stylesheet" href="/css/wishlist.css" />
-
 <%- include('../includes/userHeader.ejs') %>
 
-<div class="container">
-  <h1 class="page-title">WISHLIST ITEMS</h1>
-  <% if (wishlist && wishlist.length > 0) { %> <% wishlist.forEach(item => { %>
-  <div class="wishlist">
-    <div class="product-container">
-      <div class="image-container">
-        <a href="/product-details/<%= item._id %>">
-          <img src="/uploads/<%= item.photos[0].filename %>" alt="Product Image" />
+<div class="wishlist-page">
+  <div class="container">
+    <div class="wishlist-page-header">
+      <h1>Wishlist</h1>
+      <% if (wishlist && wishlist.length > 0) { %>
+      <p><%= wishlist.length %> item<%= wishlist.length !== 1 ? 's' : '' %> saved</p>
+      <% } %>
+    </div>
+
+    <% if (wishlist && wishlist.length > 0) { %>
+
+    <div class="wishlist-grid">
+      <% wishlist.forEach(item => { %>
+      <div class="wishlist-card">
+        <!-- Image -->
+        <a href="/product-details/<%= item._id %>" class="wishlist-card-img-wrap">
+          <img src="/uploads/<%= item.photos[0].filename %>" alt="<%= item.name %>" />
         </a>
+
+        <!-- Info -->
+        <div class="wishlist-card-body">
+          <a href="/product-details/<%= item._id %>" class="wishlist-card-name">
+            <%= item.name %>
+          </a>
+          <div class="wishlist-card-price">₹<%= item.price.toFixed(2) %></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="wishlist-card-footer">
+          <form
+            action="/move-to-cart/<%= item._id %>"
+            method="POST"
+            class="wishlist-form"
+            style="flex: 1; margin: 0"
+          >
+            <input type="hidden" name="productId" value="<%= item._id %>" />
+            <button type="submit" class="btn-add-to-cart">
+              <i class="fas fa-shopping-bag"></i> Add to Cart
+            </button>
+          </form>
+
+          <form action="/wishlist/remove/<%= item._id %>" method="POST" style="margin: 0">
+            <button type="submit" class="btn-remove-wishlist" title="Remove from wishlist">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </form>
+        </div>
       </div>
-      <div class="product-details">
-        <h2 class="product-name"><%= item.name %></h2>
-        <p class="product-price">₹<%= item.price.toFixed(2) %></p>
-      </div>
+      <% }) %>
     </div>
-    <div class="button-container">
-      <form action="/move-to-cart/<%= item._id %>" method="POST" class="wishlist-form">
-        <input type="hidden" name="productId" value="<%= item._id %>" />
-        <button type="submit" class="btn product-btn">ADD TO CART</button>
-      </form>
-      <form action="/wishlist/remove/<%= item._id %>" method="POST" class="wishlist-form">
-        <button type="submit" class="btn product-btn delete-btn">DELETE</button>
-      </form>
+
+    <% } else { %>
+
+    <div class="wishlist-empty">
+      <i class="far fa-heart"></i>
+      <h2>Your Wishlist is Empty</h2>
+      <p>Save items you love here and come back when you're ready.</p>
+      <a href="/products" class="btn-shop-now"><i class="fas fa-arrow-right"></i> Shop Now</a>
     </div>
+
+    <% } %>
   </div>
-  <% }) %>
-  <% } else { %>
-  <div class="empty-state">
-    <h2>NO ITEMS IN WISHLIST</h2>
-    <a href="/products" class="btn product-btn">SHOP NOW</a>
-  </div>
-  <% } %>
 </div>
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  // document.querySelectorAll('.add-to-cart-button').forEach(button => {
-  //     button.addEventListener('click', async (event) => {
-  //         const form = event.target.closest('form');
-  //         const formData = new FormData(form);
-
-  //            fetch('/move-to-cart', {
-  //                 method: 'POST',
-  //                 headers: {
-  //                     'Content-Type': 'application/json'
-  //                 },
-  //                 body: formData
-  //             })
-  //             .then(response => response.json())
-  //             .then(data => {
-  //               if (data.success) {
-  //                 Swal.fire('Success!', data.message, 'success');
-  //               } else {
-  //                 console.error('Error adding product to cart:', data.error);
-  //               }
-  //             })
-  //     });
-  // });
-</script>
-<script>
   function setCategory(category) {
-    document.getElementById("selectedCategory").value = category;
-    document.getElementById("categoryDropdown").querySelector(".dropdown-toggle-text").textContent =
-      category.charAt(0).toUpperCase() + category.slice(1);
+    const el = document.getElementById("selectedCategory");
+    if (el) el.value = category;
+    const dt = document.querySelector(".dropdown-toggle-text");
+    if (dt) dt.textContent = category.charAt(0).toUpperCase() + category.slice(1);
   }
 </script>

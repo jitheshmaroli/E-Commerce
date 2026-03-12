@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Coupon - Admin</title>
+    <title>Add Coupon · ShoeZone Admin</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -12,140 +12,89 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link rel="stylesheet" href="/css/theme.css" />
-    <link rel="stylesheet" href="/css/addCoupon.css" />
+    <link rel="stylesheet" href="/css/admin-shared.css" />
   </head>
-  <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/admin">
-          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
-          SportZilon Admin
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+  <body>
+    <!-- ── Top bar ── -->
+    <header class="admin-topbar">
+      <a href="/admin" class="topbar-brand">
+        <div class="topbar-brand-logo"><img src="/test.jpg" alt="Logo" /></div>
+        <span class="topbar-brand-name">ShoeZone <em>Admin</em></span>
+      </a>
+      <div class="topbar-breadcrumb">
+        <a href="/admin/couponList" style="color: rgba(255, 255, 255, 0.35); text-decoration: none"
+          >Coupon List</a
         >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle text-white"
-                href="#"
-                id="adminDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                ADMIN
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
+        <i class="fas fa-chevron-right"></i>
+        <span>Add New Coupon</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-admin-pill" id="adminPill">
+          <div class="topbar-admin-avatar">A</div>
+          <span class="topbar-admin-label">Admin</span>
+          <i class="fas fa-chevron-down topbar-admin-chevron"></i>
+          <div class="topbar-admin-dropdown">
+            <a href="/admin/logout" class="topbar-dropdown-item"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <div class="d-flex">
-      <!-- Sidebar -->
-      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
-        <div class="list-group list-group-flush">
-          <a
-            href="/admin"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-home me-2"></i> HOME
-          </a>
-          <a
-            href="/admin/allproducts"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-box me-2"></i> ALL PRODUCTS
-          </a>
-          <a
-            href="/admin/ordersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
-          </a>
-          <a
-            href="/admin/usersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-users me-2"></i> USERS LIST
-          </a>
-          <a
-            href="/admin/categoryList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-tags me-2"></i> CATEGORY LIST
-          </a>
-          <a
-            href="/admin/couponList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
-          >
-            <i class="fas fa-gift me-2"></i> COUPON LIST
-          </a>
-          <a
-            href="/admin/offers"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-percentage me-2"></i> OFFERS
+    <div class="admin-shell">
+      <%- include('../includes/adminSidebar.ejs', { activePage: 'coupons' }) %>
+
+      <main class="admin-main">
+        <div class="admin-page-header">
+          <div class="admin-page-header-left">
+            <div class="admin-page-title">Add New Coupon</div>
+            <div class="admin-page-subtitle">Create a discount coupon for customers</div>
+          </div>
+          <a href="/admin/couponList" class="btn-admin btn-admin-ghost">
+            <i class="fas fa-arrow-left"></i> Back to Coupons
           </a>
         </div>
-      </aside>
 
-      <!-- Main Content -->
-      <main class="content flex-grow-1 p-4">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent p-0 mb-4">
-            <li class="breadcrumb-item">
-              <a href="/admin/couponList" class="text-dark">Coupon List</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Add New Coupon</li>
-          </ol>
-        </nav>
-
-        <div class="card shadow-lg border-0" style="max-width: 550px; margin: 0 auto">
-          <div class="card-header bg-dark text-white text-center py-3">
-            <h4 class="mb-0">Add New Coupon</h4>
-          </div>
-          <div class="card-body p-4">
+        <div class="admin-card" style="max-width: 560px">
+          <div class="admin-card-body">
             <form id="couponForm" method="POST" action="/admin/addcoupon">
-              <div id="message" class="text-danger mb-3 fw-bold"><%= message || '' %></div>
+              <div
+                id="message"
+                class="admin-error"
+                style="font-weight: 700; margin-bottom: 0.75rem"
+              >
+                <%= message || '' %>
+              </div>
 
               <!-- Coupon Code -->
-              <div class="mb-4">
-                <label for="code" class="form-label fw-bold"
-                  >Coupon Code <span class="text-danger">*</span></label
-                >
+              <div class="admin-field">
+                <label class="admin-label">Coupon Code <span class="req">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="admin-input"
                   id="code"
                   name="code"
                   placeholder="e.g. NEW20"
                   maxlength="5"
                   required
                   autocomplete="off"
+                  style="
+                    text-transform: uppercase;
+                    font-family: 'Bebas Neue', sans-serif;
+                    font-size: 1.1rem;
+                    letter-spacing: 0.08em;
+                  "
                 />
-                <small id="codeError" class="text-danger"></small>
+                <small id="codeError" class="admin-error"></small>
               </div>
 
               <!-- Discount -->
-              <div class="mb-4">
-                <label for="discount" class="form-label fw-bold"
-                  >Discount Percentage <span class="text-danger">*</span></label
-                >
+              <div class="admin-field">
+                <label class="admin-label">Discount Percentage <span class="req">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="admin-input"
                   id="discount"
                   name="discount"
                   placeholder="e.g. 20"
@@ -154,48 +103,52 @@
                   max="100"
                   required
                 />
-                <small id="discountError" class="text-danger"></small>
+                <small id="discountError" class="admin-error"></small>
               </div>
 
               <!-- Valid From -->
-              <div class="mb-4">
-                <label for="startDate" class="form-label fw-bold"
-                  >Valid From <span class="text-danger">*</span></label
-                >
-                <input type="date" class="form-control" id="startDate" name="startDate" required />
-                <small id="startDateError" class="text-danger"></small>
+              <div class="admin-field">
+                <label class="admin-label">Valid From <span class="req">*</span></label>
+                <input type="date" class="admin-input" id="startDate" name="startDate" required />
+                <small id="startDateError" class="admin-error"></small>
               </div>
 
               <!-- Valid Until -->
-              <div class="mb-4">
-                <label for="expiryDate" class="form-label fw-bold"
-                  >Valid Until <span class="text-danger">*</span></label
-                >
-                <input
-                  type="date"
-                  class="form-control"
-                  id="expiryDate"
-                  name="expiryDate"
-                  required
-                />
-                <small id="expiryDateError" class="text-danger"></small>
+              <div class="admin-field">
+                <label class="admin-label">Valid Until <span class="req">*</span></label>
+                <input type="date" class="admin-input" id="expiryDate" name="expiryDate" required />
+                <small id="expiryDateError" class="admin-error"></small>
               </div>
 
               <!-- Buttons -->
-              <div class="d-flex gap-3">
-                <button type="submit" class="btn btn-dark flex-grow-1 py-2 fw-bold">
+              <div
+                style="
+                  display: flex;
+                  gap: 0.75rem;
+                  margin-top: 2rem;
+                  padding-top: 1.5rem;
+                  border-top: 1px solid var(--grey-100);
+                "
+              >
+                <button
+                  type="submit"
+                  class="btn-admin btn-admin-primary"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
+                >
                   ADD COUPON
                 </button>
                 <button
                   type="button"
-                  class="btn btn-outline-dark flex-grow-1 py-2"
+                  class="btn-admin btn-admin-ghost"
                   onclick="clearFields()"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
                 >
                   CLEAR
                 </button>
                 <a
                   href="/admin/couponList"
-                  class="btn btn-outline-secondary flex-grow-1 py-2 text-center"
+                  class="btn-admin btn-admin-ghost"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
                 >
                   BACK
                 </a>
@@ -206,11 +159,19 @@
       </main>
     </div>
 
-    <!-- Scripts -->
+    <footer class="admin-footer">© 2024 ShoeZone Admin Panel. All rights reserved.</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
+      document.getElementById("adminPill")?.addEventListener("click", function (e) {
+        e.stopPropagation();
+        this.classList.toggle("open");
+      });
+      document.addEventListener("click", () =>
+        document.getElementById("adminPill")?.classList.remove("open")
+      );
+
       const codeInput = document.getElementById("code");
       const discountInput = document.getElementById("discount");
       const startInput = document.getElementById("startDate");
@@ -332,9 +293,9 @@
         discountInput.value = "";
         startInput.value = "";
         expiryInput.value = "";
-        document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
+        document.querySelectorAll(".admin-error").forEach((el) => (el.textContent = ""));
         document
-          .querySelectorAll(".form-control")
+          .querySelectorAll(".admin-input")
           .forEach((el) => el.classList.remove("is-invalid"));
       }
     </script>

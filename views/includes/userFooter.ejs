@@ -1,52 +1,109 @@
-<footer class="footer bg-dark text-light py-5 mt-5">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-lg-4">
-        <h5 class="fw-bold mb-3">About ShoeZone</h5>
-        <p class="opacity-75">
-          Discover premium footwear for every step. Quality, style, and comfort guaranteed.
-        </p>
-        <a href="/about" class="btn btn-outline-light btn-sm">Learn More</a>
-      </div>
-      <div class="col-lg-4">
-        <h5 class="fw-bold mb-3">Quick Links</h5>
-        <ul class="list-unstyled">
-          <li>
-            <a href="/help" class="text-light text-decoration-none opacity-75">Help Center</a>
-          </li>
-          <li>
-            <a href="/privacy" class="text-light text-decoration-none opacity-75">Privacy Policy</a>
-          </li>
-          <li>
-            <a href="/terms" class="text-light text-decoration-none opacity-75"
-              >Terms & Conditions</a
-            >
-          </li>
-          <li>
-            <a href="/contact" class="text-light text-decoration-none opacity-75">Contact Us</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-lg-4">
-        <h5 class="fw-bold mb-3">Stay Updated</h5>
-        <p class="opacity-75 mb-3">Subscribe for exclusive deals and new arrivals.</p>
-        <form action="/subscribe" method="POST" class="d-flex">
-          <input type="email" class="form-control me-2" placeholder="Your email" required />
-          <button type="submit" class="btn btn-primary">Subscribe</button>
-        </form>
-      </div>
-    </div>
-    <hr class="my-4" />
-    <div class="row align-items-center">
-      <div class="col-md-6">
-        <p class="mb-0 opacity-75">&copy; 2025 ShoeZone. All Rights Reserved.</p>
-      </div>
-      <div class="col-md-6 text-md-end">
-        <a href="#" class="text-light me-3 fs-5"><i class="fab fa-facebook"></i></a>
-        <a href="#" class="text-light me-3 fs-5"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="text-light me-3 fs-5"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="text-light fs-5"><i class="fab fa-youtube"></i></a>
+<footer class="site-footer">
+
+  <!-- Footer Top: Brand + Links + Newsletter -->
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+
+        <!-- Brand Column -->
+        <div class="footer-brand-col">
+          <a href="/" class="footer-logo">
+            Shoe<em>Zone</em>
+          </a>
+          <p class="footer-tagline">
+            Premium footwear for every stride. Comfort, style, and authenticity — delivered to your door.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-btn" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-btn" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+          </div>
+          <!-- Trust badges -->
+          <div class="footer-trust-badges">
+            <div class="trust-badge-item"><i class="fas fa-shield-alt"></i> SSL Secured</div>
+            <div class="trust-badge-item"><i class="fas fa-award"></i> 100% Authentic</div>
+          </div>
+        </div>
+
+        <!-- Shop Column -->
+        <div class="footer-links-col">
+          <h4 class="footer-col-title">Shop</h4>
+          <ul class="footer-link-list">
+            <li><a href="/products">All Products</a></li>
+            <li><a href="/products?category=MEN">Men's Collection</a></li>
+            <li><a href="/products?category=WOMEN">Women's Collection</a></li>
+            <li><a href="/products?category=KIDS">Kids' Collection</a></li>
+            <li><a href="/products?sortby=newArrivals">New Arrivals</a></li>
+            <li><a href="/products?sortby=popularity">Bestsellers</a></li>
+          </ul>
+        </div>
+
+        <!-- Help Column -->
+        <div class="footer-links-col">
+          <h4 class="footer-col-title">Help & Info</h4>
+          <ul class="footer-link-list">
+            <li><a href="/help"><i class="fas fa-question-circle me-1 opacity-50"></i>Help Center</a></li>
+            <li><a href="/orders"><i class="fas fa-box me-1 opacity-50"></i>Track My Order</a></li>
+            <li><a href="/returns"><i class="fas fa-undo me-1 opacity-50"></i>Returns & Exchanges</a></li>
+            <li><a href="/contact"><i class="fas fa-envelope me-1 opacity-50"></i>Contact Us</a></li>
+            <li><a href="/privacy"><i class="fas fa-lock me-1 opacity-50"></i>Privacy Policy</a></li>
+            <li><a href="/terms"><i class="fas fa-file-alt me-1 opacity-50"></i>Terms & Conditions</a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter Column -->
+        <div class="footer-newsletter-col">
+          <h4 class="footer-col-title">Stay Updated</h4>
+          <p class="footer-newsletter-desc">
+            Be the first to know about new drops, exclusive deals, and member-only offers.
+          </p>
+          <form action="/subscribe" method="POST" class="footer-newsletter-form">
+            <div class="footer-input-wrap">
+              <input type="email" name="email" placeholder="Your email address" required />
+              <button type="submit" aria-label="Subscribe">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+            <p class="footer-newsletter-note">No spam, ever. Unsubscribe anytime.</p>
+          </form>
+          <!-- Contact info -->
+          <div class="footer-contact-info">
+            <div class="contact-row"><i class="fas fa-headset"></i> <span>24/7 Support Available</span></div>
+            <div class="contact-row"><i class="fas fa-envelope"></i> <span>support@shoezone.in</span></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
+
+  <!-- Footer Divider -->
+  <div class="footer-divider">
+    <div class="container">
+      <div class="footer-divider-inner"></div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="footer-bottom-inner">
+        <div class="footer-copy">
+          &copy; 2025 ShoeZone. All rights reserved.
+        </div>
+        <div class="footer-payment-icons">
+          <span class="payment-badge"><i class="fab fa-cc-visa"></i></span>
+          <span class="payment-badge"><i class="fab fa-cc-mastercard"></i></span>
+          <span class="payment-badge" style="font-size:.65rem;font-weight:800;letter-spacing:.02em">WALLET</span>
+        </div>
+        <div class="footer-legal-links">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </footer>

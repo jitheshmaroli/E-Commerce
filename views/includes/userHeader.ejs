@@ -1,144 +1,213 @@
-<header class="navbar-header">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-transparent fixed-top">
-    <div class="container-fluid">
+<header class="site-header">
+  <nav class="main-nav" id="mainNav">
+    <div class="nav-inner">
       <!-- Logo -->
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="/test.jpg" alt="ShoeZone Logo" width="40" height="40" class="me-2 rounded" />
-        <span class="brand-name fw-bold">ShoeZone</span>
+      <a class="nav-logo" href="/">
+        <div class="logo-mark">
+          <img src="/test.jpg" alt="ShoeZone" />
+        </div>
+        <span class="logo-text">Shoe<em>Zone</em></span>
       </a>
 
-      <!-- Mobile Toggle -->
-      <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links d-none d-lg-flex">
+        <li><a href="/products" class="nav-link-item">Shop</a></li>
+        <li><a href="/products?sortby=newArrivals" class="nav-link-item">New Arrivals</a></li>
+        <li><a href="/products?sortby=popularity" class="nav-link-item">Bestsellers</a></li>
+      </ul>
 
-      <!-- Collapsible Nav Content -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- Search and Nav -->
-        <div class="navbar-nav mx-auto">
-          <form action="/products" method="GET" class="d-flex search-form mx-lg-4">
-            <div class="input-group w-100">
-              <input
-                type="text"
-                name="query"
-                class="form-control border-0 ps-3"
-                placeholder="Search shoes..."
-                aria-label="Search"
-                value="<%= typeof query !== 'undefined' ? query.query : '' %>"
-              />
-              <select name="category" class="form-select border-0 px-2" style="max-width: 120px">
-                <option value="">All Categories</option>
-                <option value="MEN">Men</option>
-                <option value="WOMEN">Women</option>
-                <option value="KIDS">Kids</option>
-              </select>
-              <button type="submit" class="btn btn-dark px-3">
-                <i class="fas fa-search"></i>
-              </button>
+      <!-- Search -->
+      <form action="/products" method="GET" class="nav-search" id="navSearchForm">
+        <div class="search-wrap">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="text"
+            name="query"
+            class="search-input"
+            placeholder="Search shoes, brands..."
+            aria-label="Search"
+            value="<%= typeof query !== 'undefined' ? query.query : '' %>"
+            autocomplete="off"
+          />
+          <select name="category" class="search-cat" aria-label="Category">
+            <option value="">All</option>
+            <option value="MEN">Men</option>
+            <option value="WOMEN">Women</option>
+            <option value="KIDS">Kids</option>
+          </select>
+          <button type="submit" class="search-btn" aria-label="Search">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <!-- User menu -->
+        <% if (user) { %>
+        <div class="nav-user-menu" id="userMenuTrigger">
+          <div class="user-avatar-btn">
+            <% if (user.photo && user.photo.length > 0) { %>
+            <img
+              src="/uploads/<%= user.photo[0].filename %>"
+              alt="<%= user.name %>"
+              class="user-avatar-img"
+            />
+            <% } else { %>
+            <div class="user-avatar-initial">
+              <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
             </div>
-          </form>
-        </div>
-
-        <!-- User Actions -->
-        <div class="navbar-nav ms-auto d-flex align-items-center">
-          <% if (user) { %>
-          <div class="dropdown">
-            <a
-              class="nav-link dropdown-toggle text-white d-flex align-items-center"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-            >
-              <% if (user.photo && user.photo.length > 0) { %>
-              <img
-                src="/uploads/<%= user.photo[0].filename %>"
-                alt="Profile Photo"
-                class="rounded-circle me-1"
-                style="width: 30px; height: 30px; object-fit: cover"
-              />
-              <% } else { %>
-              <span
-                class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-1"
-                style="width: 30px; height: 30px; font-size: 12px; font-weight: bold"
-                ><%= user.name ? user.name.charAt(0).toUpperCase() : 'P'
-                %></span
-              >
-              <% } %>
-              <%= user.name || 'Profile' %>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/profile">Profile</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
+            <% } %>
+            <span class="user-name-label d-none d-xl-inline"><%= user.name || 'Account' %></span>
+            <i class="fas fa-chevron-down nav-chevron ms-1"></i>
           </div>
-          <% } else { %>
-          <a class="nav-link text-white" href="/login"
-            ><i class="fas fa-sign-in-alt me-1"></i>Login</a
-          >
-          <% } %>
-          <!-- Cart and Wishlist icons with badges -->
-          <a class="nav-link text-white ms-2 position-relative" href="/cart">
-            <i class="fas fa-shopping-cart"></i>
-            <% if (cartCount > 0) { %>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              id="cart-count-badge"
-            >
-              <%= cartCount %>
-            </span>
-            <% } else { %>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
-              id="cart-count-badge"
-              >0</span
-            >
-            <% } %>
-          </a>
-          <a class="nav-link text-white ms-2 position-relative" href="/wishlist">
-            <i class="fas fa-heart"></i>
-            <% if (wishlistCount > 0) { %>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              id="wishlist-count-badge"
-            >
-              <%= wishlistCount %>
-            </span>
-            <% } else { %>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
-              id="wishlist-count-badge"
-              >0</span
-            >
-            <% } %>
-          </a>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="ud-name"><%= user.name || 'Guest' %></div>
+              <div
+                class="ud-email"
+                style="
+                  font-size: 0.75rem;
+                  color: var(--grey-400);
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                "
+              >
+                <%= user.email || '' %>
+              </div>
+            </div>
+            <div class="user-dropdown-body">
+              <a href="/profile" class="ud-item"><i class="fas fa-user-circle"></i> My Profile</a>
+              <a href="/order-history" class="ud-item"><i class="fas fa-box"></i> My Orders</a>
+            </div>
+            <div class="user-dropdown-footer">
+              <a href="/logout" class="ud-logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+            </div>
+          </div>
         </div>
+        <% } else { %>
+        <a href="/login" class="btn-nav-login">
+          <i class="fas fa-sign-in-alt"></i>
+          <span class="d-none d-md-inline">Login</span>
+        </a>
+        <% } %>
+
+        <!-- Wishlist -->
+        <a href="/wishlist" class="nav-icon-btn" aria-label="Wishlist">
+          <i class="fas fa-heart"></i>
+          <span
+            class="nav-badge <%= wishlistCount > 0 ? '' : 'd-none' %>"
+            id="wishlist-count-badge"
+          >
+            <%= wishlistCount %>
+          </span>
+        </a>
+
+        <!-- Cart -->
+        <a href="/cart" class="nav-icon-btn nav-cart-btn" aria-label="Cart">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="nav-badge <%= cartCount > 0 ? '' : 'd-none' %>" id="cart-count-badge">
+            <%= cartCount %>
+          </span>
+        </a>
+
+        <!-- Mobile Hamburger -->
+        <button class="hamburger d-lg-none" id="mobileMenuToggle" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </nav>
+
+  <!-- Mobile Menu Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="mobile-drawer-inner">
+      <div class="mobile-drawer-top">
+        <span class="logo-text drawer-logo-text">Shoe<em class="drawer-logo-em">Zone</em></span>
+        <button class="drawer-close" id="drawerClose"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Mobile Search -->
+      <form action="/products" method="GET" class="mobile-search-form">
+        <div class="mobile-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" name="query" placeholder="Search shoes..." />
+          <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </form>
+
+      <nav class="mobile-nav-links">
+        <a href="/products" class="mob-link"><i class="fas fa-store"></i> Shop All</a>
+        <a href="/products?sortby=newArrivals" class="mob-link"
+          ><i class="fas fa-star"></i> New Arrivals</a
+        >
+        <a href="/products?sortby=popularity" class="mob-link"
+          ><i class="fas fa-fire"></i> Bestsellers</a
+        >
+        <div class="mob-divider">Categories</div>
+        <a href="/products?category=MEN" class="mob-link"><i class="fas fa-male"></i> Men</a>
+        <a href="/products?category=WOMEN" class="mob-link"><i class="fas fa-female"></i> Women</a>
+        <a href="/products?category=KIDS" class="mob-link"><i class="fas fa-child"></i> Kids</a>
+        <div class="mob-divider">Account</div>
+        <% if (user) { %>
+        <a href="/profile" class="mob-link"><i class="fas fa-user-circle"></i> My Profile</a>
+        <a href="/order-history" class="mob-link"><i class="fas fa-box"></i> My Orders</a>
+        <a href="/logout" class="mob-link mob-logout"
+          ><i class="fas fa-sign-out-alt"></i> Sign Out</a
+        >
+        <% } else { %>
+        <a href="/login" class="mob-link mob-login"
+          ><i class="fas fa-sign-in-alt"></i> Login / Register</a
+        >
+        <% } %>
+      </nav>
+    </div>
+  </div>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
 </header>
+
 <script>
   (function () {
-    const hasHero = document.querySelector(".hero-banner");
-    const nav = document.querySelector(".navbar");
-    if (!nav) return;
-    if (!hasHero) {
-      nav.classList.remove("navbar-transparent");
-      return;
-    }
+    const nav = document.getElementById("mainNav");
+    const menuToggle = document.getElementById("mobileMenuToggle");
+    const drawer = document.getElementById("mobileDrawer");
+    const drawerClose = document.getElementById("drawerClose");
+    const overlay = document.getElementById("drawerOverlay");
+    const userTrigger = document.getElementById("userMenuTrigger");
+
+    // Scroll-based nav style
     const onScroll = () => {
-      if (window.scrollY > 10) {
-        nav.classList.remove("navbar-transparent");
-      } else {
-        nav.classList.add("navbar-transparent");
-      }
+      if (window.scrollY > 40) nav.classList.add("nav-scrolled");
+      else nav.classList.remove("nav-scrolled");
     };
-    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    // Mobile drawer
+    function openDrawer() {
+      drawer.classList.add("open");
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      menuToggle.classList.add("active");
+    }
+    function closeDrawer() {
+      drawer.classList.remove("open");
+      overlay.classList.remove("open");
+      document.body.style.overflow = "";
+      menuToggle.classList.remove("active");
+    }
+    menuToggle?.addEventListener("click", openDrawer);
+    drawerClose?.addEventListener("click", closeDrawer);
+    overlay?.addEventListener("click", closeDrawer);
+
+    // User dropdown
+    userTrigger?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      userTrigger.classList.toggle("open");
+    });
+    document.addEventListener("click", () => {
+      userTrigger?.classList.remove("open");
+    });
   })();
 </script>

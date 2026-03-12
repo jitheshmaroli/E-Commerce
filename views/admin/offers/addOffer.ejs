@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add New Offer - Admin</title>
+    <title>Add Offer · ShoeZone Admin</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -12,256 +12,212 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link rel="stylesheet" href="/css/theme.css" />
-    <link rel="stylesheet" href="/css/addProduct.css" />
+    <link rel="stylesheet" href="/css/admin-shared.css" />
   </head>
-  <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/admin">
-          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
-          SportZilon Admin
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+  <body>
+    <!-- ── Top bar ── -->
+    <header class="admin-topbar">
+      <a href="/admin" class="topbar-brand">
+        <div class="topbar-brand-logo"><img src="/test.jpg" alt="Logo" /></div>
+        <span class="topbar-brand-name">ShoeZone <em>Admin</em></span>
+      </a>
+      <div class="topbar-breadcrumb">
+        <a href="/admin/offers" style="color: rgba(255, 255, 255, 0.35); text-decoration: none"
+          >Offers</a
         >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle text-white"
-                href="#"
-                id="adminDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                ADMIN
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
+        <i class="fas fa-chevron-right"></i>
+        <span>Add New Offer</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-admin-pill" id="adminPill">
+          <div class="topbar-admin-avatar">A</div>
+          <span class="topbar-admin-label">Admin</span>
+          <i class="fas fa-chevron-down topbar-admin-chevron"></i>
+          <div class="topbar-admin-dropdown">
+            <a href="/admin/logout" class="topbar-dropdown-item"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <div class="d-flex">
-      <!-- Sidebar -->
-      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
-        <div class="list-group list-group-flush">
-          <a
-            href="/admin"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-home me-2"></i> HOME
-          </a>
-          <a
-            href="/admin/allproducts"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-box me-2"></i> ALL PRODUCTS
-          </a>
-          <a
-            href="/admin/ordersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
-          </a>
-          <a
-            href="/admin/usersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-users me-2"></i> USERS LIST
-          </a>
-          <a
-            href="/admin/categoryList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-tags me-2"></i> CATEGORY LIST
-          </a>
-          <a
-            href="/admin/couponList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-gift me-2"></i> COUPON LIST
-          </a>
-          <a
-            href="/admin/offers"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
-          >
-            <i class="fas fa-percentage me-2"></i> OFFERS
+    <div class="admin-shell">
+      <%- include('../../includes/adminSidebar.ejs', { activePage: 'offers' }) %>
+
+      <main class="admin-main">
+        <div class="admin-page-header">
+          <div class="admin-page-header-left">
+            <div class="admin-page-title">Create New Offer</div>
+            <div class="admin-page-subtitle">
+              Configure discount rules and target products or categories
+            </div>
+          </div>
+          <a href="/admin/offers" class="btn-admin btn-admin-ghost">
+            <i class="fas fa-arrow-left"></i> Back to Offers
           </a>
         </div>
-      </aside>
 
-      <!-- Main Content -->
-      <main class="content flex-grow-1 p-4">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent p-0 mb-4">
-            <li class="breadcrumb-item"><a href="/admin/offers" class="text-dark">Offers</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Add New Offer</li>
-          </ol>
-        </nav>
-
-        <div class="card shadow-lg border-0" style="max-width: 800px; margin: 0 auto">
-          <div class="card-header bg-dark text-white text-center py-3">
-            <h4 class="mb-0">Create New Offer</h4>
-          </div>
-          <div class="card-body p-4">
+        <div class="admin-card" style="max-width: 820px">
+          <div class="admin-card-body">
             <form id="offerForm" method="POST" action="/admin/offers/add-offer">
-              <div id="globalError" class="text-danger mb-3 fw-bold"></div>
+              <div id="globalError" class="admin-error" style="margin-bottom: 0.75rem"></div>
 
               <!-- Offer Name -->
-              <div class="mb-4">
-                <label for="name" class="form-label fw-bold"
-                  >Offer Name <span class="text-danger">*</span></label
-                >
+              <div class="admin-field">
+                <label class="admin-label">Offer Name <span class="req">*</span></label>
                 <input
                   type="text"
-                  class="form-control text-uppercase"
+                  class="admin-input"
                   id="name"
                   name="name"
                   maxlength="50"
                   required
                   style="text-transform: uppercase"
                 />
-                <small id="nameError" class="text-danger"></small>
+                <small id="nameError" class="admin-error"></small>
               </div>
 
               <!-- Discount Type & Value -->
-              <div class="row mb-4">
+              <div class="row g-3 mb-0">
                 <div class="col-md-6">
-                  <label for="discountType" class="form-label fw-bold"
-                    >Discount Type <span class="text-danger">*</span></label
-                  >
-                  <select class="form-control" id="discountType" name="discountType" required>
-                    <option value="">Select Type</option>
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="amount">Fixed Amount (₹)</option>
-                  </select>
-                  <small id="discountTypeError" class="text-danger"></small>
+                  <div class="admin-field">
+                    <label class="admin-label">Discount Type <span class="req">*</span></label>
+                    <select class="admin-select" id="discountType" name="discountType" required>
+                      <option value="">Select Type</option>
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="amount">Fixed Amount (₹)</option>
+                    </select>
+                    <small id="discountTypeError" class="admin-error"></small>
+                  </div>
                 </div>
                 <div class="col-md-6">
-                  <label for="discountValue" class="form-label fw-bold"
-                    >Discount Value <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="discountValue"
-                    name="discountValue"
-                    step="0.01"
-                    min="0.01"
-                    required
-                  />
-                  <small id="discountValueError" class="text-danger"></small>
+                  <div class="admin-field">
+                    <label class="admin-label">Discount Value <span class="req">*</span></label>
+                    <input
+                      type="number"
+                      class="admin-input"
+                      id="discountValue"
+                      name="discountValue"
+                      step="0.01"
+                      min="0.01"
+                      required
+                    />
+                    <small id="discountValueError" class="admin-error"></small>
+                  </div>
                 </div>
               </div>
 
               <!-- Description -->
-              <div class="mb-4">
-                <label for="description" class="form-label fw-bold"
-                  >Description <span class="text-danger">*</span></label
-                >
+              <div class="admin-field">
+                <label class="admin-label">Description <span class="req">*</span></label>
                 <textarea
-                  class="form-control"
+                  class="admin-textarea"
                   id="description"
                   name="description"
                   rows="4"
                   maxlength="200"
                   required
                 ></textarea>
-                <small id="descriptionError" class="text-danger"></small>
+                <small id="descriptionError" class="admin-error"></small>
               </div>
 
               <!-- Dates -->
-              <div class="row mb-4">
+              <div class="row g-3 mb-0">
                 <div class="col-md-6">
-                  <label for="startDate" class="form-label fw-bold"
-                    >Start Date <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="startDate"
-                    name="startDate"
-                    min="<%= new Date().toISOString().split('T')[0] %>"
-                    required
-                  />
-                  <small id="startDateError" class="text-danger"></small>
+                  <div class="admin-field">
+                    <label class="admin-label">Start Date <span class="req">*</span></label>
+                    <input
+                      type="date"
+                      class="admin-input"
+                      id="startDate"
+                      name="startDate"
+                      min="<%= new Date().toISOString().split('T')[0] %>"
+                      required
+                    />
+                    <small id="startDateError" class="admin-error"></small>
+                  </div>
                 </div>
                 <div class="col-md-6">
-                  <label for="endDate" class="form-label fw-bold"
-                    >End Date <span class="text-danger">*</span></label
-                  >
-                  <input type="date" class="form-control" id="endDate" name="endDate" required />
-                  <small id="endDateError" class="text-danger"></small>
+                  <div class="admin-field">
+                    <label class="admin-label">End Date <span class="req">*</span></label>
+                    <input type="date" class="admin-input" id="endDate" name="endDate" required />
+                    <small id="endDateError" class="admin-error"></small>
+                  </div>
                 </div>
               </div>
 
               <!-- Offer Type -->
-              <div class="mb-4">
-                <label for="offerType" class="form-label fw-bold"
-                  >Apply To <span class="text-danger">*</span></label
-                >
-                <select class="form-control" id="offerType" name="offerType" required>
+              <div class="admin-field">
+                <label class="admin-label">Apply To <span class="req">*</span></label>
+                <select class="admin-select" id="offerType" name="offerType" required>
                   <option value="">Select Target</option>
                   <option value="product">Specific Product</option>
                   <option value="category">Specific Category</option>
-                  <option value="all">All Products/Categories</option>
+                  <option value="all-products">All Products</option>
+                  <option value="all-categories">All Categories</option>
                 </select>
-                <small id="offerTypeError" class="text-danger"></small>
+                <small id="offerTypeError" class="admin-error"></small>
               </div>
 
-              <!-- Product / Category Selectors -->
-              <div class="mb-4" id="productGroup" style="display: none">
-                <label for="product" class="form-label fw-bold">Product</label>
-                <select class="form-control" id="product" name="product">
+              <!-- Product selector -->
+              <div class="admin-field" id="productGroup" style="display: none">
+                <label class="admin-label">Product</label>
+                <select class="admin-select" id="product" name="product">
                   <option value="">None</option>
                   <option value="all">All Products</option>
                   <% products.forEach(p => { %>
                   <option value="<%= p._id %>"><%= p.name %></option>
                   <% }) %>
                 </select>
-                <small id="productError" class="text-danger"></small>
+                <small id="productError" class="admin-error"></small>
               </div>
 
-              <div class="mb-4" id="categoryGroup" style="display: none">
-                <label for="category" class="form-label fw-bold">Category</label>
-                <select class="form-control" id="category" name="category">
+              <!-- Category selector -->
+              <div class="admin-field" id="categoryGroup" style="display: none">
+                <label class="admin-label">Category</label>
+                <select class="admin-select" id="category" name="category">
                   <option value="">None</option>
                   <option value="all">All Categories</option>
                   <% categories.forEach(c => { %>
                   <option value="<%= c._id %>"><%= c.categoryName %></option>
                   <% }) %>
                 </select>
-                <small id="categoryError" class="text-danger"></small>
+                <small id="categoryError" class="admin-error"></small>
               </div>
 
               <!-- Buttons -->
-              <div class="d-flex gap-3 mt-4">
-                <button type="submit" class="btn product-btn flex-grow-1 py-2 fw-bold">
-                  Add Offer
+              <div
+                style="
+                  display: flex;
+                  gap: 0.75rem;
+                  margin-top: 2rem;
+                  padding-top: 1.5rem;
+                  border-top: 1px solid var(--grey-100);
+                "
+              >
+                <button
+                  type="submit"
+                  class="btn-admin btn-admin-primary"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
+                >
+                  <i class="fas fa-plus"></i> Add Offer
                 </button>
                 <button
                   type="button"
-                  class="btn btn-outline-dark flex-grow-1 py-2"
+                  class="btn-admin btn-admin-ghost"
                   onclick="clearFields()"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
                 >
-                  Clear
+                  <i class="fas fa-eraser"></i> Clear
                 </button>
                 <a
                   href="/admin/offers"
-                  class="btn btn-outline-secondary flex-grow-1 py-2 text-center"
-                  >Cancel</a
+                  class="btn-admin btn-admin-ghost"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
                 >
+                  <i class="fas fa-times"></i> Cancel
+                </a>
               </div>
             </form>
           </div>
@@ -269,11 +225,19 @@
       </main>
     </div>
 
-    <!-- Scripts -->
+    <footer class="admin-footer">© 2024 ShoeZone Admin Panel. All rights reserved.</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
+      document.getElementById("adminPill")?.addEventListener("click", function (e) {
+        e.stopPropagation();
+        this.classList.toggle("open");
+      });
+      document.addEventListener("click", () =>
+        document.getElementById("adminPill")?.classList.remove("open")
+      );
+
       const inputs = {
         name: document.getElementById("name"),
         discountType: document.getElementById("discountType"),
@@ -429,7 +393,7 @@
           el.value = "";
           el.classList.remove("is-invalid");
         });
-        document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
+        document.querySelectorAll(".admin-error").forEach((el) => (el.textContent = ""));
       }
 
       // Conditional visibility

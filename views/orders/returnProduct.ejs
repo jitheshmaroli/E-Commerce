@@ -1,45 +1,96 @@
 <%- include('../includes/userHead.ejs') %>
-<link rel="stylesheet" href="/css/returnProduct.css" />
-
+<link rel="stylesheet" href="/css/profile-shared.css" />
 <%- include('../includes/userHeader.ejs') %>
 
-<div class="container">
-  <div class="return-container">
-    <h2 class="page-title">Return Product</h2>
-    <div class="return-content">
-      <div class="product-info">
-        <img
-          src="/uploads/<%= item.productId.photos[0].filename %>"
-          alt="<%= item.productId.name %>"
-          class="product-image"
-        />
-        <div class="product-details">
-          <h3 class="product-name"><%= item.productId.name %></h3>
-          <p class="product-quantity">Ordered Quantity: <%= item.quantity %></p>
+<% if (user) { %>
+<div class="account-shell">
+  <%- include('../includes/accountNav.ejs', { activePage: 'orders' }) %>
+
+  <div class="account-content">
+    <div style="max-width: 800px">
+      <!-- Back + title -->
+      <div style="margin-bottom: 1.5rem">
+        <a
+          href="/order-history"
+          class="btn-acc-ghost"
+          style="
+            font-size: 0.74rem;
+            padding: 0.45rem 0.95rem;
+            margin-bottom: 1rem;
+            display: inline-flex;
+          "
+        >
+          <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+        <h2
+          style="
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.03em;
+            color: var(--black);
+            margin: 0;
+          "
+        >
+          Return Product
+        </h2>
+      </div>
+
+      <div class="return-page-grid">
+        <!-- Product info -->
+        <div class="return-product-card">
+          <img
+            src="/uploads/<%= item.productId.photos[0].filename %>"
+            alt="<%= item.productId.name %>"
+            class="return-product-img"
+          />
+          <div class="return-product-meta">
+            <div class="return-product-name"><%= item.productId.name %></div>
+            <div class="return-product-qty">
+              <i class="fas fa-box me-1"></i>Ordered Qty:
+              <%= item.quantity %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Return form -->
+        <div class="account-card return-form-card">
+          <div class="account-card-header">
+            <div class="account-card-icon"><i class="fas fa-undo"></i></div>
+            <h2>Return Request</h2>
+          </div>
+          <div class="account-card-body">
+            <div class="return-note">
+              <i class="fas fa-info-circle"></i>
+              <span
+                >Returns are accepted within 7 days of delivery. Refunds will be credited to your
+                ShoeZone Wallet once the return is approved.</span
+              >
+            </div>
+
+            <form action="/return-product/<%= order._id %>/<%= item.productId._id %>" method="POST">
+              <div class="acc-field">
+                <label for="returnReason">Reason for Return</label>
+                <textarea
+                  id="returnReason"
+                  name="returnReason"
+                  class="return-reason-textarea"
+                  rows="5"
+                  placeholder="Describe why you're returning this product..."
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn-acc-submit">
+                <i class="fas fa-paper-plane"></i> Submit Return Request
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-      <form
-        action="/return-product/<%= order._id %>/<%= item.productId._id %>"
-        method="POST"
-        class="return-form"
-      >
-        <div class="form-group">
-          <label for="returnReason" class="form-label">Return Reason</label>
-          <textarea
-            id="returnReason"
-            name="returnReason"
-            class="form-control"
-            rows="4"
-            required
-            placeholder="Describe the reason for return..."
-          ></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary submit-btn">Submit Return Request</button>
-      </form>
     </div>
   </div>
 </div>
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userScripts.ejs') %>

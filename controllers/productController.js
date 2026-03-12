@@ -272,10 +272,13 @@ const deleteProduct = async (req, res) => {
     const productId = req.params.productId;
     const productData = await Product.findOne({ _id: productId });
     if (productData) {
-      productData.isDeleted = true;
-      await productData.save();
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Product not found" });
     }
-    res.redirect("/admin/allProducts");
+    productData.isDeleted = true;
+    await productData.save();
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error(error);
     res

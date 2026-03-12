@@ -3,152 +3,179 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify OTP - ShoeZone</title>
+    <title>Verify Email – ShoeZone</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
     <link rel="stylesheet" href="/css/auth-shared.css" />
   </head>
   <body>
-    <header class="header">
-      <div class="brand">
-        <a class="navbar-brand nav-link" style="color: aliceblue" href="/">
-          <img src="/test.jpg" alt="Brand Logo" />
-          <span class="brand-name">ShoeZone</span>
-        </a>
-      </div>
-    </header>
-
-    <div class="container d-flex align-items-center justify-content-center min-vh-100">
-      <div class="form-container card shadow">
-        <div class="card-body p-4">
-          <h3 class="text-center mb-4">Verify Your Email</h3>
-
-          <div id="otpInfoAlert" class="alert alert-info text-center mb-4" role="alert">
-            OTP sent to <strong><%= maskedEmail %></strong>
+    <div class="auth-page">
+      <div class="auth-panel-brand">
+        <div class="auth-brand-top">
+          <a href="/" class="auth-logo-wrap">
+            <img src="/test.jpg" alt="ShoeZone" class="auth-logo-img" />
+            <span class="auth-logo-text">Shoe<em>Zone</em></span>
+          </a>
+        </div>
+        <div class="auth-panel-mid">
+          <div class="auth-panel-tagline">Check<br />Your<br /><span>Inbox.</span></div>
+          <p class="auth-panel-sub">
+            We sent a 6-digit code to your email. Enter it to verify your account and start
+            shopping.
+          </p>
+        </div>
+        <div class="auth-panel-bottom">
+          <div class="auth-stat">
+            <div class="auth-stat-num">6</div>
+            <div class="auth-stat-label">Digit Code</div>
           </div>
-
-          <% if (message) { %>
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <%= message %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-          <% } %>
-
-          <form
-            action="/verify-otp"
-            method="POST"
-            id="otpForm"
-            data-remaining-time="<%= remainingTime || 60 %>"
-          >
-            <div class="mb-4 position-relative">
-              <label class="form-label text-center d-block fw-bold mb-3"> Enter 6-digit OTP </label>
-
-              <div class="d-flex justify-content-center gap-3">
-                <input
-                  type="password"
-                  class="otp-box"
-                  maxlength="1"
-                  data-index="0"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  required
-                  autofocus
-                />
-                <input
-                  type="password"
-                  class="otp-box"
-                  maxlength="1"
-                  data-index="1"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  required
-                />
-                <input
-                  type="password"
-                  class="otp-box"
-                  maxlength="1"
-                  data-index="2"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  required
-                />
-                <input
-                  type="password"
-                  class="otp-box"
-                  maxlength="1"
-                  data-index="3"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  required
-                />
-                <input
-                  type="password"
-                  class="otp-box"
-                  maxlength="1"
-                  data-index="4"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  required
-                />
-                <input
-                  type="password"
-                  class="otp-box"
-                  maxlength="1"
-                  data-index="5"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  required
-                />
-              </div>
-
-              <input type="hidden" name="otp" id="hiddenOtp" required />
-              <div id="otpError" class="text-danger text-center mt-2 small"></div>
-            </div>
-
-            <button type="submit" id="submitBtn" class="btn btn-dark w-100 py-2" disabled>
-              Verify OTP
-            </button>
-          </form>
-
-          <div class="d-flex justify-content-between align-items-center mt-4">
-            <p id="timer" class="text-muted mb-0"></p>
-            <button type="button" id="resendBtn" class="btn btn-outline-dark btn-sm" disabled>
-              Resend OTP
-            </button>
+          <div class="auth-stat">
+            <div class="auth-stat-num">60s</div>
+            <div class="auth-stat-label">Expiry</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <footer class="footer">
-      <p class="copyright">© 2026 ShoeZone</p>
-    </footer>
+      <div class="auth-panel-form">
+        <div class="auth-form-scroll">
+          <div class="auth-form-inner">
+            <div class="auth-form-title">Verify Email</div>
+            <div class="auth-form-sub">Enter the 6-digit OTP sent to</div>
+
+            <div class="auth-alert auth-alert-info" id="otpInfoAlert" style="margin-bottom: 1.5rem">
+              <i class="fas fa-envelope"></i>
+              <span
+                >OTP sent to <strong><%= maskedEmail %></strong></span
+              >
+            </div>
+
+            <% if (message) { %>
+            <div class="auth-alert auth-alert-error">
+              <i class="fas fa-circle-exclamation"></i>
+              <span><%= message %></span>
+              <button class="auth-alert-close" onclick="this.closest('.auth-alert').remove()">
+                &times;
+              </button>
+            </div>
+            <% } %>
+
+            <form
+              action="/verify-otp"
+              method="POST"
+              id="otpForm"
+              data-remaining-time="<%= remainingTime || 60 %>"
+              novalidate
+            >
+              <div class="auth-field" style="margin-bottom: 1rem">
+                <label style="text-align: center; display: block">Enter OTP</label>
+                <div class="otp-row">
+                  <input
+                    type="password"
+                    class="otp-box"
+                    maxlength="1"
+                    data-index="0"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    required
+                    autofocus
+                  />
+                  <input
+                    type="password"
+                    class="otp-box"
+                    maxlength="1"
+                    data-index="1"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    required
+                  />
+                  <input
+                    type="password"
+                    class="otp-box"
+                    maxlength="1"
+                    data-index="2"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    required
+                  />
+                  <input
+                    type="password"
+                    class="otp-box"
+                    maxlength="1"
+                    data-index="3"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    required
+                  />
+                  <input
+                    type="password"
+                    class="otp-box"
+                    maxlength="1"
+                    data-index="4"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    required
+                  />
+                  <input
+                    type="password"
+                    class="otp-box"
+                    maxlength="1"
+                    data-index="5"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    required
+                  />
+                </div>
+                <input type="hidden" name="otp" id="hiddenOtp" required />
+                <div
+                  id="otpError"
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--red-err);
+                    text-align: center;
+                    margin-top: 0.5rem;
+                    min-height: 1.2rem;
+                  "
+                ></div>
+              </div>
+
+              <button type="submit" id="submitBtn" class="btn-auth-submit" disabled>
+                <i class="fas fa-check" style="margin-right: 0.5rem"></i>Verify OTP
+              </button>
+
+              <div class="otp-timer-row">
+                <span class="otp-timer-text" id="timer"></span>
+                <button type="button" id="resendBtn" class="btn-resend" disabled>Resend OTP</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="auth-form-footer">© 2026 ShoeZone. All rights reserved.</div>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       const form = document.getElementById("otpForm");
-      const timeLeftInitial = parseInt(form.dataset.remainingTime) || 60;
-
       const otpBoxes = document.querySelectorAll(".otp-box");
       const hiddenOtp = document.getElementById("hiddenOtp");
       const submitBtn = document.getElementById("submitBtn");
       const otpError = document.getElementById("otpError");
       const resendBtn = document.getElementById("resendBtn");
       const timerEl = document.getElementById("timer");
-      const otpInfoAlert = document.getElementById("otpInfoAlert");
+      const infoAlert = document.getElementById("otpInfoAlert");
 
-      let timeLeft = timeLeftInitial;
+      let timeLeft = parseInt(form.dataset.remainingTime) || 60;
       let timerId = null;
 
       function updateHidden() {
         hiddenOtp.value = Array.from(otpBoxes)
-          .map((box) => box.value)
+          .map((b) => b.value)
           .join("");
       }
 
@@ -156,17 +183,17 @@
         box.addEventListener("input", (e) => {
           const val = e.target.value.replace(/\D/, "");
           box.value = val;
+          box.classList.toggle("filled", !!val);
           if (val && i < 5) otpBoxes[i + 1].focus();
           updateHidden();
           validate();
         });
-
         box.addEventListener("keydown", (e) => {
           if (e.key === "Backspace" && !box.value && i > 0) {
             otpBoxes[i - 1].focus();
+            otpBoxes[i - 1].classList.remove("filled");
           }
         });
-
         box.addEventListener("paste", (e) => {
           e.preventDefault();
           const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "");
@@ -175,10 +202,12 @@
               .split("")
               .slice(0, 6 - i)
               .forEach((d, idx) => {
-                if (otpBoxes[i + idx]) otpBoxes[i + idx].value = d;
+                if (otpBoxes[i + idx]) {
+                  otpBoxes[i + idx].value = d;
+                  otpBoxes[i + idx].classList.add("filled");
+                }
               });
-            const next = Math.min(i + text.length, 5);
-            otpBoxes[next]?.focus();
+            otpBoxes[Math.min(i + text.length, 5)]?.focus();
             updateHidden();
             validate();
           }
@@ -186,13 +215,9 @@
       });
 
       function validate() {
-        const isComplete = hiddenOtp.value.length === 6;
-        otpError.textContent = isComplete
-          ? ""
-          : hiddenOtp.value.length > 0
-          ? "Enter complete 6-digit OTP"
-          : "";
-        submitBtn.disabled = !isComplete;
+        const ok = hiddenOtp.value.length === 6;
+        otpError.textContent = !ok && hiddenOtp.value.length > 0 ? "Enter all 6 digits." : "";
+        submitBtn.disabled = !ok;
       }
 
       function startTimer() {
@@ -201,13 +226,11 @@
           timerEl.textContent = "";
           return;
         }
-
         resendBtn.disabled = true;
-        timerEl.textContent = `Resend available in ${timeLeft}s`;
-
+        timerEl.textContent = `Resend in ${timeLeft}s`;
         timerId = setInterval(() => {
           timeLeft--;
-          timerEl.textContent = `Resend available in ${timeLeft}s`;
+          timerEl.textContent = `Resend in ${timeLeft}s`;
           if (timeLeft <= 0) {
             clearInterval(timerId);
             timerEl.textContent = "";
@@ -220,44 +243,36 @@
         resendBtn.disabled = true;
         timeLeft = 60;
         startTimer();
-
         try {
-          const email = "<%= userData.email %>";
           const res = await fetch("/resend-otp", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ email: "<%= userData.email %>" }),
           });
-
           const data = await res.json();
-
           if (data.success) {
-            const maskedEmail = "<%= maskedEmail %>";
-            otpInfoAlert.textContent = `New OTP has been sent to ${maskedEmail}`;
-            otpInfoAlert.classList.remove("alert-danger");
-            otpInfoAlert.classList.add("alert-success");
+            infoAlert.innerHTML = `<i class="fas fa-envelope"></i><span>New OTP sent to <strong><%= maskedEmail %></strong></span>`;
+            infoAlert.className = "auth-alert auth-alert-info";
           } else {
-            otpInfoAlert.textContent = data.message || "Failed to resend OTP";
-            otpInfoAlert.classList.remove("alert-success");
-            otpInfoAlert.classList.add("alert-danger");
-            timeLeft = 0; // stop timer
+            infoAlert.innerHTML = `<i class="fas fa-circle-exclamation"></i><span>${
+              data.message || "Failed to resend OTP"
+            }</span>`;
+            infoAlert.className = "auth-alert auth-alert-error";
+            timeLeft = 0;
             clearInterval(timerId);
             startTimer();
           }
-        } catch (err) {
-          otpInfoAlert.textContent = "Network error. Please try again.";
-          otpInfoAlert.classList.add("alert-danger");
+        } catch {
+          infoAlert.innerHTML = `<i class="fas fa-circle-exclamation"></i><span>Network error. Please try again.</span>`;
+          infoAlert.className = "auth-alert auth-alert-error";
           timeLeft = 0;
           clearInterval(timerId);
           startTimer();
         }
       });
 
-      // Start on load
       startTimer();
       validate();
-
-      // Optional: focus first box
       otpBoxes[0]?.focus();
     </script>
   </body>
