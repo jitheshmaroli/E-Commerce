@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Category - Admin</title>
+    <title>Edit Category · ShoeZone Admin</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -12,169 +12,127 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link rel="stylesheet" href="/css/theme.css" />
-    <link rel="stylesheet" href="/css/addCategory.css" />
+    <link rel="stylesheet" href="/css/admin-shared.css" />
   </head>
-  <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/admin">
-          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
-          SportZilon Admin
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+  <body>
+    <!-- ── Top bar ── -->
+    <header class="admin-topbar">
+      <a href="/admin" class="topbar-brand">
+        <div class="topbar-brand-logo"><img src="/test.jpg" alt="Logo" /></div>
+        <span class="topbar-brand-name">ShoeZone <em>Admin</em></span>
+      </a>
+      <div class="topbar-breadcrumb">
+        <a
+          href="/admin/categoryList"
+          style="color: rgba(255, 255, 255, 0.35); text-decoration: none"
+          >Category List</a
         >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle text-white"
-                href="#"
-                id="adminDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                ADMIN
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
+        <i class="fas fa-chevron-right"></i>
+        <span>Edit Category</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-admin-pill" id="adminPill">
+          <div class="topbar-admin-avatar">A</div>
+          <span class="topbar-admin-label">Admin</span>
+          <i class="fas fa-chevron-down topbar-admin-chevron"></i>
+          <div class="topbar-admin-dropdown">
+            <a href="/admin/logout" class="topbar-dropdown-item"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <div class="d-flex">
-      <!-- Sidebar -->
-      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
-        <div class="list-group list-group-flush">
-          <a
-            href="/admin"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-home me-2"></i> HOME
-          </a>
-          <a
-            href="/admin/allproducts"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-box me-2"></i> ALL PRODUCTS
-          </a>
-          <a
-            href="/admin/ordersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
-          </a>
-          <a
-            href="/admin/usersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-users me-2"></i> USERS LIST
-          </a>
-          <a
-            href="/admin/categoryList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
-          >
-            <i class="fas fa-tags me-2"></i> CATEGORY LIST
-          </a>
-          <a
-            href="/admin/couponList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-gift me-2"></i> COUPON LIST
-          </a>
-          <a
-            href="/admin/offers"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-percentage me-2"></i> OFFERS
+    <div class="admin-shell">
+      <%- include('../includes/adminSidebar.ejs', { activePage: 'categories' }) %>
+
+      <main class="admin-main">
+        <div class="admin-page-header">
+          <div class="admin-page-header-left">
+            <div class="admin-page-title">Edit Category</div>
+            <div class="admin-page-subtitle"><%= categoryList.categoryName %></div>
+          </div>
+          <a href="/admin/categoryList" class="btn-admin btn-admin-ghost">
+            <i class="fas fa-arrow-left"></i> Back to Categories
           </a>
         </div>
-      </aside>
 
-      <!-- Main Content -->
-      <main class="content flex-grow-1 p-4">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent p-0 mb-4">
-            <li class="breadcrumb-item">
-              <a href="/admin/categoryList" class="text-dark">Category List</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
-          </ol>
-        </nav>
-
-        <div class="card shadow-lg border-0" style="max-width: 550px; margin: 0 auto">
-          <div class="card-header bg-dark text-white text-center py-3">
-            <h4 class="mb-0">Edit Category</h4>
-          </div>
-          <div class="card-body p-4">
+        <div class="admin-card" style="max-width: 560px">
+          <div class="admin-card-body">
             <form
               id="categoryForm"
               method="POST"
               action="/admin/categoryList/edit/<%= categoryList._id %>"
             >
-              <div id="globalError" class="text-danger mb-3 fw-bold"></div>
+              <div
+                id="globalError"
+                class="admin-error"
+                style="font-weight: 700; margin-bottom: 0.75rem"
+              ></div>
 
               <!-- Category Name -->
-              <div class="mb-4">
-                <label for="categoryName" class="form-label fw-bold"
-                  >Category Name <span class="text-danger">*</span></label
-                >
+              <div class="admin-field">
+                <label class="admin-label">Category Name <span class="req">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="admin-input"
                   id="categoryName"
                   name="categoryName"
                   value="<%= categoryList.categoryName %>"
                   maxlength="20"
                   required
                 />
-                <small id="categoryNameError" class="text-danger"></small>
+                <small id="categoryNameError" class="admin-error"></small>
               </div>
 
               <!-- Description -->
-              <div class="mb-4">
-                <label for="description" class="form-label fw-bold"
-                  >Description <span class="text-danger">*</span></label
-                >
+              <div class="admin-field">
+                <label class="admin-label">Description <span class="req">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="admin-input"
                   id="description"
                   name="description"
                   value="<%= categoryList.description %>"
                   maxlength="100"
                   required
                 />
-                <small id="descriptionError" class="text-danger"></small>
+                <small id="descriptionError" class="admin-error"></small>
               </div>
 
               <!-- Buttons -->
-              <div class="d-flex gap-3">
-                <button type="submit" class="btn btn-dark flex-grow-1 py-2 fw-bold">
+              <div
+                style="
+                  display: flex;
+                  gap: 0.75rem;
+                  margin-top: 2rem;
+                  padding-top: 1.5rem;
+                  border-top: 1px solid var(--grey-100);
+                "
+              >
+                <button
+                  type="submit"
+                  class="btn-admin btn-admin-primary"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
+                >
                   UPDATE CATEGORY
                 </button>
                 <button
                   type="button"
-                  class="btn btn-outline-dark flex-grow-1 py-2"
+                  class="btn-admin btn-admin-ghost"
                   onclick="clearFields()"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
                 >
                   CLEAR
                 </button>
                 <a
                   href="/admin/categoryList"
-                  class="btn btn-outline-secondary flex-grow-1 py-2 text-center"
-                  >BACK</a
+                  class="btn-admin btn-admin-ghost"
+                  style="flex: 1; justify-content: center; padding: 0.85rem"
                 >
+                  BACK
+                </a>
               </div>
             </form>
           </div>
@@ -182,11 +140,19 @@
       </main>
     </div>
 
-    <!-- Scripts -->
+    <footer class="admin-footer">© 2024 ShoeZone Admin Panel. All rights reserved.</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
+      document.getElementById("adminPill")?.addEventListener("click", function (e) {
+        e.stopPropagation();
+        this.classList.toggle("open");
+      });
+      document.addEventListener("click", () =>
+        document.getElementById("adminPill")?.classList.remove("open")
+      );
+
       const inputs = {
         categoryName: document.getElementById("categoryName"),
         description: document.getElementById("description"),
@@ -199,7 +165,6 @@
 
       inputs.categoryName.addEventListener("input", function () {
         this.value = this.value.toUpperCase();
-
         validateField(this);
       });
 
@@ -214,6 +179,18 @@
           input.addEventListener("blur", () => validateField(input));
         }
       });
+
+      const initialFormState = {
+        categoryName: inputs.categoryName.value.trim(),
+        description: inputs.description.value.trim(),
+      };
+
+      function hasFormChanged() {
+        return (
+          inputs.categoryName.value.trim() !== initialFormState.categoryName ||
+          inputs.description.value.trim() !== initialFormState.description
+        );
+      }
 
       function validateField(input) {
         const value = input.value.trim();
@@ -249,6 +226,17 @@
       // Submit with SweetAlert
       document.getElementById("categoryForm").addEventListener("submit", async function (e) {
         e.preventDefault();
+
+        if (!hasFormChanged()) {
+          Swal.fire({
+            icon: "info",
+            title: "No Changes",
+            text: "No changes were made to update.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          return;
+        }
 
         if (!isFormValid()) {
           Swal.fire({
@@ -301,9 +289,9 @@
       function clearFields() {
         document.getElementById("categoryName").value = "";
         document.getElementById("description").value = "";
-        document.querySelectorAll(".text-danger").forEach((el) => (el.textContent = ""));
+        document.querySelectorAll(".admin-error").forEach((el) => (el.textContent = ""));
         document
-          .querySelectorAll(".form-control")
+          .querySelectorAll(".admin-input")
           .forEach((el) => el.classList.remove("is-invalid"));
       }
     </script>

@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const Category = require("../models/category");
 const Addresses = require("../models/address");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const addressesView = async (req, res) => {
   try {
@@ -24,7 +25,7 @@ const addressesView = async (req, res) => {
     });
   } catch (error) {
     console.error("Addresses view error:", error);
-    res.status(500).send("Internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -37,7 +38,7 @@ const addAddressView = async (req, res) => {
     res.render("users/addAddress", { user, message: "", categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal error");
   }
 };
 
@@ -73,7 +74,9 @@ const addAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding address:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -108,16 +111,22 @@ const addNewAddress = async (req, res) => {
     await addressDoc.save();
 
     if (req.headers["content-type"] === "application/json") {
-      return res.json({ success: true, message: "Address added successfully" });
+      return res
+        .status(HTTP_STATUS.CREATED)
+        .json({ success: true, message: "Address added successfully" });
     }
 
     res.redirect("/address");
   } catch (error) {
     console.error("Add address error:", error);
     if (req.headers["content-type"] === "application/json") {
-      return res.status(500).json({ success: false, message: "Failed to add address" });
+      return res
+        .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: "Failed to add address" });
     }
-    res.status(500).send("Internal server error");
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -137,10 +146,12 @@ const setDefault = async (req, res) => {
       { $set: { "address.$.isDefault": true } }
     );
 
-    res.json({ success: true, message: "Default address updated" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Default address updated" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -155,13 +166,13 @@ const editAddressView = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!addressDoc) {
-      return res.status(404).json({ error: "No addresses found for this user" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "No addresses found for this user" });
     }
 
     const address = addressDoc.address.find((addr) => addr._id.toString() === addressId);
 
     if (!address) {
-      return res.status(404).json({ error: "Address not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Address not found" });
     }
 
     res.render("users/editAddress", {
@@ -172,7 +183,7 @@ const editAddressView = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 
@@ -185,12 +196,16 @@ const updateAddress = async (req, res) => {
     const addressDoc = await Addresses.findOne({ userId: user._id });
 
     if (!addressDoc) {
-      return res.status(404).json({ success: false, message: "Address document not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Address document not found" });
     }
 
     const addressIndex = addressDoc.address.findIndex((addr) => addr._id.toString() === addressId);
     if (addressIndex === -1) {
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Address not found" });
     }
 
     addressDoc.address[addressIndex].name = req.body.name;
@@ -212,14 +227,18 @@ const updateAddress = async (req, res) => {
     }
     await addressDoc.save();
     if (req.headers["content-type"] === "application/json") {
-      return res.json({ success: true, message: "Address updated successfully" });
+      return res
+        .status(HTTP_STATUS.CREATED)
+        .json({ success: true, message: "Address updated successfully" });
     }
 
     res.redirect("/address");
   } catch (error) {
     console.error("Update address error:", error);
     if (req.headers["content-type"] === "application/json") {
-      return res.status(500).json({ success: false, message: "Failed to update address" });
+      return res
+        .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: "Failed to update address" });
     }
     res.status(500).send("Internal server error");
   }
@@ -233,30 +252,38 @@ const deleteAddress = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, message: "Unauthorized" });
     }
 
     const addressDoc = await Addresses.findOne({ userId: user._id });
     if (!addressDoc) {
-      return res.status(404).json({ success: false, message: "No addresses found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "No addresses found" });
     }
 
     const addr = addressDoc.address.id(addressId);
     if (!addr) {
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Address not found" });
     }
 
     if (addr.isDefault) {
-      return res.status(403).json({ success: false, message: "Cannot delete default address" });
+      return res
+        .status(HTTP_STATUS.FORBIDDEN)
+        .json({ success: false, message: "Cannot delete default address" });
     }
 
     addressDoc.address.pull(addressId);
     await addressDoc.save();
 
-    res.json({ success: true, message: "Address deleted successfully" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Address deleted successfully" });
   } catch (error) {
     console.error("Delete address error:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -268,10 +295,10 @@ const getAddress = async (req, res) => {
     });
     const addressDoc = await Addresses.findOne({ userId: user._id });
     const address = addressDoc.address.id(addressId);
-    res.json({ address });
+    res.status(HTTP_STATUS.OK).json({ address });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }
 };
 

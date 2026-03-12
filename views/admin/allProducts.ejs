@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>All Products - Admin</title>
+    <title>All Products · ShoeZone Admin</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -17,116 +17,63 @@
       href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css"
     />
     <link rel="stylesheet" href="/css/theme.css" />
-    <link rel="stylesheet" href="/css/adminAllProducts.css" />
+    <link rel="stylesheet" href="/css/admin-shared.css" />
   </head>
-  <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/admin">
-          <img src="/test.jpg" alt="Logo" width="35" class="d-inline-block align-text-top me-2" />
-          SportZilon Admin
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle text-white"
-                href="#"
-                id="adminDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                ADMIN
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
+  <body>
+    <!-- ── Top bar ── -->
+    <header class="admin-topbar">
+      <a href="/admin" class="topbar-brand">
+        <div class="topbar-brand-logo"><img src="/test.jpg" alt="Logo" /></div>
+        <span class="topbar-brand-name">ShoeZone <em>Admin</em></span>
+      </a>
+      <div class="topbar-breadcrumb">
+        <i class="fas fa-home"></i>
+        <i class="fas fa-chevron-right"></i>
+        <span>All Products</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-admin-pill" id="adminPill">
+          <div class="topbar-admin-avatar">A</div>
+          <span class="topbar-admin-label">Admin</span>
+          <i class="fas fa-chevron-down topbar-admin-chevron"></i>
+          <div class="topbar-admin-dropdown">
+            <a href="/admin/logout" class="topbar-dropdown-item"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <div class="d-flex">
-      <!-- Sidebar -->
-      <aside class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh">
-        <div class="list-group list-group-flush">
-          <a
-            href="/admin"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-home me-2"></i> HOME
-          </a>
-          <a
-            href="/admin/allproducts"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 active"
-          >
-            <i class="fas fa-box me-2"></i> ALL PRODUCTS
-          </a>
-          <a
-            href="/admin/ordersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-shopping-cart me-2"></i> ORDERS LIST
-          </a>
-          <a
-            href="/admin/usersList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-users me-2"></i> USERS LIST
-          </a>
-          <a
-            href="/admin/categoryList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-tags me-2"></i> CATEGORY LIST
-          </a>
-          <a
-            href="/admin/couponList"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-gift me-2"></i> COUPON LIST
-          </a>
-          <a
-            href="/admin/offers"
-            class="list-group-item list-group-item-action bg-dark text-white border-0 py-3"
-          >
-            <i class="fas fa-percentage me-2"></i> OFFERS
-          </a>
-        </div>
-      </aside>
+    <div class="admin-shell">
+      <%- include('../includes/adminSidebar.ejs', { activePage: 'products' }) %>
 
-      <!-- Main Content -->
-      <main class="content flex-grow-1 p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="mb-0">All Products</h2>
-          <a href="/admin/addproduct" class="btn btn-dark px-4 py-2">
-            <i class="fas fa-plus me-2"></i> Add New Product
+      <main class="admin-main">
+        <div class="admin-page-header">
+          <div class="admin-page-header-left">
+            <div class="admin-page-title">All Products</div>
+            <div class="admin-page-subtitle">
+              <%= products ? products.length : 0 %> products in catalog
+            </div>
+          </div>
+          <a href="/admin/addproduct" class="btn-admin btn-admin-primary">
+            <i class="fas fa-plus"></i> Add Product
           </a>
         </div>
 
         <% if (products && products.length > 0) { %>
-        <div class="card shadow-lg border-0">
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table id="productsTable" class="table table-hover table-striped align-middle">
-                <thead class="table-dark">
+        <div class="admin-card">
+          <div class="admin-card-body p-0">
+            <div class="admin-table-wrap">
+              <table id="productsTable" class="admin-table">
+                <thead>
                   <tr>
                     <th>Image</th>
                     <th>Name</th>
                     <th>Category</th>
-                    <th>Stock</th>
+                    <th class="text-center">Stock</th>
                     <th>Price</th>
-                    <th>Actions</th>
+                    <th class="text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,44 +84,59 @@
                       <img
                         src="/uploads/<%= product.photos[0].filename %>"
                         alt="<%= product.name %>"
-                        class="rounded"
-                        width="60"
-                        height="60"
-                        style="object-fit: cover"
+                        class="table-thumb"
                       />
                       <% } else { %>
-                      <img
-                        src="/images/no-image-available.png"
-                        alt="No image"
-                        width="60"
-                        height="60"
-                      />
+                      <div
+                        style="
+                          width: 46px;
+                          height: 46px;
+                          background: var(--grey-100);
+                          border-radius: var(--radius-sm);
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
+                      >
+                        <i
+                          class="fas fa-image"
+                          style="color: var(--grey-400); font-size: 0.85rem"
+                        ></i>
+                      </div>
                       <% } %>
                     </td>
-                    <td class="fw-bold"><%= product.name %></td>
-                    <td><%= product.category?.categoryName || 'Uncategorized' %></td>
-                    <td>
-                      <span class="badge <%= product.stock <= 10 ? 'bg-warning' : 'bg-success' %>">
+                    <td style="font-weight: 700"><%= product.name %></td>
+                    <td style="color: var(--grey-600)">
+                      <%= product.category?.categoryName || 'Uncategorized' %>
+                    </td>
+                    <td class="text-center">
+                      <span
+                        class="admin-badge <%= product.stock <= 10 ? 'badge-yellow' : 'badge-green' %>"
+                      >
                         <%= product.stock %>
                       </span>
                     </td>
-                    <td>₹<%= Number(product.price).toLocaleString('en-IN') %></td>
-                    <td>
-                      <a
-                        href="/admin/allProducts/edit/<%= product._id %>"
-                        class="btn btn-warning btn-sm me-2"
-                        title="Edit"
-                      >
-                        <i class="fas fa-edit"></i>
-                      </a>
-                      <button
-                        class="btn btn-danger btn-sm delete-btn"
-                        data-id="<%= product._id %>"
-                        data-name="<%= product.name %>"
-                        title="Delete"
-                      >
-                        <i class="fas fa-trash"></i>
-                      </button>
+                    <td style="font-weight: 700">
+                      ₹<%= Number(product.price).toLocaleString('en-IN') %>
+                    </td>
+                    <td class="text-center">
+                      <div style="display: flex; gap: 0.4rem; justify-content: center">
+                        <a
+                          href="/admin/allProducts/edit/<%= product._id %>"
+                          class="btn-admin btn-admin-warning btn-admin-sm"
+                          title="Edit"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <button
+                          class="btn-admin btn-admin-danger btn-admin-sm delete-btn"
+                          data-id="<%= product._id %>"
+                          data-name="<%= product.name %>"
+                          title="Delete"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   <% }) %>
@@ -183,67 +145,94 @@
             </div>
           </div>
         </div>
+
         <% } else { %>
-        <div class="alert alert-info text-center py-5">
-          <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
-          <h4>No products found</h4>
-          <p class="text-muted">Add your first product using the button above.</p>
+
+        <div class="admin-card" style="text-align: center; padding: 4rem 2rem">
+          <i
+            class="fas fa-box-open"
+            style="font-size: 3rem; color: var(--grey-200); margin-bottom: 1rem; display: block"
+          ></i>
+          <div
+            style="
+              font-family: 'Bebas Neue', sans-serif;
+              font-size: 1.5rem;
+              letter-spacing: 0.04em;
+              margin-bottom: 0.5rem;
+            "
+          >
+            No Products Yet
+          </div>
+          <p style="color: var(--grey-400); font-size: 0.88rem; margin-bottom: 1.5rem">
+            Add your first product using the button above.
+          </p>
+          <a href="/admin/addproduct" class="btn-admin btn-admin-primary">
+            <i class="fas fa-plus"></i> Add First Product
+          </a>
         </div>
+
         <% } %>
       </main>
     </div>
 
-    <!-- Scripts -->
+    <footer class="admin-footer">© 2024 ShoeZone Admin Panel. All rights reserved.</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
+      document.getElementById("adminPill")?.addEventListener("click", function (e) {
+        e.stopPropagation();
+        this.classList.toggle("open");
+      });
+      document.addEventListener("click", () =>
+        document.getElementById("adminPill")?.classList.remove("open")
+      );
+
       $(document).ready(function () {
         $("#productsTable").DataTable({
           responsive: true,
           pageLength: 10,
           lengthMenu: [5, 10, 25, 50],
           order: [[1, "asc"]],
-          language: {
-            search: "Search products:",
-            emptyTable: "No products found",
-          },
+          language: { search: "Search products:", emptyTable: "No products found" },
         });
       });
 
-      // Delete confirmation with SweetAlert
       document.querySelectorAll(".delete-btn").forEach((btn) => {
         btn.addEventListener("click", async function () {
           const productId = this.dataset.id;
           const productName = this.dataset.name;
-
           const result = await Swal.fire({
-            title: "Are you sure?",
-            text: `Delete "${productName}"? This action cannot be undone.`,
+            title: "Delete Product?",
+            text: `"${productName}" will be permanently removed.`,
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#6c757d",
-            confirmButtonText: "Yes, Delete!",
+            confirmButtonColor: "#dc2626",
+            cancelButtonColor: "#9a9a96",
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel",
+            customClass: { popup: "rounded-4" },
           });
-
           if (result.isConfirmed) {
             try {
-              const res = await fetch(`/admin/allProducts/delete/${productId}`, {
-                method: "POST",
-              });
-
+              const res = await fetch(`/admin/allProducts/delete/${productId}`, { method: "POST" });
               if (res.ok) {
-                Swal.fire("Deleted!", "Product has been deleted.", "success");
-                setTimeout(() => location.reload(), 1200);
+                await Swal.fire({
+                  icon: "success",
+                  title: "Deleted",
+                  text: "Product removed.",
+                  timer: 1200,
+                  showConfirmButton: false,
+                });
+                location.reload();
               } else {
-                Swal.fire("Error!", "Failed to delete product.", "error");
+                Swal.fire("Error", "Failed to delete product.", "error");
               }
-            } catch (err) {
-              Swal.fire("Error!", "Network error occurred.", "error");
+            } catch {
+              Swal.fire("Error", "Network error.", "error");
             }
           }
         });

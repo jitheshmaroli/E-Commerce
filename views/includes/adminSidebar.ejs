@@ -1,0 +1,33 @@
+<%
+  const _active = typeof activePage !== 'undefined' ? activePage : '';
+%>
+<aside class="admin-sidebar">
+  <span class="sidebar-section-label">Main</span>
+  <a href="/admin" class="sidebar-item <%= _active === 'dashboard' ? 'active' : '' %>">
+    <i class="fas fa-home"></i> Dashboard
+  </a>
+
+  <span class="sidebar-section-label">Catalog</span>
+  <a href="/admin/allproducts" class="sidebar-item <%= _active === 'products' ? 'active' : '' %>">
+    <i class="fas fa-box"></i> All Products
+  </a>
+  <a href="/admin/categoryList" class="sidebar-item <%= _active === 'categories' ? 'active' : '' %>">
+    <i class="fas fa-tags"></i> Categories
+  </a>
+  <a href="/admin/offers" class="sidebar-item <%= _active === 'offers' ? 'active' : '' %>">
+    <i class="fas fa-percentage"></i> Offers
+  </a>
+
+  <span class="sidebar-section-label">Commerce</span>
+  <a href="/admin/ordersList" class="sidebar-item <%= _active === 'orders' ? 'active' : '' %>">
+    <i class="fas fa-shopping-bag"></i> Orders
+  </a>
+  <a href="/admin/couponList" class="sidebar-item <%= _active === 'coupons' ? 'active' : '' %>">
+    <i class="fas fa-ticket-alt"></i> Coupons
+  </a>
+
+  <span class="sidebar-section-label">People</span>
+  <a href="/admin/usersList" class="sidebar-item <%= _active === 'users' ? 'active' : '' %>">
+    <i class="fas fa-users"></i> Users
+  </a>
+</aside>

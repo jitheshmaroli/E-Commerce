@@ -1,3 +1,4 @@
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 const Coupon = require("../models/coupon");
 
 const couponListView = async (req, res) => {
@@ -6,7 +7,7 @@ const couponListView = async (req, res) => {
     res.render("admin/couponList", { coupons });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal server error");
   }
 };
 
@@ -16,7 +17,7 @@ const addCouponView = async (req, res) => {
     res.render("admin/addCoupon", { coupons, message: "" });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Internal Server Error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -25,14 +26,18 @@ const addCoupon = async (req, res) => {
     const { code, discount, startDate, expiryDate } = req.body;
 
     if (!code || code.trim().length < 3 || !/[a-zA-Z]/.test(code)) {
-      return res.status(400).json({ success: false, message: "Invalid coupon code" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid coupon code" });
     }
     if (!discount || isNaN(discount) || discount < 1 || discount > 100) {
-      return res.status(400).json({ success: false, message: "Invalid discount" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid discount" });
     }
     if (!startDate || !expiryDate) {
       return res
-        .status(400)
+        .status(HTTP_STATUS.BAD_REQUEST)
         .json({ success: false, message: "Both start and expiry dates are required" });
     }
 
@@ -40,20 +45,26 @@ const addCoupon = async (req, res) => {
     const expiry = new Date(expiryDate);
 
     if (isNaN(start) || isNaN(expiry)) {
-      return res.status(400).json({ success: false, message: "Invalid date format" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid date format" });
     }
     if (start >= expiry) {
       return res
-        .status(400)
+        .status(HTTP_STATUS.BAD_REQUEST)
         .json({ success: false, message: "Start date must be before expiry date" });
     }
     if (expiry <= new Date()) {
-      return res.status(400).json({ success: false, message: "Expiry date must be in the future" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Expiry date must be in the future" });
     }
 
     const existCoupon = await Coupon.findOne({ code: code.toUpperCase() });
     if (existCoupon) {
-      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Coupon code already exists" });
     }
 
     const expiryDateMidnight = new Date(expiry);
@@ -66,10 +77,12 @@ const addCoupon = async (req, res) => {
       expiryDate: expiryDateMidnight,
     });
 
-    res.status(201).json({ success: true, message: "Coupon added successfully" });
+    res.status(HTTP_STATUS.CREATED).json({ success: true, message: "Coupon added successfully" });
   } catch (error) {
     console.error("Add coupon error:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 const deleteCoupon = async (req, res) => {
@@ -79,13 +92,17 @@ const deleteCoupon = async (req, res) => {
     const deleted = await Coupon.findByIdAndDelete(couponId);
 
     if (!deleted) {
-      return res.status(404).json({ success: false, message: "Coupon not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Coupon not found" });
     }
 
-    res.json({ success: true, message: "Coupon deleted successfully" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Coupon deleted successfully" });
   } catch (error) {
     console.error("Delete coupon error:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -96,86 +113,152 @@ const couponDiscount = async (req, res) => {
     const coupon = await Coupon.findOne({ code: couponCode });
 
     if (!coupon) {
-      return res.status(404).json({ error: "Coupon not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Coupon not found" });
     }
 
     const currentDate = new Date();
     if (currentDate > coupon.expiryDate) {
-      return res.status(400).json({ error: "Coupon expired" });
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Coupon expired" });
     }
 
-    res.json({ success: true, discount: coupon.discount });
+    res.status(HTTP_STATUS.OK).json({ success: true, discount: coupon.discount });
   } catch (err) {
     console.error("Error checking coupon:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 
+// Helper: strip time component for a date-only comparison
+const toDateOnly = (d) => {
+  const copy = new Date(d);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+};
+
 const updateCoupon = async (req, res) => {
-  const couponId = req.params.couponId;
+  const { couponId } = req.params;
   try {
     const { code, discount, startDate, expiryDate } = req.body;
 
+    // ── Field validation ───────────────────────────────────────────────
     if (!code || code.trim().length < 3 || code.trim().length > 5 || !/[a-zA-Z]/.test(code)) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
-        message: "Coupon code must be 3-5 chars with at least one letter",
+        message: "Coupon code must be 3–5 characters and contain at least one letter",
       });
     }
-
-    const existCoupon = await Coupon.findOne({ code: code.toUpperCase() });
-    if (existCoupon) {
-      return res.status(400).json({ success: false, message: "Coupon code already exists" });
-    }
-
     if (!discount || isNaN(discount) || discount < 1 || discount > 100) {
       return res
-        .status(400)
+        .status(HTTP_STATUS.BAD_REQUEST)
         .json({ success: false, message: "Discount must be between 1 and 100" });
     }
     if (!startDate || !expiryDate) {
       return res
-        .status(400)
+        .status(HTTP_STATUS.BAD_REQUEST)
         .json({ success: false, message: "Both start and expiry dates are required" });
     }
 
-    const start = new Date(startDate);
-    const expiry = new Date(expiryDate);
+    const submittedStart = new Date(startDate);
+    const submittedExpiry = new Date(expiryDate);
 
-    if (isNaN(start) || isNaN(expiry)) {
-      return res.status(400).json({ success: false, message: "Invalid date format" });
-    }
-    if (start >= expiry) {
+    if (isNaN(submittedStart) || isNaN(submittedExpiry)) {
       return res
-        .status(400)
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid date format" });
+    }
+    if (submittedStart >= submittedExpiry) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
         .json({ success: false, message: "Start date must be before expiry date" });
     }
-    if (expiry <= new Date()) {
-      return res.status(400).json({ success: false, message: "Expiry date must be in the future" });
+
+    // ── Fetch the existing coupon for comparison ───────────────────────
+    const existing = await Coupon.findById(couponId);
+    if (!existing) {
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Coupon not found" });
     }
 
-    const expiryDateMidnight = new Date(expiry);
+    const now = new Date();
+    const existingStartOnly = toDateOnly(existing.startDate);
+    const existingExpiryOnly = toDateOnly(existing.expiryDate);
+    const submittedStartOnly = toDateOnly(submittedStart);
+    const submittedExpiryOnly = toDateOnly(submittedExpiry);
+
+    const startDateChanged = submittedStartOnly.getTime() !== existingStartOnly.getTime();
+    const expiryDateChanged = submittedExpiryOnly.getTime() !== existingExpiryOnly.getTime();
+
+    // ── Date-change rules ──────────────────────────────────────────────
+
+    // 1. Start date is in the past — block any attempt to change it
+    if (startDateChanged && toDateOnly(now) > existingStartOnly) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message:
+          "The start date is already in the past and cannot be changed. " +
+          "If you need to extend the coupon, update only the End Date.",
+      });
+    }
+
+    // 2. Start date is in the future — allow changing it, but not to the past
+    if (startDateChanged && submittedStartOnly < toDateOnly(now)) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: "Start date cannot be set to a past date.",
+      });
+    }
+
+    // 3. Expiry date changed — must always be in the future
+    if (expiryDateChanged && submittedExpiryOnly <= toDateOnly(now)) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: "End date must be a future date.",
+      });
+    }
+
+    // 4. No date fields changed — skip all date checks entirely
+    //    (user only updated code / discount — always allowed)
+
+    // ── Duplicate code check — exclude the coupon being edited ─────────
+    const normalizedCode = code.trim().toUpperCase();
+    const duplicate = await Coupon.findOne({
+      code: normalizedCode,
+      _id: { $ne: couponId },
+    });
+    if (duplicate) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Another coupon with this code already exists" });
+    }
+
+    // ── Persist ────────────────────────────────────────────────────────
+    const expiryDateMidnight = new Date(submittedExpiry);
     expiryDateMidnight.setHours(23, 59, 59, 999);
 
     const updated = await Coupon.findByIdAndUpdate(
       couponId,
       {
-        code: code.toUpperCase(),
+        code: normalizedCode,
         discount: Number(discount),
-        startDate: start,
+        startDate: submittedStart,
         expiryDate: expiryDateMidnight,
       },
       { new: true, runValidators: true }
     );
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Coupon not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Coupon not found" });
     }
 
-    res.json({ success: true, message: "Coupon updated successfully" });
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Coupon updated successfully" });
   } catch (error) {
     console.error("Update coupon error:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 

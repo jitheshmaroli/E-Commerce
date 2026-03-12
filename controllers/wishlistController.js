@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Category = require("../models/category");
 const mongoose = require("mongoose");
 const Cart = require("../models/cart");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const toggleWishList = async (req, res) => {
   const { productId } = req.body;
@@ -13,7 +14,9 @@ const toggleWishList = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "please log in to continue" });
+      return res
+        .status(HTTP_STATUS.UNAUTHORIZED)
+        .json({ success: false, message: "please log in to continue" });
     }
 
     const userId = user._id;
@@ -36,10 +39,14 @@ const toggleWishList = async (req, res) => {
     const cart = await Cart.findOne({ userId });
     const cartCount = cart ? cart.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
     const wishlistCount = wishlist.products.length;
-    res.json({ success: true, isInWishlist: productIndex === -1, cartCount, wishlistCount });
+    res
+      .status(HTTP_STATUS.OK)
+      .json({ success: true, isInWishlist: productIndex === -1, cartCount, wishlistCount });
   } catch (error) {
     console.error(error);
-    res.json({ success: false, message: "Error toggling wishlist item" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Error toggling wishlist item" });
   }
 };
 
@@ -51,7 +58,7 @@ const moveToWishList = async (req, res) => {
   const userId = user._id;
 
   if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
-    return res.status(400).json({ error: "Invalid userId or productId" });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid userId or productId" });
   }
 
   try {
@@ -68,13 +75,13 @@ const moveToWishList = async (req, res) => {
     wishlist.products.push(productId);
     await wishlist.save();
 
-    res.status(200).json({
+    res.status(HTTP_STATUS.OK).json({
       success: true,
       message: "Product moved to wishlist successfully.",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 
@@ -95,7 +102,7 @@ const wishListView = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 
@@ -110,7 +117,7 @@ const removeFromWishList = async (req, res) => {
     const wishlist = await Wishlist.findOne({ userId });
 
     if (!wishlist) {
-      return res.status(404).json({ error: "Wishlist not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Wishlist not found" });
     }
 
     wishlist.products = wishlist.products.filter((product) => !product.equals(productId));
@@ -120,7 +127,7 @@ const removeFromWishList = async (req, res) => {
     res.redirect("/wishlist");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 

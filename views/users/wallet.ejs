@@ -1,39 +1,32 @@
 <%- include('../includes/userHead.ejs') %>
-<link rel="stylesheet" href="/css/wallet.css" />
-
+<link rel="stylesheet" href="/css/profile-shared.css" />
 <%- include('../includes/userHeader.ejs') %>
 
-<main class="main">
-  <% if (user) { %>
-  <aside class="sidebar">
-    <div class="profile-section">
-      <div class="avatar">
-        <img
-          src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar"
-        />
+<% if (user) { %>
+<div class="account-shell">
+  <%- include('../includes/accountNav.ejs', { activePage: 'wallet' }) %>
+
+  <div class="account-content">
+    <!-- Balance Card -->
+    <div class="wallet-balance-card">
+      <i class="fas fa-wallet wallet-icon-bg"></i>
+      <div class="wallet-balance-label">Available Balance</div>
+      <div class="wallet-balance-amount">₹<%= user.wallet.toFixed(2) %></div>
+      <div class="wallet-balance-sub">
+        ShoeZone Wallet &middot; Credited on refunds &amp; returns
       </div>
-      <ul class="profile-links">
-        <li><a href="/profile">User Profile</a></li>
-        <li><a href="/address">Address</a></li>
-        <li><a href="/order-history">Order History</a></li>
-        <li><a href="/change-password">Change Password</a></li>
-        <li><a href="/wallet">Wallet</a></li>
-      </ul>
     </div>
-  </aside>
-  <section class="content">
-    <div class="container">
-      <h2 class="page-title">My Wallet</h2>
-      <div class="card mb-4">
-        <div class="card-body">
-          <h3 class="card-title">Current Balance</h3>
-          <h4 class="card-text text-primary">₹<%= user.wallet.toFixed(2) %></h4>
-        </div>
+
+    <!-- Transactions -->
+    <div class="transactions-card">
+      <div class="transactions-card-header">
+        <div class="account-card-icon"><i class="fas fa-list-alt"></i></div>
+        <h3>Transaction History</h3>
       </div>
-      <h3>Transaction History</h3>
-      <div class="transaction-list">
-        <table class="table table-striped">
+
+      <% if (user.walletTransactions && user.walletTransactions.length > 0) { %>
+      <div style="overflow-x: auto">
+        <table class="txn-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -43,38 +36,48 @@
             </tr>
           </thead>
           <tbody>
-            <% user.walletTransactions.forEach(transaction => { %>
+            <% user.walletTransactions.slice().reverse().forEach(function(txn) { %>
             <tr>
-              <td><%= transaction.createdAt.toLocaleDateString() %></td>
-              <td><%= transaction.description %></td>
-              <td class="<%= transaction.type === 'credit' ? 'text-success' : 'text-danger' %>">
-                <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2)
-                %>
+              <td style="white-space: nowrap; color: var(--grey-600); font-size: 0.8rem">
+                <i class="far fa-calendar-alt me-1"></i>
+                <%= txn.createdAt.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %>
+              </td>
+              <td><%= txn.description %></td>
+              <td class="<%= txn.type === 'credit' ? 'txn-amount-credit' : 'txn-amount-debit' %>">
+                <%= txn.type === 'credit' ? '+' : '-' %><%- '&#8377;' %><%= txn.amount.toFixed(2) %>
               </td>
               <td>
-                <%= transaction.type.charAt(0).toUpperCase() +
-                transaction.type.slice(1) %>
+                <span
+                  class="txn-type-pill <%= txn.type === 'credit' ? 'txn-credit' : 'txn-debit' %>"
+                >
+                  <i class="fas <%= txn.type === 'credit' ? 'fa-arrow-down' : 'fa-arrow-up' %>"></i>
+                  <%= txn.type.charAt(0).toUpperCase() + txn.type.slice(1) %>
+                </span>
               </td>
             </tr>
             <% }) %>
           </tbody>
         </table>
       </div>
+      <% } else { %>
+      <div class="wallet-empty">
+        <i class="fas fa-receipt"></i>
+        <p>No transactions yet. Your wallet activity will appear here.</p>
+      </div>
+      <% } %>
     </div>
-  </section>
-  <% } %>
-</main>
+  </div>
+</div>
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
-<%-
-include('../includes/userScripts.ejs') %>
+<%- include('../includes/userScripts.ejs') %>
 
 <script>
-  function setCategory(category) {
-    const selectedCategory = document.getElementById("selectedCategory");
-    if (selectedCategory) selectedCategory.value = category;
-    const dropdownText = document.querySelector(".dropdown-toggle-text");
-    if (dropdownText)
-      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+  function setCategory(c) {
+    var el = document.getElementById("selectedCategory");
+    if (el) el.value = c;
+    var dt = document.querySelector(".dropdown-toggle-text");
+    if (dt) dt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
   }
 </script>

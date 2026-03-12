@@ -1,73 +1,74 @@
 <%- include('../includes/userHead.ejs') %>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="/css/userProfile.css" />
+<link rel="stylesheet" href="/css/profile-shared.css" />
 
 <%- include('../includes/userHeader.ejs') %>
 
-<main class="main">
-  <% if (user) { %>
-  <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
-    <aside class="sidebar">
-      <div class="profile-section">
-        <div class="avatar">
-          <img
-            id="profileImg"
-            src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-            alt="Profile Avatar"
-          />
-          <input type="file" accept="image/*" id="profile-pic-input" name="profile-pic" />
-          <label for="profile-pic-input" class="avatar-overlay">
-            <span class="upload-text">Upload Photo</span>
-            <button type="button" id="cancel-upload" class="cancel-btn" style="display: none">
-              Cancel
+<% if (user) { %>
+<div class="account-shell">
+
+  <%- include('../includes/accountNav.ejs', { activePage: 'profile' }) %>
+
+  <div class="account-content">
+
+    <form id="profileForm" action="/update-profile" method="POST" enctype="multipart/form-data">
+      <input type="file" accept="image/*" id="profile-pic-input" name="profile-pic" style="display:none" />
+
+      <div class="account-card">
+
+        <!-- Avatar row at top of card -->
+        <div class="profile-avatar-edit">
+          <div class="pae-img-wrap">
+            <img
+              id="profileImgPreview"
+              class="pae-img"
+              src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
+              alt="<%= user.name %>"
+            />
+            <label class="pae-overlay" for="profile-pic-input">
+              <i class="fas fa-camera" style="font-size:1rem;display:block;margin-bottom:.2rem"></i>
+              Change
+            </label>
+          </div>
+          <div class="pae-info">
+            <h3><%= user.name %></h3>
+            <p><%= user.email %></p>
+            <button type="button" id="cancel-upload" class="btn-cancel-upload" style="display:none">
+              <i class="fas fa-times"></i> Remove Photo
             </button>
-          </label>
-        </div>
-        <ul class="profile-links">
-          <li><a href="/profile" class="active">User Profile</a></li>
-          <li><a href="/address">Address</a></li>
-          <li><a href="/order-history">Order History</a></li>
-          <li><a href="/change-password">Change Password</a></li>
-          <li><a href="/wallet">Wallet</a></li>
-        </ul>
-      </div>
-    </aside>
-
-    <section class="content">
-      <div class="profile-edit">
-        <h2 class="page-title">Edit Profile</h2>
-        <p><%= user.email %></p>
-
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value="<%= user.name %>"
-            maxlength="50"
-            required
-          />
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="gender">Gender:</label>
-          <select id="gender" name="gender">
-            <option value="">Select Gender</option>
-            <option value="male" <% if (user.gender === 'male') { %>selected<% } %> >Male</option>
-            <option value="female" <% if (user.gender === 'female') { %>selected<% } %> >Female</option>
-            <option value="other" <% if (user.gender === 'other') { %>selected<% } %> >Other</option>
-          </select>
-        </div>
+        <div class="account-card-body">
+          <div class="acc-form">
 
-        
+            <div class="acc-field">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" value="<%= user.name %>" maxlength="50" required />
+            </div>
 
-        <button type="submit" id="saveBtn" class="btn product-btn" disabled>Save</button>
-      </div>
-    </section>
-  </form>
-  <% } %>
-</main>
+            <div class="acc-field">
+              <label for="gender">Gender</label>
+              <select id="gender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="male"   <%= user.gender === 'male'   ? 'selected' : '' %>>Male</option>
+                <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
+                <option value="other"  <%= user.gender === 'other'  ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+
+            <button type="submit" id="saveBtn" class="btn-acc-submit" disabled>
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+
+          </div><!-- /acc-form -->
+        </div><!-- /card-body -->
+      </div><!-- /account-card -->
+    </form>
+
+  </div><!-- /account-content -->
+</div><!-- /account-shell -->
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
@@ -77,98 +78,76 @@
     const form = document.getElementById("profileForm");
     if (!form) return;
 
-    const profileImg = document.getElementById("profileImg");
+    const profileImg = document.getElementById("profileImgPreview");
     const fileInput = document.getElementById("profile-pic-input");
     const cancelBtn = document.getElementById("cancel-upload");
     const saveBtn = document.getElementById("saveBtn");
     const nameInput = document.getElementById("name");
     const genderSelect = document.getElementById("gender");
-    const overlay = document.querySelector(".avatar-overlay");
 
-    // Store initial values
     const initialName = nameInput.value.trim();
     const initialGender = genderSelect.value;
     const originalImgSrc = profileImg.src;
-    let previewSrc = null;
     let fileChanged = false;
 
-    // Show success message if updated
+    // Show success message if redirected back after update
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("updated") === "true") {
-      Swal.fire({
-        title: "Success!",
-        text: "Profile updated successfully.",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then(() => {
-        window.history.replaceState({}, document.title, window.location.pathname);
-      });
+      Swal.fire({ title:"Success!", text:"Profile updated successfully.", icon:"success", confirmButtonText:"OK" })
+        .then(() => window.history.replaceState({}, document.title, window.location.pathname));
     }
 
     function checkChanges() {
-      const currentName = nameInput.value.trim();
-      const currentGender = genderSelect.value;
-      const hasChanges =
-        currentName !== initialName || currentGender !== initialGender || fileChanged;
+      const hasChanges = nameInput.value.trim() !== initialName
+        || genderSelect.value !== initialGender
+        || fileChanged;
       saveBtn.disabled = !hasChanges;
     }
 
-    fileInput.addEventListener("change", function (event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          previewSrc = e.target.result;
-          profileImg.src = previewSrc;
-          overlay.style.opacity = "1";
-          cancelBtn.style.display = "block";
-          document.querySelector(".upload-text").style.display = "none";
-          fileChanged = true;
-          checkChanges();
-        };
-        reader.readAsDataURL(file);
-      }
+    fileInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        profileImg.src = ev.target.result;
+        cancelBtn.style.display = "inline-flex";
+        fileChanged = true;
+        checkChanges();
+      };
+      reader.readAsDataURL(file);
     });
 
     cancelBtn.addEventListener("click", function () {
       fileInput.value = "";
       profileImg.src = originalImgSrc;
-      previewSrc = null;
-      fileChanged = false;
       cancelBtn.style.display = "none";
-      document.querySelector(".upload-text").style.display = "block";
-      overlay.style.opacity = "0";
+      fileChanged = false;
       checkChanges();
     });
 
     nameInput.addEventListener("input", checkChanges);
     genderSelect.addEventListener("change", checkChanges);
-    checkChanges(); // Initial state
+    checkChanges();
 
-    // Validation on submit
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
       const currentName = nameInput.value.trim();
       if (!/^[a-zA-Z\s]+$/.test(currentName) || currentName.length === 0) {
-        Swal.fire("Error!", "Name must contain only letters and spaces.", "error");
-        return;
+        Swal.fire("Error!", "Name must contain only letters and spaces.", "error"); return;
       }
-
       const file = fileInput.files[0];
       if (file) {
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (file.size > maxSize) {
-          Swal.fire("Error!", "Image must be under 5MB.", "error");
-          return;
-        }
-        if (!/\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
-          Swal.fire("Error!", "Only JPG, PNG, GIF allowed.", "error");
-          return;
-        }
+        if (file.size > 5 * 1024 * 1024) { Swal.fire("Error!", "Image must be under 5MB.", "error"); return; }
+        if (!/\.(jpg|jpeg|png|gif)$/i.test(file.name)) { Swal.fire("Error!", "Only JPG, PNG, GIF allowed.", "error"); return; }
       }
-
       form.submit();
     });
   });
+
+  function setCategory(c) {
+    const el = document.getElementById("selectedCategory");
+    if (el) el.value = c;
+    const dt = document.querySelector(".dropdown-toggle-text");
+    if (dt) dt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+  }
 </script>

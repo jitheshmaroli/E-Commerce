@@ -1,13 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>500 - Server Error</title>
-  </head>
-  <body>
-    <h1>500 - Server Error</h1>
-    <p>Something went wrong on our end. Please try again later.</p>
-    <a href="/">Go back to home</a>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>500 – Server Error · ShoeZone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --off-white: #f7f6f3;
+      --grey-800: #2b2b28;
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 30% 70%, rgba(220,38,38,.06) 0%, transparent 50%),
+        radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: auto, 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .error-bg-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(160px, 28vw, 340px);
+      letter-spacing: -.02em;
+      color: rgba(255,255,255,.04);
+      line-height: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .error-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .error-icon {
+      font-size: 2.5rem;
+      color: rgba(220,38,38,.5);
+      margin-bottom: 1.5rem;
+    }
+
+    .error-code {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: rgba(220,38,38,.55);
+      margin-bottom: .6rem;
+    }
+
+    .error-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: .03em;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .error-desc {
+      font-size: clamp(.88rem, 1.5vw, 1rem);
+      color: rgba(255,255,255,.45);
+      max-width: 400px;
+      line-height: 1.65;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Error detail box (shown in dev only, populated by server) */
+    .error-detail {
+      background: rgba(220,38,38,.08);
+      border: 1px solid rgba(220,38,38,.2);
+      border-radius: 8px;
+      padding: .85rem 1.25rem;
+      font-size: .78rem;
+      color: rgba(220,38,38,.7);
+      font-family: monospace;
+      max-width: 480px;
+      text-align: left;
+      margin-bottom: 2.5rem;
+      word-break: break-word;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary-error {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .85rem 2.25rem;
+      background: var(--white);
+      color: var(--black);
+      border: none;
+      border-radius: 50px;
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary-error:hover { background: var(--off-white); transform: translateY(-1px); color: var(--black); }
+
+    .btn-ghost-error {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .85rem 2.25rem;
+      background: transparent;
+      color: rgba(255,255,255,.55);
+      border: 1.5px solid rgba(255,255,255,.15);
+      border-radius: 50px;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-ghost-error:hover { border-color: rgba(255,255,255,.4); color: rgba(255,255,255,.85); }
+
+    .error-logo {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.75rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: .06em;
+      color: rgba(255,255,255,.4);
+      text-decoration: none;
+      z-index: 2;
+      transition: color .2s;
+    }
+    .error-logo:hover { color: rgba(255,255,255,.8); }
+
+    @media (max-width: 480px) {
+      .error-actions { flex-direction: column; align-items: center; }
+      .btn-primary-error, .btn-ghost-error { width: 100%; max-width: 280px; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="/" class="error-logo">ShoeZone</a>
+
+  <div class="error-bg-num">500</div>
+
+  <div class="error-page">
+    <div class="error-icon"><i class="fas fa-server"></i></div>
+    <div class="error-code">Error 500</div>
+    <h1 class="error-title">Something Went Wrong</h1>
+    <p class="error-desc">Our servers hit an unexpected snag. We're already on it — please try again in a moment.</p>
+
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+    <div class="error-detail">
+      <strong>Details:</strong> <%= errorMessage %>
+    </div>
+    <% } %>
+
+    <div class="error-actions">
+      <a href="/" class="btn-primary-error"><i class="fas fa-home"></i> Back to Home</a>
+      <button onclick="location.reload()" class="btn-ghost-error"><i class="fas fa-redo"></i> Try Again</button>
+    </div>
+  </div>
+
+</body>
 </html>

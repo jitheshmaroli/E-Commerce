@@ -2,6 +2,7 @@ const Product = require("../models/product");
 const path = require("path");
 const multer = require("multer");
 const Category = require("../models/category");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 const fs = require("fs").promises;
 
 const storage = multer.diskStorage({
@@ -22,7 +23,7 @@ const addProductView = async (req, res) => {
     res.render("admin/addProduct", { categoryList, message: "" });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Internal Server Error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
   }
 };
 
@@ -31,7 +32,7 @@ const newProduct = async (req, res) => {
     const { name, description, category, brandName = "", stock, price, tags } = req.body;
 
     if (!name?.trim() || !category || !stock || !price) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: "Required fields missing (name, category, stock, price)",
       });
@@ -41,15 +42,19 @@ const newProduct = async (req, res) => {
     const priceNum = Number(price);
 
     if (isNaN(stockNum) || stockNum < 0) {
-      return res.status(400).json({ success: false, message: "Invalid stock value" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid stock value" });
     }
     if (isNaN(priceNum) || priceNum <= 0) {
-      return res.status(400).json({ success: false, message: "Invalid price value" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid price value" });
     }
 
     const existing = await Product.findOne({ name: name.trim(), brandName: brandName.trim() });
     if (existing) {
-      return res.status(409).json({
+      return res.status(HTTP_STATUS.CONFLICT).json({
         success: false,
         message: "Product with this name and brand already exists",
       });
@@ -64,7 +69,7 @@ const newProduct = async (req, res) => {
         mimetype: file.mimetype,
       }));
     } else {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: "Exactly 4 images are required",
       });
@@ -72,7 +77,9 @@ const newProduct = async (req, res) => {
 
     const catDoc = await Category.findOne({ categoryName: category.trim() });
     if (!catDoc) {
-      return res.status(400).json({ success: false, message: "Invalid category" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid category" });
     }
 
     const product = new Product({
@@ -93,14 +100,14 @@ const newProduct = async (req, res) => {
 
     await product.save();
 
-    return res.status(201).json({
+    return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: "Product created successfully",
       productId: product._id,
     });
   } catch (err) {
     console.error("Add product error:", err);
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Server error while creating product",
       error: process.env.NODE_ENV === "development" ? err.message : undefined,
@@ -114,13 +121,13 @@ const updateProductView = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!productData) {
-      return res.status(404).send("Product not found");
+      return res.status(HTTP_STATUS.NOT_FOUND).send("Product not found");
     }
 
     res.render("admin/updateProduct", { productData, categoryList });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -129,18 +136,24 @@ const updateProduct = async (req, res) => {
     const productId = req.params.productId;
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Product not found" });
     }
 
     const { name, description, category, brandName = "", stock, price, tags } = req.body;
 
     if (!name?.trim() || !category || !stock || !price) {
-      return res.status(400).json({ success: false, message: "Required fields missing" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Required fields missing" });
     }
 
     const catDoc = await Category.findOne({ categoryName: category.trim() });
     if (!catDoc) {
-      return res.status(400).json({ success: false, message: "Invalid category" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "Invalid category" });
     }
 
     product.name = name.trim();
@@ -174,11 +187,13 @@ const updateProduct = async (req, res) => {
     }
 
     if (keptPhotos.length < 4) {
-      return res.status(400).json({ success: false, message: "At least four images are required" });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ success: false, message: "At least four images are required" });
     }
 
     if (keptPhotos.length > 4) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: "Maximum 4 images allowed per product.",
       });
@@ -188,13 +203,13 @@ const updateProduct = async (req, res) => {
 
     await product.save();
 
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: "Product updated successfully",
     });
   } catch (err) {
     console.error("Update product error:", err);
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Server error while updating product",
     });
@@ -209,14 +224,16 @@ const removeImage = async (req, res) => {
     fs.unlink(imagePath, (unlinkErr) => {
       if (unlinkErr) {
         console.error("Error removing file:", unlinkErr);
-        return res.status(500).json({ error: "Failed to remove image" });
+        return res
+          .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          .json({ error: "Failed to remove image" });
       }
 
-      res.status(200).json({ success: true, message: "Image removed successfully" });
+      res.status(HTTP_STATUS.OK).json({ success: true, message: "Image removed successfully" });
     });
   } catch (error) {
     console.error("Error removing image:", error);
-    res.status(500).json({ error: "Failed to remove image" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Failed to remove image" });
   }
 };
 
@@ -228,13 +245,15 @@ const updatePhotos = async (req, res) => {
     const product = await Product.findByIdAndUpdate(productId, { photos }, { new: true });
 
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Product not found" });
     }
 
-    res.status(200).json({ success: true, product });
+    res.status(HTTP_STATUS.OK).json({ success: true, product });
   } catch (error) {
     console.error("Error updating product photos:", error);
-    res.status(500).json({ error: "Failed to update product photos" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to update product photos" });
   }
 };
 
@@ -244,7 +263,7 @@ const allProducts = async (req, res) => {
     res.render("admin/allProducts", { products });
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("internal server error");
   }
 };
 
@@ -253,13 +272,18 @@ const deleteProduct = async (req, res) => {
     const productId = req.params.productId;
     const productData = await Product.findOne({ _id: productId });
     if (productData) {
-      productData.isDeleted = true;
-      await productData.save();
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ success: false, message: "Product not found" });
     }
-    res.redirect("/admin/allProducts");
+    productData.isDeleted = true;
+    await productData.save();
+    res.status(HTTP_STATUS.OK).json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).render("userSide/error", { message: "Internal server error" });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .render("userSide/error", { message: "Internal server error" });
   }
 };
 

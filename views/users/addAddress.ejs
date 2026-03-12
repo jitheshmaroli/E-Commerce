@@ -1,121 +1,114 @@
 <%- include('../includes/userHead.ejs') %>
-<link rel="stylesheet" href="/css/addAddress.css" />
+<link rel="stylesheet" href="/css/profile-shared.css" />
 
 <%- include('../includes/userHeader.ejs') %>
 
-<main class="main">
-  <% if (user) { %>
-  <aside class="sidebar">
-    <div class="profile-section">
-      <div class="avatar">
-        <img
-          src="<%= user.photo && user.photo.length > 0 ? '/uploads/' + user.photo[0].filename : '/images/avatar.jpg' %>"
-          alt="Profile Avatar"
-        />
+<% if (user) { %>
+<div class="account-shell">
+  <%- include('../includes/accountNav.ejs', { activePage: 'address' }) %>
+
+  <div class="account-content">
+    <div class="account-card">
+      <div class="account-card-header">
+        <div class="account-card-icon"><i class="fas fa-plus"></i></div>
+        <h2>Add New Address</h2>
       </div>
-      <ul class="profile-links">
-        <li><a href="/user-profile">User Profile</a></li>
-        <li><a href="/address">Address</a></li>
-        <li><a href="/order-history">Order History</a></li>
-        <li><a href="/change-password">Change Password</a></li>
-        <li><a href="/wallet">Wallet</a></li>
-      </ul>
+      <div class="account-card-body">
+        <form
+          id="add-address-form"
+          action="/addresses/add"
+          method="post"
+          onsubmit="return validateForm();"
+        >
+          <input type="hidden" id="userId" name="userId" value="<%= user._id %>" />
+
+          <div class="acc-form">
+            <div class="acc-field">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" maxlength="50" required />
+            </div>
+
+            <div class="acc-form-row">
+              <div class="acc-field">
+                <label for="houseName">House / Flat No.</label>
+                <input type="text" id="houseName" name="houseName" maxlength="50" required />
+              </div>
+              <div class="acc-field">
+                <label for="street">Street / Area</label>
+                <input type="text" id="street" name="street" maxlength="50" required />
+              </div>
+            </div>
+
+            <div class="acc-form-row">
+              <div class="acc-field">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" maxlength="50" required />
+              </div>
+              <div class="acc-field">
+                <label for="district">District</label>
+                <input type="text" id="district" name="district" maxlength="50" required />
+              </div>
+            </div>
+
+            <div class="acc-form-row">
+              <div class="acc-field">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" maxlength="50" required />
+              </div>
+              <div class="acc-field">
+                <label for="pinCode">PIN Code</label>
+                <input
+                  type="number"
+                  id="pinCode"
+                  name="pinCode"
+                  minlength="6"
+                  maxlength="6"
+                  required
+                  onkeyup="limitPincode(this)"
+                />
+              </div>
+            </div>
+
+            <div class="acc-check">
+              <input type="checkbox" id="isDefault" name="isDefault" />
+              <label for="isDefault">Set as Default Address</label>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap">
+              <button type="submit" id="add-address-submit-btn" class="btn-acc-submit" disabled>
+                <i class="fas fa-save"></i> Save Address
+              </button>
+              <a href="/address" class="btn-acc-ghost"> <i class="fas fa-arrow-left"></i> Back </a>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-  </aside>
-  <section class="content">
-    <h2 class="page-title">Add New Address</h2>
-    <form
-      id="add-address-form"
-      action="/addresses/add"
-      method="post"
-      onsubmit="return validateForm();"
-    >
-      <input type="hidden" id="userId" name="userId" value="<%= user._id %>" />
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" maxlength="50" required />
-      </div>
-      <div class="form-group">
-        <label for="houseName">House Name/Number:</label>
-        <input type="text" id="houseName" name="houseName" maxlength="50" required />
-      </div>
-      <div class="form-group">
-        <label for="street">Street Address:</label>
-        <input type="text" id="street" name="street" maxlength="50" required />
-      </div>
-      <div class="form-group">
-        <label for="city">City:</label>
-        <input type="text" id="city" name="city" maxlength="50" required />
-      </div>
-      <div class="form-group">
-        <label for="district">District:</label>
-        <input type="text" id="district" name="district" maxlength="50" required />
-      </div>
-      <div class="form-group">
-        <label for="state">State:</label>
-        <input type="text" id="state" name="state" maxlength="50" required />
-      </div>
-      <div class="form-group">
-        <label for="pinCode">PIN Code:</label>
-        <input
-          type="number"
-          id="pinCode"
-          name="pinCode"
-          minlength="6"
-          maxlength="6"
-          required
-          onkeyup="limitPincode(this)"
-        />
-      </div>
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" />
-        <label class="form-check-label" for="isDefault"> Set as Default Address </label>
-      </div>
-      <div class="form-group">
-        <button type="submit" id="add-address-submit-btn" class="btn product-btn" disabled>
-          Add Address
-        </button>
-      </div>
-    </form>
-  </section>
-  <% } %>
-</main>
+  </div>
+</div>
+<% } %>
 
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
 <%- include('../includes/addressValidation.ejs') %>
 
 <script>
-  function setCategory(category) {
-    const selectedCategory = document.getElementById("selectedCategory");
-    if (selectedCategory) selectedCategory.value = category;
-    const dropdownText = document.querySelector(".dropdown-toggle-text");
-    if (dropdownText)
-      dropdownText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-  }
-</script>
-<script>
   document.getElementById("add-address-form")?.addEventListener("submit", async function (e) {
     e.preventDefault();
-
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     data.isDefault = document.getElementById("isDefault").checked;
-
     try {
       const res = await fetch("/address/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       const result = await res.json();
-
       if (result.success) {
         Swal.fire({
           icon: "success",
-          title: "Success",
-          text: "Address added successfully",
+          title: "Address Added!",
           timer: 2000,
           showConfirmButton: false,
         }).then(() => {
@@ -125,7 +118,7 @@
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: result.message || "Failed to add address",
+          text: result.message || "Failed to add address.",
         });
       }
     } catch (err) {
@@ -136,4 +129,11 @@
       });
     }
   });
+
+  function setCategory(c) {
+    const el = document.getElementById("selectedCategory");
+    if (el) el.value = c;
+    const dt = document.querySelector(".dropdown-toggle-text");
+    if (dt) dt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+  }
 </script>

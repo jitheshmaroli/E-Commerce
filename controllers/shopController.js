@@ -7,8 +7,9 @@ const Cart = require("../models/cart");
 const Address = require("../models/address");
 
 const offerController = require("../controllers/offerController");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
-const shoppingHomeView = async (req, res) => {
+const shoppingHomeView = async (req, res, next) => {
   try {
     await offerController.applyOffers();
     let wishlistProducts = [];
@@ -41,7 +42,10 @@ const shoppingHomeView = async (req, res) => {
     })
       .populate("offer")
       .populate("category")
-      .populate("reviews")
+      .populate({
+        path: "reviews",
+        select: "rating",
+      })
       .skip(skip)
       .limit(productsPerPage);
 
@@ -63,7 +67,7 @@ const shoppingHomeView = async (req, res) => {
         };
       })
     );
-
+    console.log("prdscrating:", productsWithRating);
     res.render("userSide/shoppingHome", {
       products: productsWithRating,
       wishlistProducts: wishlistProducts,
@@ -77,11 +81,12 @@ const shoppingHomeView = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
+    // res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
   }
 };
 
-const checkoutView = async (req, res) => {
+const checkoutView = async (req, res, next) => {
   try {
     offerController.applyOffers();
     const productId = req.params.productId;
@@ -94,7 +99,9 @@ const checkoutView = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "please log in to continue" });
+      return res
+        .status(HTTP_STATUS.UNAUTHORIZED)
+        .json({ success: false, message: "please log in to continue" });
     }
 
     const userId = user._id;
@@ -110,7 +117,7 @@ const checkoutView = async (req, res) => {
     if (productId && quantity) {
       const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).send("Product not found");
+        return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Product not found" });
       }
 
       const bestOffer = await offerController.getBestOffer(product);
@@ -135,7 +142,7 @@ const checkoutView = async (req, res) => {
       const cartItem = cart.items.find((item) => item.productId.equals(productId));
       if (cartItem) {
         if (parseInt(quantity) > product.stock) {
-          return res.status(400).json({
+          return res.status(HTTP_STATUS.BAD_REQUEST).json({
             error: "Not enough stock available",
             availableStock: product.stock,
           });
@@ -168,7 +175,7 @@ const checkoutView = async (req, res) => {
         })
       );
     } else {
-      return res.status(400).send("Invalid request");
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Invalid request" });
     }
 
     return res.render("userSide/checkout", {
@@ -180,7 +187,8 @@ const checkoutView = async (req, res) => {
     });
   } catch (error) {
     console.error("Checkout error:", error);
-    return res.status(500).send("An error occurred during checkout");
+    // return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send("An error occurred during checkout");
+    next(error);
   }
 };
 
@@ -267,6 +275,11 @@ const productSearchView = async (req, res) => {
 
     const products = await Product.find(query)
       .populate("category")
+      .populate({
+        path: "reviews",
+        select: "rating",
+      })
+      .populate("offer")
       .sort(sort)
       .collation(collation)
       .skip(skip)
@@ -300,6 +313,7 @@ const productSearchView = async (req, res) => {
       urlParams.delete("page");
       return "&" + urlParams.toString();
     };
+    console.log("productsrating:", productsWithRating);
 
     res.render("userSide/productSearch", {
       products: productsWithRating,
@@ -315,7 +329,9 @@ const productSearchView = async (req, res) => {
     });
   } catch (error) {
     console.error("Search error:", error);
-    res.status(500).send("An error occurred while searching");
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ message: "An error occurred while searching" });
   }
 };
 
@@ -335,7 +351,7 @@ const productDetailsView = async (req, res) => {
     }
     let wishlistProducts = [];
     if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(400).send("Invalid product ID");
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Invalid product ID" });
     }
 
     if (user) {
@@ -356,7 +372,7 @@ const productDetailsView = async (req, res) => {
     const categoryList = await Category.find({ isBlocked: false });
 
     if (!product) {
-      return res.status(404).render("userSide/productNotFound", { message: "Product not found" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Product not found" });
     }
 
     const reviews = product.reviews;
@@ -385,7 +401,7 @@ const productDetailsView = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).render("userSide/error", { message: "Internal server error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }
 };
 

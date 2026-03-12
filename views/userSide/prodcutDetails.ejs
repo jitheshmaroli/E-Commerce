@@ -1,26 +1,36 @@
 <%- include('../includes/userHead.ejs') %>
 <link rel="stylesheet" href="/css/productDetails.css" />
-
 <%- include('../includes/userHeader.ejs') %>
 
 <div class="container product-page-container">
   <% if (product) { %>
-  <nav aria-label="breadcrumb" class="mt-3">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mt-2">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/">Home</a></li>
       <li class="breadcrumb-item">
-        <a href="/products?category=<%= product.category.categoryName %>">
-          <%= product.category.categoryName %>
-        </a>
+        <a href="/products?category=<%= product.category.categoryName %>"
+          ><%= product.category.categoryName %></a
+        >
       </li>
       <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
     </ol>
   </nav>
 
-  <div class="row mt-4">
-    <!-- Left - Images Section -->
-    <div class="col-lg-6 col-md-7">
+  <div class="row mt-3 g-4">
+    <!-- ===== LEFT: IMAGE GALLERY ===== -->
+    <div class="col-lg-6 col-md-7 gallery-col">
       <div class="main-image-wrapper zoom-container">
+        <% if (product.stock === 0) { %>
+        <div class="stock-ribbon oos"><i class="fas fa-times-circle me-1"></i>Out of Stock</div>
+        <% } else if (product.stock < 5) { %>
+        <div class="stock-ribbon">
+          <i class="fas fa-fire me-1"></i>Only
+          <%= product.stock %>
+          left
+        </div>
+        <% } %>
         <img
           src="/uploads/<%= product.photos[0]?.filename || 'placeholder.jpg' %>"
           alt="<%= product.name %>"
@@ -29,13 +39,13 @@
         />
       </div>
 
-      <!-- Thumbnails -->
-      <div class="thumbnails mt-3">
+      <!-- Thumbnails (desktop) -->
+      <div class="thumbnails d-none d-md-flex mt-3">
         <% product.photos.slice(0,4).forEach((photo, index) => { %>
         <div class="thumbnail-item <%= index === 0 ? 'active' : '' %>">
           <img
             src="/uploads/<%= photo.filename %>"
-            alt="Thumbnail <%= index + 1 %>"
+            alt="View <%= index + 1 %>"
             class="thumbnail"
             data-full="/uploads/<%= photo.filename %>"
           />
@@ -43,16 +53,17 @@
         <% }) %>
       </div>
 
-      <!-- Mobile carousel fallback -->
-      <div class="carousel-wrapper d-lg-none mt-4">
+      <!-- Mobile carousel -->
+      <div class="carousel-wrapper d-md-none mt-3">
         <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
+          <div class="carousel-inner rounded-3 overflow-hidden">
             <% product.photos.slice(0,4).forEach((photo, index) => { %>
             <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
               <img
                 src="/uploads/<%= photo.filename %>"
                 class="d-block w-100"
                 alt="Product Image <%= index + 1 %>"
+                style="aspect-ratio: 1/1; object-fit: contain; background: var(--off-white)"
               />
             </div>
             <% }) %>
@@ -79,86 +90,86 @@
       </div>
     </div>
 
-    <!-- Right - Product Details -->
+    <!-- ===== RIGHT: PRODUCT INFO ===== -->
     <div class="col-lg-6 col-md-5">
-      <div class="product-details ps-lg-4">
-        <h1 id="product-name"><%= product.name.toUpperCase() %></h1>
-        <div class="product-category"><%= product.category.categoryName %></div>
-
+      <div class="product-info-panel">
         <input type="hidden" id="product-id" value="<%= product._id %>" />
 
-        <div class="rating mb-3">
-          <% for (let i = 1; i <= 5; i++) { %> <% if (i <= product.averageRating) { %>
-          <i class="fas fa-star"></i>
-          <% } else { %>
-          <i class="far fa-star"></i>
-          <% } %>
-          <% } %>
-          <span class="ms-2">(<%= product.averageRating %> out of 5)</span>
-        </div>
+        <!-- Category tag -->
+        <div class="pd-category-tag"><%= product.category.categoryName %></div>
 
-        <% if (product.bestOffer) { %>
-        <p
-          id="product-price"
-          data-product-price="<%= product.currentPrice %>"
-          data-original-price="<%= product.price %>"
-          class="price"
-        >
-          <span class="original-price">₹<%= product.price.toFixed(2) %></span>
-          ₹<%= product.currentPrice.toFixed(2) %>
-          <i
-            class="fas fa-info-circle offer-icon ms-2"
-            data-bs-toggle="modal"
-            data-bs-target="#offerModal<%= product._id %>"
-          ></i>
-        </p>
-        <% } else { %>
-        <p id="product-price" data-product-price="<%= product.price %>" class="price">
-          ₹<%= product.price.toFixed(2) %>
-        </p>
-        <% } %>
+        <!-- Name -->
+        <h1 class="pd-name" id="product-name"><%= product.name.toUpperCase() %></h1>
 
-        <% if (product.bestOffer) { %>
-        <!-- Offer Modal -->
-        <div
-          class="modal fade"
-          id="offerModal<%= product._id %>"
-          tabindex="-1"
-          aria-labelledby="offerModalLabel<%= product._id %>"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="offerModalLabel<%= product._id %>">Offer Details</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <p>
-                  Offer Name:
-                  <%= product.bestOffer.name %>
-                </p>
-                <p>
-                  Discount: <%= product.bestOffer.discountType === 'percentage' ?
-                  product.bestOffer.discountValue + '%' : '₹' + product.bestOffer.discountValue %>
-                </p>
-                <p>Valid until: <%= product.bestOffer.endDate.toLocaleDateString() %></p>
-              </div>
-            </div>
+        <!-- Rating -->
+        <div class="pd-rating-row">
+          <div class="stars-row">
+            <% for (let i = 1; i <= 5; i++) { %>
+            <i class="fa<%= i <= product.averageRating ? 's' : 'r' %> fa-star"></i>
+            <% } %>
           </div>
+          <span class="pd-rating-label"
+            ><%= product.averageRating %>
+            / 5 &nbsp;·&nbsp;
+            <%= product.reviews.length %>
+            review<%=
+            product.reviews.length !== 1 ? 's' : '' %></span
+          >
+        </div>
+
+        <!-- Price -->
+        <% if (product.bestOffer) { %>
+        <div class="pd-price-block">
+          <span
+            class="pd-price-current"
+            id="product-price"
+            data-product-price="<%= product.currentPrice %>"
+            data-original-price="<%= product.price %>"
+          >
+            ₹<%= product.currentPrice.toFixed(2) %>
+          </span>
+          <span class="pd-price-original">₹<%= product.price.toFixed(2) %></span>
+          <span class="pd-discount-pill">
+            −<%= Math.round(((product.price - product.currentPrice) / product.price) * 100) %>% OFF
+          </span>
+        </div>
+        <!-- Offer banner -->
+        <div
+          class="pd-offer-banner"
+          data-bs-toggle="modal"
+          data-bs-target="#offerModal<%= product._id %>"
+        >
+          <span
+            ><i class="fas fa-tag me-2"></i><strong><%= product.bestOffer.name %></strong> — tap for
+            details</span
+          >
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        <% } else { %>
+        <div class="pd-price-block">
+          <span
+            class="pd-price-current"
+            id="product-price"
+            data-product-price="<%= product.price %>"
+          >
+            ₹<%= product.price.toFixed(2) %>
+          </span>
         </div>
         <% } %>
 
-        <% if (product.stock == 0) { %>
-        <div class="text-danger fw-bold mb-3">The product is currently out of stock</div>
-        <div class="quantity-control disabled">
-          <button class="quantity-btn" disabled>-</button>
+        <div class="pd-divider"></div>
+
+        <% if (product.stock === 0) { %>
+        <!-- Out of stock -->
+        <div class="pd-oos-banner">
+          <i class="fas fa-exclamation-circle"></i>
+          This product is currently out of stock
+        </div>
+        <div class="pd-qty-label">Quantity</div>
+        <div class="pd-quantity-control">
+          <button class="pd-qty-btn quantity-btn" disabled>−</button>
           <input
+            class="pd-qty-input"
             type="number"
             id="quantity-input"
             value="1"
@@ -167,35 +178,51 @@
             data-stock="<%= product.stock %>"
             disabled
           />
-          <button class="quantity-btn" disabled>+</button>
+          <button class="pd-qty-btn quantity-btn" disabled>+</button>
         </div>
-        <p class="final-price">Total Price: ₹<span id="final-price"></span></p>
-        <div class="product-actions">
-          <a href="#" class="btn btn-add-to-cart disabled" id="add-to-cart-btn" disabled
-            >Add to Cart</a
+        <p class="pd-total-price">
+          Total: <strong>₹<span id="final-price">0.00</span></strong>
+        </p>
+        <div class="pd-actions">
+          <button class="btn-pd-cart" disabled>
+            <i class="fas fa-shopping-cart"></i> Add to Cart
+          </button>
+          <a
+            href="/checkout/<%= product._id %>/1"
+            class="btn-pd-buy disabled"
+            style="pointer-events: none; opacity: 0.45"
           >
-          <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now disabled" disabled
-            >Buy Now</a
-          >
+            <i class="fas fa-bolt"></i> Buy Now
+          </a>
           <% const isInWishlist = wishlistProducts.find(item => item._id.toString() ===
           product._id.toString()); %>
           <% if (isInWishlist) { %>
-          <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
+          <a
+            href="/wishlist"
+            class="btn-pd-wishlist wishlisted"
+            id="wishlist-btn"
+            title="View Wishlist"
+            ><i class="fas fa-heart"></i
+          ></a>
           <% } else { %>
           <button
-            class="btn btn-add-to-wishlist"
+            class="btn-pd-wishlist"
             id="wishlist-btn"
             data-product-id="<%= product._id %>"
+            title="Add to Wishlist"
           >
-            Add to Wishlist
+            <i class="far fa-heart"></i>
           </button>
           <% } %>
         </div>
+
         <% } else { %>
-        <!-- Normal stock case -->
-        <div class="quantity-control">
-          <button class="quantity-btn">-</button>
+        <!-- In stock -->
+        <div class="pd-qty-label">Quantity</div>
+        <div class="pd-quantity-control">
+          <button class="pd-qty-btn quantity-btn">−</button>
           <input
+            class="pd-qty-input"
             type="number"
             id="quantity-input"
             value="1"
@@ -203,88 +230,158 @@
             data-product-id="<%= product._id %>"
             data-stock="<%= product.stock %>"
           />
-          <button class="quantity-btn">+</button>
+          <button class="pd-qty-btn quantity-btn">+</button>
         </div>
-        <p class="final-price">Total Price: ₹<span id="final-price"></span></p>
+        <p class="pd-total-price">
+          Total: <strong>₹<span id="final-price">0.00</span></strong>
+        </p>
 
-        <div class="product-actions">
+        <div class="pd-actions">
           <% if (matchingCartItem) { %>
-          <a href="/cart" class="btn btn-view-cart" id="view-cart-btn">View Cart</a>
-          <% } else { %>
-          <a
-            href="#"
-            class="btn btn-add-to-cart"
-            id="add-to-cart-btn"
-            data-product-id="<%= product._id %>"
+          <a href="/cart" class="btn-pd-cart" id="view-cart-btn"
+            ><i class="fas fa-shopping-bag"></i> View Cart</a
           >
-            Add to Cart
+          <% } else { %>
+          <a href="#" class="btn-pd-cart" id="add-to-cart-btn" data-product-id="<%= product._id %>">
+            <i class="fas fa-shopping-cart"></i> Add to Cart
           </a>
           <% } %>
-          <a href="/checkout/<%= product._id %>/1" class="btn btn-buy-now">Buy Now</a>
-          <% const isInWishlist = wishlistProducts.find(item => item._id.toString() ===
+          <a href="/checkout/<%= product._id %>/1" class="btn-pd-buy">
+            <i class="fas fa-bolt"></i> Buy Now
+          </a>
+          <% const isInWishlistIn = wishlistProducts.find(item => item._id.toString() ===
           product._id.toString()); %>
-          <% if (isInWishlist) { %>
-          <a href="/wishlist" class="btn btn-view-wishlist" id="wishlist-btn">View Wishlist</a>
+          <% if (isInWishlistIn) { %>
+          <a
+            href="/wishlist"
+            class="btn-pd-wishlist wishlisted"
+            id="wishlist-btn"
+            title="View Wishlist"
+            ><i class="fas fa-heart"></i
+          ></a>
           <% } else { %>
           <a
             href="#"
-            class="btn btn-add-to-wishlist"
+            class="btn-pd-wishlist"
             id="wishlist-btn"
             data-product-id="<%= product._id %>"
-          >
-            Add to Wishlist
-          </a>
+            title="Add to Wishlist"
+            ><i class="far fa-heart"></i
+          ></a>
           <% } %>
         </div>
         <% } %>
-        <div class="product-description mt-4 pt-4 border-top">
-          <h2>Product Description</h2>
-          <div class="description-content"><%= product.description %></div>
+
+        <!-- Trust row -->
+        <div class="pd-trust-row">
+          <div class="pd-trust-item"><i class="fas fa-undo"></i> 7-day returns</div>
+          <div class="pd-trust-item"><i class="fas fa-shield-alt"></i> 100% authentic</div>
+          <div class="pd-trust-item"><i class="fas fa-lock"></i> Secure checkout</div>
         </div>
       </div>
+      <!-- /product-info-panel -->
     </div>
   </div>
 
-  <!-- Reviews -->
-  <div class="row mt-5">
-    <div class="col-12">
-      <div class="reviews">
-        <h3>Customer Reviews</h3>
-        <% if (product.reviews.length > 0) { %>
-        <div id="review-list" class="review-list">
-          <% product.reviews.slice(0, 5).forEach(review => { %>
-          <div class="review" data-review-id="<%= review._id %>">
-            <div class="rating">
-              <% for (let i = 1; i <= 5; i++) { %> <% if (i <= review.rating) { %>
-              <i class="fas fa-star"></i>
-              <% } else { %>
-              <i class="far fa-star"></i>
+  <!-- ===== DESCRIPTION ===== -->
+  <div class="pd-description-section mt-4">
+    <div class="pd-desc-header">
+      <div class="desc-icon"><i class="fas fa-align-left"></i></div>
+      <h2>Product Description</h2>
+    </div>
+    <div class="pd-desc-body"><%= product.description %></div>
+  </div>
+
+  <!-- ===== REVIEWS ===== -->
+  <div class="pd-reviews-section mt-3">
+    <div class="pd-reviews-header">
+      <h3>Customer Reviews</h3>
+      <span class="reviews-count-pill"
+        ><%= product.reviews.length %>
+        review<%= product.reviews.length !== 1 ? 's' : '' %></span
+      >
+    </div>
+
+    <% if (product.reviews.length > 0) { %>
+    <div id="review-list" class="pd-review-list">
+      <% product.reviews.slice(0, 5).forEach(review => { %>
+      <div class="pd-review-item" data-review-id="<%= review._id %>">
+        <div class="review-meta">
+          <div class="review-avatar">
+            <%= review.userId.name ? review.userId.name.charAt(0).toUpperCase() : 'U' %>
+          </div>
+          <div>
+            <div class="review-user"><%= review.userId.name %></div>
+            <div class="review-stars">
+              <% for (let i = 1; i <= 5; i++) { %>
+              <i class="fa<%= i <= review.rating ? 's' : 'r' %> fa-star"></i>
               <% } %>
-              <% } %>
-              <p class="user">By <%= review.userId.name %></p>
-              <p class="date"><%= review.createdAt.toDateString() %></p>
-            </div>
-            <div class="comment">
-              <p><%= review.comment %></p>
             </div>
           </div>
-          <% }) %>
+          <span class="review-date"><%= review.createdAt.toDateString() %></span>
         </div>
-        <% if (product.reviews.length > 5) { %>
-        <button
-          id="load-more-btn"
-          class="btn btn-outline-secondary mt-3"
-          data-reviews="<%= JSON.stringify(product.reviews.slice(5)) %>"
-        >
-          Load More Reviews
-        </button>
-        <% } %>
-        <% } else { %>
-        <p class="text-muted">No reviews yet. Be the first to review this product!</p>
-        <% } %>
+        <div class="review-comment"><%= review.comment %></div>
+      </div>
+      <% }) %>
+    </div>
+    <% if (product.reviews.length > 5) { %>
+    <button
+      id="load-more-btn"
+      class="btn-load-more"
+      data-reviews="<%= JSON.stringify(product.reviews.slice(5)) %>"
+    >
+      <i class="fas fa-chevron-down me-1"></i> Load More Reviews
+    </button>
+    <% } %>
+    <% } else { %>
+    <div class="no-reviews-state">
+      <i class="far fa-comment-dots"></i>
+      <p>No reviews yet. Be the first to share your experience!</p>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- ===== OFFER MODAL ===== -->
+  <% if (product.bestOffer) { %>
+  <div class="modal fade" id="offerModal<%= product._id %>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 overflow-hidden">
+        <div class="modal-header bg-black text-white border-0 pb-3">
+          <h5 class="modal-title fw-bold"><i class="fas fa-tag me-2"></i>Offer Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="d-flex flex-column gap-3">
+            <div
+              class="d-flex justify-content-between align-items-center p-3 rounded-3"
+              style="background: var(--off-white); border: 1px solid var(--grey-100)"
+            >
+              <span class="fw-bold text-black">Offer Name</span>
+              <span class="text-muted"><%= product.bestOffer.name %></span>
+            </div>
+            <div
+              class="d-flex justify-content-between align-items-center p-3 rounded-3"
+              style="background: var(--off-white); border: 1px solid var(--grey-100)"
+            >
+              <span class="fw-bold text-black">Discount</span>
+              <span class="fw-bold" style="color: #15803d">
+                <%= product.bestOffer.discountType === 'percentage' ?
+                product.bestOffer.discountValue + '%' : '₹' + product.bestOffer.discountValue %> OFF
+              </span>
+            </div>
+            <div
+              class="d-flex justify-content-between align-items-center p-3 rounded-3"
+              style="background: var(--off-white); border: 1px solid var(--grey-100)"
+            >
+              <span class="fw-bold text-black">Valid Until</span>
+              <span class="text-muted"><%= product.bestOffer.endDate.toLocaleDateString() %></span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <% } %>
 
   <% } else { %>
   <div class="alert alert-danger mt-5">Product not found or an error occurred.</div>
@@ -294,19 +391,16 @@
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
 
-<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
-
 <script>
+  // Thumbnail switcher
   document.addEventListener("DOMContentLoaded", function () {
     const mainImage = document.getElementById("mainImage");
     const thumbnails = document.querySelectorAll(".thumbnail");
-
     if (mainImage && thumbnails.length > 0) {
       thumbnails.forEach((thumb) => {
         thumb.addEventListener("click", function () {
           thumbnails.forEach((t) => t.parentElement.classList.remove("active"));
           this.parentElement.classList.add("active");
-
           const newSrc = this.getAttribute("data-full");
           mainImage.style.opacity = "0";
           setTimeout(() => {
@@ -317,24 +411,19 @@
       });
     }
   });
-</script>
-<script>
+
+  // Quantity + total price
   const quantityInput = document.getElementById("quantity-input");
   const productPriceElement = document.getElementById("product-price");
-  const currentPrice = parseFloat(productPriceElement.dataset.productPrice);
-  const originalPrice = parseFloat(
-    productPriceElement.dataset.originalPrice || productPriceElement.dataset.productPrice
-  );
+  const currentPrice = parseFloat(productPriceElement?.dataset.productPrice || 0);
   const finalPriceSpan = document.getElementById("final-price");
   const addToCartBtn = document.getElementById("add-to-cart-btn");
-  const productName = document.getElementById("product-name").textContent;
-
-  const productId = document.getElementById("product-id").value;
+  const productName = document.getElementById("product-name")?.textContent || "";
+  const productId = document.getElementById("product-id")?.value;
 
   function updateTotalPrice() {
-    const quantity = parseInt(quantityInput.value);
-    const totalPrice = currentPrice * quantity;
-    finalPriceSpan.textContent = totalPrice.toFixed(2);
+    const qty = parseInt(quantityInput?.value) || 1;
+    if (finalPriceSpan) finalPriceSpan.textContent = (currentPrice * qty).toFixed(2);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -342,75 +431,73 @@
 
     document.querySelectorAll(".quantity-btn").forEach((btn) => {
       btn.addEventListener("click", function (e) {
-        const input = e.target.closest(".quantity-control").querySelector("input");
-        let currentQty = parseInt(input.value);
-        const stockQty = parseInt(input.getAttribute("data-stock"));
+        const input = e.target
+          .closest(".pd-quantity-control, .quantity-control")
+          .querySelector("input");
+        if (!input) return;
+        let qty = parseInt(input.value);
+        const stock = parseInt(input.getAttribute("data-stock"));
+        const isMinus = e.target.textContent.trim() === "−" || e.target.textContent.trim() === "-";
 
-        if (e.target.textContent === "+") {
-          if (currentQty < maxQtyPerUser && currentQty < stockQty) {
-            input.value = currentQty + 1;
-          } else if (currentQty >= maxQtyPerUser) {
+        if (!isMinus) {
+          if (qty < maxQtyPerUser && qty < stock) {
+            qty++;
+          } else if (qty >= maxQtyPerUser) {
             Swal.fire({
               icon: "warning",
               title: "Limit Exceeded",
-              text: "You can only buy up to 5 units of this item.",
+              text: "Max 5 units per order.",
               confirmButtonText: "OK",
             });
           } else {
             Swal.fire({
               icon: "warning",
               title: "Stock Alert",
-              text: "Stock is less!",
+              text: "Not enough stock available.",
               confirmButtonText: "OK",
             });
           }
-        } else if (e.target.textContent === "-") {
-          if (currentQty > 1) {
-            input.value = currentQty - 1;
+        } else {
+          if (qty > 1) {
+            qty--;
           } else {
             Swal.fire({
               icon: "warning",
-              title: "Minimum Order",
-              text: "The minimum order is 1 item.",
+              title: "Minimum 1",
+              text: "Minimum order quantity is 1.",
               confirmButtonText: "OK",
             });
           }
         }
+        input.value = qty;
         updateTotalPrice();
       });
     });
 
-    document.querySelectorAll(".quantity-control input").forEach((input) => {
-      input.addEventListener("change", function (e) {
-        let newQty = parseInt(e.target.value);
-        const stockQty = parseInt(e.target.getAttribute("data-stock"));
-
-        if (newQty > maxQtyPerUser) {
-          newQty = maxQtyPerUser;
+    document.querySelectorAll(".pd-qty-input, .quantity-control input").forEach((input) => {
+      input.addEventListener("change", function () {
+        let qty = parseInt(this.value) || 1;
+        const stock = parseInt(this.getAttribute("data-stock"));
+        if (qty > maxQtyPerUser) {
+          qty = maxQtyPerUser;
           Swal.fire({
             icon: "warning",
             title: "Limit Exceeded",
-            text: "You can only buy up to 5 units of this item.",
+            text: "Max 5 units.",
             confirmButtonText: "OK",
           });
-        } else if (newQty > stockQty) {
-          newQty = stockQty;
+        } else if (qty > stock) {
+          qty = stock;
           Swal.fire({
             icon: "warning",
             title: "Stock Alert",
-            text: "Stock is less!",
+            text: "Adjusted to available stock.",
             confirmButtonText: "OK",
           });
-        } else if (newQty < 1) {
-          newQty = 1;
-          Swal.fire({
-            icon: "warning",
-            title: "Minimum Order",
-            text: "The minimum order is 1 item.",
-            confirmButtonText: "OK",
-          });
+        } else if (qty < 1) {
+          qty = 1;
         }
-        e.target.value = newQty;
+        this.value = qty;
         updateTotalPrice();
       });
     });
@@ -418,190 +505,144 @@
     updateTotalPrice();
   });
 
-  // Add to Cart action
-  if (addToCartBtn && !addToCartBtn.disabled && addToCartBtn.id === "add-to-cart-btn") {
+  // Add to cart
+  if (addToCartBtn && !addToCartBtn.disabled) {
     addToCartBtn.addEventListener("click", async (e) => {
       e.preventDefault();
       const quantity = parseInt(quantityInput.value);
-
       try {
-        const response = await fetch("/add-to-cart", {
+        const res = await fetch("/add-to-cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId, quantity }),
         });
-
-        if (response.status === 401) {
+        if (res.status === 401) {
           Swal.fire({
             title: "Please Log In",
-            text: "You need to be logged in to add items to cart",
+            text: "Login to add items to cart",
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Go to Login",
-            cancelButtonText: "Cancel",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              const returnTo = encodeURIComponent(
-                window.location.pathname + window.location.search
-              );
-              window.location.href = `/login?redirect=${returnTo}`;
-            }
+          }).then((r) => {
+            if (r.isConfirmed)
+              window.location.href = `/login?redirect=${encodeURIComponent(
+                window.location.pathname
+              )}`;
           });
           return;
         }
-
-        if (!response.ok) {
-          const data = await response.json();
+        if (!res.ok) {
+          const data = await res.json();
           if (data.error === "Not enough stock available") {
             Swal.fire("Oops!", `Only ${data.availableStock} items available.`, "warning");
             return;
           }
           throw new Error(data.message || "Something went wrong");
         }
-
-        const data = await response.json();
-
+        const data = await res.json();
         if (data.success) {
-          if (typeof updateCounts === "function") {
-            updateCounts(data.cartCount, data.wishlistCount);
-          }
-
-          addToCartBtn.textContent = "View Cart";
-          addToCartBtn.classList.remove("btn-add-to-cart");
-          addToCartBtn.classList.add("btn-view-cart");
+          if (typeof updateCounts === "function") updateCounts(data.cartCount, data.wishlistCount);
+          addToCartBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> View Cart';
+          addToCartBtn.classList.remove("btn-pd-cart");
+          addToCartBtn.classList.add("btn-pd-cart");
           addToCartBtn.setAttribute("href", "/cart");
-
-          Swal.fire("Success!", `${quantity} x ${productName} added to cart!`, "success");
+          addToCartBtn.id = "view-cart-btn";
+          Swal.fire({
+            icon: "success",
+            title: "Added!",
+            text: `${quantity} × ${productName} added to cart!`,
+            timer: 1600,
+            showConfirmButton: false,
+          });
         }
-      } catch (error) {
-        console.error("Add to cart error:", error);
+      } catch (err) {
+        console.error(err);
         Swal.fire("Error", "Failed to add product to cart", "error");
       }
     });
   }
-</script>
-<script>
+
+  // Wishlist
   document.addEventListener("DOMContentLoaded", function () {
     const wishlistBtn = document.getElementById("wishlist-btn");
-
     if (!wishlistBtn) return;
-
     wishlistBtn.addEventListener("click", async function (e) {
-      if (wishlistBtn.classList.contains("btn-view-wishlist")) {
-        return;
-      }
-
+      if (wishlistBtn.classList.contains("wishlisted")) return;
       e.preventDefault();
-
-      const productId = document.getElementById("product-id").value;
-
+      const pid = document.getElementById("product-id").value;
       try {
-        const response = await fetch("/toggle-wishlist", {
+        const res = await fetch("/toggle-wishlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId }),
+          body: JSON.stringify({ productId: pid }),
         });
-
-        if (response.status === 401) {
+        if (res.status === 401) {
           Swal.fire({
             title: "Please Log In",
-            text: "You need to be logged in to manage your wishlist",
+            text: "Login to manage your wishlist",
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Go to Login",
-            cancelButtonText: "Cancel",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              const returnTo = encodeURIComponent(
-                window.location.pathname + window.location.search
-              );
-              window.location.href = `/login?redirect=${returnTo}`;
-            }
+          }).then((r) => {
+            if (r.isConfirmed)
+              window.location.href = `/login?redirect=${encodeURIComponent(
+                window.location.pathname
+              )}`;
           });
           return;
         }
-
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || "Failed to update wishlist");
-        }
-
-        const data = await response.json();
-
+        const data = await res.json();
         if (data.success) {
-          if (typeof updateCounts === "function") {
-            updateCounts(data.cartCount, data.wishlistCount);
-          }
-
-          // Convert button to View Wishlist
-          wishlistBtn.textContent = "View Wishlist";
-          wishlistBtn.classList.remove("btn-add-to-wishlist");
-          wishlistBtn.classList.add("btn-view-wishlist");
+          if (typeof updateCounts === "function") updateCounts(data.cartCount, data.wishlistCount);
+          wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
+          wishlistBtn.classList.add("wishlisted");
           wishlistBtn.setAttribute("href", "/wishlist");
-
-          Swal.fire("Success!", "Item added to Wishlist!", "success");
+          wishlistBtn.title = "View Wishlist";
+          Swal.fire({
+            icon: "success",
+            title: "Added to Wishlist!",
+            timer: 1400,
+            showConfirmButton: false,
+          });
         }
-      } catch (error) {
-        console.error("Wishlist toggle error:", error);
-        Swal.fire("Error", error.message, "error");
+      } catch (err) {
+        console.error(err);
       }
     });
   });
-</script>
-<script>
-  function setCategory(category) {
-    document.getElementById("selectedCategory").value = category;
-    document.getElementById("categoryDropdown").querySelector(".dropdown-toggle-text").textContent =
-      category.charAt(0).toUpperCase() + category.slice(1);
-  }
-</script>
-<script>
+
+  // Load more reviews
   document.addEventListener("DOMContentLoaded", function () {
     const loadMoreBtn = document.getElementById("load-more-btn");
     const reviewList = document.getElementById("review-list");
+    if (!loadMoreBtn) return;
+    const additionalReviews = JSON.parse(loadMoreBtn.getAttribute("data-reviews"));
 
-    if (loadMoreBtn) {
-      const additionalReviews = JSON.parse(loadMoreBtn.getAttribute("data-reviews"));
-      let visibleReviews = 3;
-
-      loadMoreBtn.addEventListener("click", function () {
-        const reviewsToRender = additionalReviews.slice(0, 3);
-
-        reviewsToRender.forEach((review) => {
-          const reviewHtml = `
-            <div class="review">
-              <div class="rating">
-                ${generateStarRating(review.rating)}
-                <p class="user">By User: ${review.userId.name}</p>
-                <p class="date">Posted on: ${new Date(review.createdAt).toDateString()}</p>
+    loadMoreBtn.addEventListener("click", function () {
+      const batch = additionalReviews.splice(0, 3);
+      batch.forEach((review) => {
+        const initial = review.userId?.name ? review.userId.name.charAt(0).toUpperCase() : "U";
+        const stars = Array.from(
+          { length: 5 },
+          (_, i) => `<i class="fa${i < review.rating ? "s" : "r"} fa-star"></i>`
+        ).join("");
+        reviewList.insertAdjacentHTML(
+          "beforeend",
+          `
+          <div class="pd-review-item">
+            <div class="review-meta">
+              <div class="review-avatar">${initial}</div>
+              <div>
+                <div class="review-user">${review.userId?.name || "User"}</div>
+                <div class="review-stars">${stars}</div>
               </div>
-              <div class="comment">
-                 <p>${review.comment}</p>
-              </div>
+              <span class="review-date">${new Date(review.createdAt).toDateString()}</span>
             </div>
-          `;
-          reviewList.insertAdjacentHTML("beforeend", reviewHtml);
-        });
-
-        visibleReviews += reviewsToRender.length;
-        additionalReviews.splice(0, 3);
-
-        if (additionalReviews.length === 0) {
-          loadMoreBtn.style.display = "none";
-        }
+            <div class="review-comment">${review.comment}</div>
+          </div>`
+        );
       });
-    }
-
-    function generateStarRating(rating) {
-      let starRating = "";
-      for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-          starRating += '<i class="fas fa-star"></i>';
-        } else {
-          starRating += '<i class="far fa-star"></i>';
-        }
-      }
-      return starRating;
-    }
+      if (additionalReviews.length === 0) loadMoreBtn.style.display = "none";
+    });
   });
 </script>

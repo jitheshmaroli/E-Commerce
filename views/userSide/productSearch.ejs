@@ -1,139 +1,182 @@
 <%- include('../includes/userHead.ejs') %>
 <link rel="stylesheet" href="/css/productSearch.css" />
 <%- include('../includes/userHeader.ejs') %>
-<section class="product-section">
-  <div class="container-fluid d-md-none mb-3">
-    <div class="row">
-      <div class="col-6">
-        <div class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle w-100"
-            type="button"
-            id="filterDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Filter
-          </button>
-          <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
-            <li>
-              <h6 class="dropdown-header">Category</h6>
-              <select id="categoryFilterMobile" class="form-select mb-2">
-                <option value="">All Categories</option>
-                <% categoryList.forEach(category => { %>
-                <option value="<%= category.categoryName %>"><%= category.categoryName %></option>
-                <% }) %>
-              </select>
-            </li>
-            <li>
-              <h6 class="dropdown-header">Price Range</h6>
-              <input
-                type="number"
-                id="minPriceMobile"
-                class="form-control mb-2"
-                placeholder="Min Price"
-              />
-              <input
-                type="number"
-                id="maxPriceMobile"
-                class="form-control mb-2"
-                placeholder="Max Price"
-              />
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <button class="btn btn-primary w-100" id="applyFiltersMobile">Apply Filters</button>
-            </li>
-            <li>
-              <button class="btn btn-secondary w-100 mt-2" id="clearFiltersMobile">
-                Clear Filters
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle w-100"
-            type="button"
-            id="sortDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Sort
-          </button>
-          <ul class="dropdown-menu w-100" aria-labelledby="sortDropdown" id="sortOptionsMobile">
-            <li><a class="dropdown-item" href="#" data-sort="popularity">Popularity</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="newArrivals">New Arrivals</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="price_Asc">Price: Low to High</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="price_Desc">Price: High to Low</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="name_Asc">Name: A to Z</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="name_Desc">Name: Z to A</a></li>
-            <li>
-              <a class="dropdown-item" href="#" data-sort="rating_Asc">Rating: High to Low</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-sort="rating_Desc">Rating: Low to High</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="shop-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div>
+    <div class="shop-breadcrumb">
+      <a href="/">Home</a>
+      <span class="sep">/</span>
+      <span>Shop</span>
+      <% if (typeof query !== 'undefined' && query && query.query) { %>
+      <span class="sep">/</span>
+      <span>Search: "<%= query.query %>"</span>
+      <% } %>
     </div>
+    <h1>All Shoes</h1>
   </div>
+  <% if (products && products.length > 0) { %>
+  <div class="results-count">
+    Showing <strong><%= products.length %></strong> of
+    <strong><%= products.length * totalPages %></strong> results
+  </div>
+  <% } %>
+</div>
+
+<!-- ===== MOBILE FILTER BAR ===== -->
+<div class="container-fluid d-md-none mobile-filter-bar">
+  <div class="dropdown flex-fill">
+    <button
+      class="btn dropdown-toggle w-100"
+      type="button"
+      id="filterDropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      <i class="fas fa-sliders-h"></i> Filter
+    </button>
+    <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+      <li>
+        <h6 class="dropdown-header text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.1em">
+          Category
+        </h6>
+      </li>
+      <li>
+        <select id="categoryFilterMobile" class="form-select mb-3">
+          <option value="">All Categories</option>
+          <% categoryList.forEach(category => { %>
+          <option value="<%= category.categoryName %>"><%= category.categoryName %></option>
+          <% }) %>
+        </select>
+      </li>
+      <li>
+        <h6 class="dropdown-header text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.1em">
+          Price Range
+        </h6>
+      </li>
+      <li>
+        <div class="d-flex gap-2 px-3 mb-3">
+          <input type="number" id="minPriceMobile" class="form-control" placeholder="Min ₹" />
+          <input type="number" id="maxPriceMobile" class="form-control" placeholder="Max ₹" />
+        </div>
+      </li>
+      <li><hr class="dropdown-divider my-2" /></li>
+      <li class="px-3 pb-2">
+        <button class="btn btn-primary w-100 mb-2" id="applyFiltersMobile">Apply Filters</button>
+        <button class="btn btn-secondary w-100" id="clearFiltersMobile">Clear Filters</button>
+      </li>
+    </ul>
+  </div>
+  <div class="dropdown flex-fill">
+    <button
+      class="btn dropdown-toggle w-100"
+      type="button"
+      id="sortDropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      <i class="fas fa-sort"></i> Sort
+    </button>
+    <ul class="dropdown-menu w-100" aria-labelledby="sortDropdown" id="sortOptionsMobile">
+      <li>
+        <a class="dropdown-item" href="#" data-sort="popularity"
+          ><i class="fas fa-fire me-2 text-muted"></i>Popularity</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="newArrivals"
+          ><i class="fas fa-star me-2 text-muted"></i>New Arrivals</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="price_Asc"
+          ><i class="fas fa-sort-amount-up me-2 text-muted"></i>Price: Low to High</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="price_Desc"
+          ><i class="fas fa-sort-amount-down me-2 text-muted"></i>Price: High to Low</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="name_Asc"
+          ><i class="fas fa-font me-2 text-muted"></i>Name: A to Z</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="name_Desc"
+          ><i class="fas fa-font me-2 text-muted"></i>Name: Z to A</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="rating_Asc"
+          ><i class="fas fa-star me-2 text-muted"></i>Rating: High to Low</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" data-sort="rating_Desc"
+          ><i class="fas fa-star-half-alt me-2 text-muted"></i>Rating: Low to High</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<section class="product-section">
+  <!-- SIDEBAR -->
   <aside class="aside d-none d-md-block">
-    <h4>Filter By</h4>
-    <h5>Category</h5>
+    <div class="filter-heading">
+      Filters
+      <span class="filter-count" id="activeFilterCount" style="display: none">0</span>
+    </div>
+
+    <div class="filter-section-label">Category</div>
     <select id="categoryFilter" class="form-select mb-3">
       <option value="">All Categories</option>
       <% categoryList.forEach(category => { %>
       <option value="<%= category.categoryName %>"><%= category.categoryName %></option>
       <% }) %>
     </select>
-    <h5>Price Range</h5>
-    <input type="number" id="minPrice" class="form-control mb-2" placeholder="Min Price" />
-    <input type="number" id="maxPrice" class="form-control mb-3" placeholder="Max Price" />
-    <button class="btn apply-filter-btn" id="applyFilters">Apply Filters</button>
-    <button class="btn clear-filter-btn mt-2" id="clearFilters">Clear Filters</button>
+
+    <div class="filter-section-label">Price Range</div>
+    <div class="price-range-row mb-3">
+      <input type="number" id="minPrice" class="form-control" placeholder="Min ₹" />
+      <input type="number" id="maxPrice" class="form-control" placeholder="Max ₹" />
+    </div>
+
+    <button class="apply-filter-btn" id="applyFilters">
+      <i class="fas fa-check me-1"></i> Apply Filters
+    </button>
+    <button class="clear-filter-btn mt-2" id="clearFilters">
+      <i class="fas fa-times me-1"></i> Clear All
+    </button>
   </aside>
+
+  <!-- PRODUCTS AREA -->
   <div class="container">
-    <div class="row mb-3">
-      <div class="col-12">
-        <div class="d-flex justify-content-end align-items-center d-none d-md-block">
-          <span class="me-2">Sort By:</span>
-          <div id="sortOptions" class="d-flex">
-            <a href="#" data-sort="popularity" class="btn btn-outline-secondary btn-sm me-1"
-              >Popularity</a
-            >
-            <a href="#" data-sort="newArrivals" class="btn btn-outline-secondary btn-sm me-1"
-              >New Arrivals</a
-            >
-            <a href="#" data-sort="price_Asc" class="btn btn-outline-secondary btn-sm me-1"
-              >Price: Low to High</a
-            >
-            <a href="#" data-sort="price_Desc" class="btn btn-outline-secondary btn-sm me-1"
-              >Price: High to Low</a
-            >
-            <a href="#" data-sort="name_Asc" class="btn btn-outline-secondary btn-sm me-1"
-              >Name: A to Z</a
-            >
-            <a href="#" data-sort="name_Desc" class="btn btn-outline-secondary btn-sm me-1"
-              >Name: Z to A</a
-            >
-            <a href="#" data-sort="rating_Asc" class="btn btn-outline-secondary btn-sm me-1"
-              >Rating: High to Low</a
-            >
-            <a href="#" data-sort="rating_Desc" class="btn btn-outline-secondary btn-sm"
-              >Rating: Low to High</a
-            >
-          </div>
-        </div>
+    <!-- Sort bar (desktop) -->
+    <div class="sort-bar d-none d-md-flex">
+      <span class="sort-bar-label">Sort By</span>
+      <div id="sortOptions">
+        <a href="#" data-sort="popularity">Popularity</a>
+        <a href="#" data-sort="newArrivals">New Arrivals</a>
+        <a href="#" data-sort="price_Asc">Price ↑</a>
+        <a href="#" data-sort="price_Desc">Price ↓</a>
+        <a href="#" data-sort="name_Asc">A → Z</a>
+        <a href="#" data-sort="name_Desc">Z → A</a>
+        <a href="#" data-sort="rating_Asc">Top Rated</a>
+        <a href="#" data-sort="rating_Desc">Rating ↓</a>
       </div>
     </div>
+
     <% if (products && products.length > 0) { %>
+
+    <!-- Product Grid -->
     <div class="row">
       <% products.forEach(product => { %>
-      <div class="col-lg-4 col-md-6 col-sm-12" style="margin-bottom: 20px">
+      <div class="col-lg-4 col-md-6 col-sm-12">
         <div
           class="product-card modern-product-card shadow-sm border-0 rounded-3 overflow-hidden h-100 <%= product.stock === 0 ? 'out-of-stock' : '' %>"
           data-product="<%= product._id %>"
@@ -141,7 +184,7 @@
         >
           <div
             class="product-image-container position-relative overflow-hidden"
-            style="height: 280px"
+            style="height: 265px"
           >
             <a href="/product-details/<%= product._id %>">
               <img
@@ -158,7 +201,7 @@
             <button
               class="wishlist-btn position-absolute top-2 end-2 p-0 border-0 bg-white rounded-circle d-flex align-items-center justify-content-center"
               onclick="toggleWishlist(this)"
-              style="width: 40px; height: 40px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)"
+              style="width: 36px; height: 36px"
             >
               <% const isInWishlist = wishlistProducts.find(item => item._id.toString() ===
               product._id.toString()); %>
@@ -183,6 +226,9 @@
                   ></i>
                   <% } %>
                 </div>
+                <span style="font-size: 0.78rem; color: var(--grey-600, #6b6b68)"
+                  >(<%= product.averageRating ? product.averageRating : '—' %>)</span
+                >
               </div>
               <div class="price-container mb-3">
                 <% if (product.offer && product.price !== product.currentPrice) { %>
@@ -196,43 +242,12 @@
                 </div>
                 <% if (product.offer) { %>
                 <div class="offer-info bg-black text-white px-3 py-2 rounded small">
-                  <i class="fas fa-info-circle me-1"></i
-                  ><%= product.offer.name || 'Special Offer' %>
-                  - Save
-                  <%= Math.round(((product.price - product.currentPrice) / product.price) * 100) %>%!
+                  🎉 <%= product.offer.name || 'Special Offer' %> — <% if
+                  (product.offer.discountType === "percentage") { %> Save <%=
+                  product.offer.discountValue %>% <% } else { %> Save ₹<%=
+                  product.offer.discountValue %> <% } %>
                 </div>
                 <% } %>
-                <!-- Modal -->
-                <div
-                  class="modal fade"
-                  id="offerModal-<%= product._id %>"
-                  tabindex="-1"
-                  aria-labelledby="offerModalLabel"
-                  aria-hidden="true"
-                >
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="offerModalLabel">Offer Details</h5>
-                        <button
-                          type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div class="modal-body">
-                        <p><%= product.offer.name %></p>
-                        <p><%= product.offer.description %></p>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <% } else { %>
                 <div class="price-row d-flex align-items-center gap-2 mb-2">
                   <span class="regular-price fw-bold fs-4">₹<%= product.price.toFixed(2) %></span>
@@ -245,90 +260,81 @@
                 class="btn-add-cart flex-fill btn border-2 border-black text-black fw-bold text-uppercase small py-2"
                 data-product-id="<%= product._id %>"
               >
-                <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                <i class="fas fa-cart-plus me-1"></i>Add to Cart
               </button>
               <a
                 href="/checkout/<%= product._id %>/1"
-                class="btn-buy-now flex-fill btn btn-black text-white fw-bold text-uppercase small py-2"
-                >Buy Now</a
+                class="btn-buy-now flex-fill btn btn-dark text-white fw-bold text-uppercase small py-2"
               >
+                Buy Now
+              </a>
             </div>
           </div>
         </div>
       </div>
       <% }) %>
     </div>
-    <div class="pagination-controls pagination" id="pagination-controls">
+
+    <!-- Pagination -->
+    <div class="pagination-controls" id="pagination-controls">
       <% if (currentPage > 1) { %>
-      <a
-        href="?page=<%= currentPage - 1 %><%= getCurrentFilters() %>"
-        class="page-link text-black rounded border-0"
-        >Previous</a
-      >
+      <a href="?page=<%= currentPage - 1 %><%= getCurrentFilters() %>" class="page-link">
+        <i class="fas fa-chevron-left" style="font-size: 0.7rem"></i>
+      </a>
       <% } %>
       <% for (let i = 1; i <= totalPages; i++) { %>
       <% if (i === currentPage) { %>
-      <span class="current-page page-link active bg-black text-white rounded border-0"
-        ><%= i %></span
-      >
+      <span class="current-page page-link"><%= i %></span>
       <% } else { %>
-      <a
-        href="?page=<%= i %><%= getCurrentFilters() %>"
-        class="page-link text-black rounded border-0"
-        ><%= i %></a
-      >
+      <a href="?page=<%= i %><%= getCurrentFilters() %>" class="page-link"><%= i %></a>
       <% } %>
       <% } %>
       <% if (currentPage < totalPages) { %>
-      <a
-        href="?page=<%= currentPage + 1 %><%= getCurrentFilters() %>"
-        class="page-link text-black rounded border-0"
-        >Next</a
-      >
+      <a href="?page=<%= currentPage + 1 %><%= getCurrentFilters() %>" class="page-link">
+        <i class="fas fa-chevron-right" style="font-size: 0.7rem"></i>
+      </a>
       <% } %>
     </div>
-    <% } else{ %>
-    <h1 style="text-align: center; padding: 150px">NO PRODUCTS AVAILABLE</h1>
+
+    <% } else { %>
+    <!-- Empty state -->
+    <div class="no-products-state">
+      <div class="empty-icon"><i class="fas fa-shoe-prints"></i></div>
+      <h2>No Products Found</h2>
+      <p>We couldn't find any products matching your filters. Try adjusting your search.</p>
+      <a href="/products"><i class="fas fa-times me-1"></i> Clear Filters</a>
+    </div>
     <% } %>
   </div>
 </section>
+
 <%- include('../includes/userFooter.ejs') %>
 <%- include('../includes/userScripts.ejs') %>
-<script>
-  const addToCartButtons = document.querySelectorAll(".btn-add-cart");
 
-  addToCartButtons.forEach((button) => {
+<script>
+  // Add to Cart
+  document.querySelectorAll(".btn-add-cart").forEach((button) => {
     button.addEventListener("click", async (event) => {
       event.preventDefault();
-
       const card = button.closest(".product-card");
       const stock = parseInt(card.dataset.stock);
-
       if (stock <= 0) {
         Swal.fire("Out of Stock", "This product is currently out of stock.", "warning");
         return;
       }
-
       const productId = button.dataset.productId;
-      const quantity = 1;
-
       try {
         const response = await fetch("/add-to-cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId, quantity }),
+          body: JSON.stringify({ productId, quantity: 1 }),
         });
-
         if (response.status === 401) {
           window.location.href = `/login?redirect=/products`;
           return;
         }
-
         const data = await response.json();
-
-        if (data.success) {
-          updateCounts(data.cartCount, data.wishlistCount);
-        }
+        if (data.success) updateCounts(data.cartCount, data.wishlistCount);
         if (!response.ok) {
           if (data.error === "Not enough stock available") {
             Swal.fire("Oops!", `Only ${data.availableStock} items available.`, "warning");
@@ -336,144 +342,129 @@
           }
           throw new Error(data.error || "Failed");
         }
-
-        Swal.fire("Success!", "Product added to cart!", "success");
+        Swal.fire({
+          icon: "success",
+          title: "Added!",
+          text: "Product added to cart!",
+          timer: 1400,
+          showConfirmButton: false,
+        });
       } catch (err) {
         console.error(err);
         Swal.fire("Error", "Something went wrong", "error");
       }
     });
   });
-</script>
-<script>
-  // Wishlist Toggle
+
+  // Wishlist
   async function toggleWishlist(btn) {
     const icon = btn.querySelector("i");
     const productCard = btn.closest(".product-card");
     const productId = productCard.dataset.product;
-
     try {
       const res = await fetch("/toggle-wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
-
       const data = await res.json();
-
       if (res.status === 401) {
         Swal.fire({
           title: "Please Log In",
-          text: "You need to be logged in to add items to your wishlist",
+          text: "Login to add to wishlist",
           icon: "info",
           showCancelButton: true,
           confirmButtonText: "Go to Login",
-          cancelButtonText: "Cancel",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/login?redirect=${returnTo}`;
-          }
+        }).then((r) => {
+          if (r.isConfirmed)
+            window.location.href = `/login?redirect=${encodeURIComponent(
+              window.location.pathname + window.location.search
+            )}`;
         });
         return;
       }
-
       if (data.success) {
-        if (data.isInWishlist) {
-          icon.className = "fa fa-heart text-danger fas fs-6";
-        } else {
-          icon.className = "fa fa-heart text-muted far fs-6";
-        }
+        icon.className = data.isInWishlist
+          ? "fa fa-heart text-danger fas"
+          : "fa fa-heart text-muted far";
         updateCounts(data.cartCount, data.wishlistCount);
-      } else {
-        Swal.fire("Error!", data.message || "Something went wrong", "error");
       }
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Failed to update wishlist", "error");
     }
   }
-</script>
-<script>
+
+  // Filters & Sort
   document.addEventListener("DOMContentLoaded", function () {
     const sortOptions = document.querySelectorAll("#sortOptions a, #sortOptionsMobile a");
     const minPrice = document.getElementById("minPrice");
     const maxPrice = document.getElementById("maxPrice");
     const categoryFilter = document.getElementById("categoryFilter");
-    const applyFiltersButton = document.getElementById("applyFilters");
-    const clearFiltersButton = document.getElementById("clearFilters");
-    // Mobile elements
     const minPriceMobile = document.getElementById("minPriceMobile");
     const maxPriceMobile = document.getElementById("maxPriceMobile");
     const categoryFilterMobile = document.getElementById("categoryFilterMobile");
-    const applyFiltersMobileButton = document.getElementById("applyFiltersMobile");
-    const clearFiltersMobileButton = document.getElementById("clearFiltersMobile");
-    if (clearFiltersButton) clearFiltersButton.addEventListener("click", clearFilters);
-    if (clearFiltersMobileButton) clearFiltersMobileButton.addEventListener("click", clearFilters);
-    function clearFilters() {
-      window.location.href = "/products";
-    }
+
     const getUrlParams = () => new URLSearchParams(window.location.search);
-    const setInputFieldsFromUrl = () => {
-      const params = getUrlParams();
-      const minPriceValue = params.get("minPrice") || "";
-      const maxPriceValue = params.get("maxPrice") || "";
-      const categoryValue = params.get("category") || "";
-      minPrice.value = minPriceValue;
-      maxPrice.value = maxPriceValue;
-      categoryFilter.value = categoryValue;
-      // Set mobile inputs
-      minPriceMobile.value = minPriceValue;
-      maxPriceMobile.value = maxPriceValue;
-      categoryFilterMobile.value = categoryValue;
-    };
-    const highlightActiveSortOption = () => {
-      const params = getUrlParams();
-      const activeSort = params.get("sortby");
-      sortOptions.forEach((option) => {
-        option.classList.toggle("active", option.getAttribute("data-sort") === activeSort);
-      });
-    };
-    setInputFieldsFromUrl();
-    highlightActiveSortOption();
+
+    // Populate fields from URL
+    const params = getUrlParams();
+    if (minPrice) minPrice.value = params.get("minPrice") || "";
+    if (maxPrice) maxPrice.value = params.get("maxPrice") || "";
+    if (categoryFilter) categoryFilter.value = params.get("category") || "";
+    if (minPriceMobile) minPriceMobile.value = params.get("minPrice") || "";
+    if (maxPriceMobile) maxPriceMobile.value = params.get("maxPrice") || "";
+    if (categoryFilterMobile) categoryFilterMobile.value = params.get("category") || "";
+
+    // Highlight active sort
+    const activeSort = params.get("sortby");
+    sortOptions.forEach((opt) =>
+      opt.classList.toggle("active", opt.getAttribute("data-sort") === activeSort)
+    );
+
+    // Apply filters
     const applyFilters = (isMobile = false) => {
-      let url = new URL(window.location.href);
-      let params = url.searchParams;
-      const minPriceEl = isMobile ? minPriceMobile : minPrice;
-      const maxPriceEl = isMobile ? maxPriceMobile : maxPrice;
-      const categoryFilterEl = isMobile ? categoryFilterMobile : categoryFilter;
-      if (minPriceEl.value) params.set("minPrice", minPriceEl.value);
-      if (maxPriceEl.value) params.set("maxPrice", maxPriceEl.value);
-      if (categoryFilterEl.value) params.set("category", categoryFilterEl.value);
+      const url = new URL(window.location.href);
+      const p = url.searchParams;
+      const minEl = isMobile ? minPriceMobile : minPrice;
+      const maxEl = isMobile ? maxPriceMobile : maxPrice;
+      const catEl = isMobile ? categoryFilterMobile : categoryFilter;
+      if (minEl && minEl.value) p.set("minPrice", minEl.value);
+      else p.delete("minPrice");
+      if (maxEl && maxEl.value) p.set("maxPrice", maxEl.value);
+      else p.delete("maxPrice");
+      if (catEl && catEl.value) p.set("category", catEl.value);
+      else p.delete("category");
+      p.delete("page");
       window.location.href = url.href;
     };
-    sortOptions.forEach((option) => {
-      option.addEventListener("click", (e) => {
-        e.preventDefault();
-        let url = new URL(window.location.href);
-        let params = url.searchParams;
 
-        params.set("sortby", e.target.getAttribute("data-sort"));
-        // Preserve existing filter parameters
-        const isMobile = e.target.closest("#sortOptionsMobile") !== null;
-        const minPriceEl = isMobile ? minPriceMobile : minPrice;
-        const maxPriceEl = isMobile ? maxPriceMobile : maxPrice;
-        const categoryFilterEl = isMobile ? categoryFilterMobile : categoryFilter;
-        if (minPriceEl.value) params.set("minPrice", minPriceEl.value);
-        if (maxPriceEl.value) params.set("maxPrice", maxPriceEl.value);
-        if (categoryFilterEl.value) params.set("category", categoryFilterEl.value);
+    // Clear filters
+    const clearFilters = () => {
+      window.location.href = "/products";
+    };
+    document.getElementById("clearFilters")?.addEventListener("click", clearFilters);
+    document.getElementById("clearFiltersMobile")?.addEventListener("click", clearFilters);
+    document.getElementById("applyFilters")?.addEventListener("click", () => applyFilters(false));
+    document
+      .getElementById("applyFiltersMobile")
+      ?.addEventListener("click", () => applyFilters(true));
+
+    // Sort
+    sortOptions.forEach((opt) => {
+      opt.addEventListener("click", (e) => {
+        e.preventDefault();
+        const url = new URL(window.location.href);
+        url.searchParams.set("sortby", e.currentTarget.getAttribute("data-sort"));
+        url.searchParams.delete("page");
         window.location.href = url.href;
       });
     });
-    if (applyFiltersButton) applyFiltersButton.addEventListener("click", () => applyFilters(false));
-    if (applyFiltersMobileButton)
-      applyFiltersMobileButton.addEventListener("click", () => applyFilters(true));
   });
-</script>
-<script>
+
   function getCurrentFilters() {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.delete("page");
-    return "&" + urlParams.toString();
+    const str = urlParams.toString();
+    return str ? "&" + str : "";
   }
 </script>

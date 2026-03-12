@@ -1,6 +1,7 @@
 const Order = require("../models/order");
 const crypto = require("crypto");
 const Razorpay = require("razorpay");
+const { HTTP_STATUS } = require("../constants/httpStatusCodes");
 
 const verifyPayment = async (req, res) => {
   try {
@@ -16,15 +17,17 @@ const verifyPayment = async (req, res) => {
         res.json({ orderId, message: "Payment verified" });
       } else {
         console.error("Error updating order status!");
-        res.status(500).json({ message: "Payment verified but order update failed" });
+        res
+          .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          .json({ message: "Payment verified but order update failed" });
       }
     } else {
       console.error("Payment verification failed!");
-      res.status(400).json({ message: "Payment verification failed" });
+      res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Payment verification failed" });
     }
   } catch (error) {
     console.error("Error verifying payment:", error);
-    res.status(500).json({ error: "Failed to verify payment" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: "Failed to verify payment" });
   }
 };
 
@@ -60,10 +63,12 @@ const retryPayment = async (req, res) => {
 
   try {
     const razorpayOrder = await razorpay.orders.create(options);
-    res.json({ success: true, orderId, razorpayOrder });
+    res.status(HTTP_STATUS.OK).json({ success: true, orderId, razorpayOrder });
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
-    res.status(500).json({ success: false, error: "Failed to initiate retry payment." });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, error: "Failed to initiate retry payment." });
   }
 };
 
@@ -72,7 +77,9 @@ const paymentFailed = (req, res) => {
     const { orderId, reason } = req.query;
     res.render("errors/paymentFailed", { orderId, reason });
   } catch {
-    res.status(500).json({ success: false, error: "Failed to load." });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, error: "Failed to load." });
   }
 };
 
