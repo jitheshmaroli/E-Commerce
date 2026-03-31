@@ -97,6 +97,27 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// const walletView = async (req, res) => {
+//   try {
+//     const user =
+//       req.user ||
+//       (req.session.isUserAuthenticated ? await User.findOne({ email: req.session.userId }) : null);
+
+//     if (!user) return res.redirect("/login");
+
+//     const populatedUser = await User.findById(user._id).populate({
+//       path: "walletTransactions",
+//       options: { sort: { createdAt: -1 } },
+//     });
+
+//     const categoryList = await Category.find({ isBlocked: false });
+//     res.render("users/wallet", { user: populatedUser, categoryList });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "internal error" });
+//   }
+// };
+
 const walletView = async (req, res) => {
   try {
     const user =
@@ -105,13 +126,36 @@ const walletView = async (req, res) => {
 
     if (!user) return res.redirect("/login");
 
+    const page = parseInt(req.query.page) || 1;
+    const itemsPerPage = 10;
+    const skip = (page - 1) * itemsPerPage;
+
     const populatedUser = await User.findById(user._id).populate({
       path: "walletTransactions",
       options: { sort: { createdAt: -1 } },
     });
 
+    const totalTransactions = populatedUser.walletTransactions.length;
+    const totalPages = Math.ceil(totalTransactions / itemsPerPage);
+
+    const paginatedUser = await User.findById(user._id).populate({
+      path: "walletTransactions",
+      options: {
+        sort: { createdAt: -1 },
+        skip: skip,
+        limit: itemsPerPage,
+      },
+    });
+
     const categoryList = await Category.find({ isBlocked: false });
-    res.render("users/wallet", { user: populatedUser, categoryList });
+
+    res.render("users/wallet", {
+      user: paginatedUser,
+      categoryList,
+      currentPage: page,
+      totalPages: totalPages,
+      totalTransactions: totalTransactions,
+    });
   } catch (error) {
     console.log(error);
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "internal error" });

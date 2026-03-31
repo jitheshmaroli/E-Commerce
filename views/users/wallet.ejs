@@ -59,6 +59,147 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination -->
+      <% if (totalPages && totalPages > 1) { %>
+      <style>
+        .wallet-pagination {
+          padding: 1.5rem 2rem;
+          border-top: 1px solid var(--grey-100);
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .wallet-pagination-nav {
+          display: flex;
+          gap: 0.4rem;
+          flex-wrap: wrap;
+          align-items: center;
+          flex: 1;
+          justify-content: center;
+        }
+        .wallet-page-link {
+          width: 36px;
+          height: 36px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          border: 1.5px solid var(--grey-100);
+          color: var(--black);
+          background: var(--off-white);
+          font-size: 0.82rem;
+          font-weight: 600;
+          transition: all var(--transition);
+          text-decoration: none;
+        }
+        .wallet-page-link:hover {
+          background: var(--black);
+          color: var(--white);
+          border-color: var(--black);
+        }
+        .wallet-page-link.active {
+          background: var(--black) !important;
+          color: var(--white) !important;
+          border-color: var(--black) !important;
+        }
+        .wallet-page-prev,
+        .wallet-page-next {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.6rem 1.1rem;
+          background: var(--off-white);
+          color: var(--black);
+          border: 1.5px solid var(--grey-100);
+          border-radius: var(--radius-sm);
+          font-size: 0.78rem;
+          font-weight: 700;
+          text-decoration: none;
+          transition: all var(--transition);
+        }
+        .wallet-page-prev:hover,
+        .wallet-page-next:hover {
+          background: var(--black);
+          color: var(--white);
+          border-color: var(--black);
+        }
+        .wallet-page-prev:disabled,
+        .wallet-page-next:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+        .pagination-ellipsis {
+          color: var(--grey-400);
+          padding: 0 0.4rem;
+        }
+        .pagination-info {
+          font-size: 0.78rem;
+          color: var(--grey-400);
+          text-align: center;
+          margin-top: 1rem;
+          padding: 0 2rem;
+        }
+      </style>
+
+      <div class="wallet-pagination">
+        <!-- Previous button -->
+        <% if (currentPage > 1) { %>
+        <a href="/wallet?page=<%= currentPage - 1 %>" class="wallet-page-prev">
+          <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        <% } else { %>
+        <button class="wallet-page-prev" disabled>
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <% } %>
+
+        <div class="wallet-pagination-nav">
+          <% let startPage = Math.max(1, currentPage - 2); let endPage = Math.min(totalPages,
+          currentPage + 2); %>
+
+          <% if (startPage > 1) { %>
+          <a href="/wallet?page=1" class="wallet-page-link">1</a>
+          <% if (startPage > 2) { %>
+          <span class="pagination-ellipsis">...</span>
+          <% } %>
+          <% } %>
+
+          <% for (let i = startPage; i <= endPage; i++) { %>
+          <a
+            href="/wallet?page=<%= i %>"
+            class="wallet-page-link <%= i === currentPage ? 'active' : '' %>"
+          >
+            <%= i %>
+          </a>
+          <% } %>
+
+          <% if (endPage < totalPages) { %>
+          <% if (endPage < totalPages - 1) { %>
+          <span class="pagination-ellipsis">...</span>
+          <% } %>
+          <a href="/wallet?page=<%= totalPages %>" class="wallet-page-link"><%= totalPages %></a>
+          <% } %>
+        </div>
+
+        <% if (currentPage < totalPages) { %>
+        <a href="/wallet?page=<%= currentPage + 1 %>" class="wallet-page-next">
+          Next <i class="fas fa-chevron-right"></i>
+        </a>
+        <% } else { %>
+        <button class="wallet-page-next" disabled>Next <i class="fas fa-chevron-right"></i></button>
+        <% } %>
+      </div>
+
+      <div class="pagination-info">
+        Showing page <strong><%= currentPage %></strong> of
+        <strong><%= totalPages %></strong> (<%= totalTransactions %>
+        total transactions)
+      </div>
+      <% } %>
+
       <% } else { %>
       <div class="wallet-empty">
         <i class="fas fa-receipt"></i>

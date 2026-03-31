@@ -75,7 +75,8 @@ const retryPayment = async (req, res) => {
 const paymentFailed = (req, res) => {
   try {
     const { orderId, reason } = req.query;
-    res.render("errors/paymentFailed", { orderId, reason });
+    const user = req.user || null;
+    res.render("errors/paymentFailed", { orderId, reason, user });
   } catch {
     res
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
